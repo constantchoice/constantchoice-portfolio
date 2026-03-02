@@ -1,0 +1,48 @@
+.corner {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+}
+
+.corner-tl { top: 0; left: 0; }
+.corner-tr { top: 0; right: 0; }
+.corner-br { bottom: 0; right: 0; }
+.corner-bl { bottom: 0; left: 0; }
+
+.corner-svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+}
+
+.corner-path {
+    stroke: #999;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    pointer-events: none;
+}
+
+/* Зоны активации */
+.activation-zone {
+    position: absolute;
+    pointer-events: auto;
+    cursor: pointer;
+    opacity: 0;
+    transition: none;
+}
+
+.activation-zone:hover {
+    opacity: 0 !important;
+}
+
+/* Цвета для разных уровней */
+.zone-level-1 { background: rgba(76, 175, 80, 0.3); }
+.zone-level-2 { background: rgba(33, 150, 243, 0.3); }
+.zone-level-3 { background: rgba(255, 152, 0, 0.3); }
+.zone-level-4 { background: rgba(156, 39, 176, 0.3); }
+.zone-level-5 { background: rgba(244, 67, 54, 0.3); }

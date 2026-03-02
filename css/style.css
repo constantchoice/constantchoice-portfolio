@@ -1,0 +1,68 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: white;
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: system-ui, sans-serif;
+}
+
+.info-panel {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255,255,255,0.95);
+    padding: 20px 30px;
+    border-radius: 30px;
+    font-size: 14px;
+    line-height: 2;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    z-index: 1000;
+    border: 1px solid rgba(0,0,0,0.05);
+    max-width: 400px;
+}
+
+.badge {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.badge-tl { background: #e3f2fd; }
+.badge-tr { background: #fff3e0; }
+.badge-br { background: #e8f5e9; }
+.badge-bl { background: #f3e5f5; }
+
+.resolution-info {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 30px;
+    font-size: 14px;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    line-height: 1.8;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.level-badge {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.level-1 { background: #4CAF50; }
+.level-2 { background: #2196F3; }
+.level-3 { background: #FF9800; }
+.level-4 { background: #9C27B0; }
+.level-5 { background: #F44336; }
