@@ -716,6 +716,18 @@ class LineManager {
         }
     }
 
+    // Вспомогательная функция для определения максимального уровня в углу
+    getMaxLevelInCorner(corner) {
+        const levels = this.linesState[corner].map(l => l.level);
+        return levels.length > 0 ? Math.max(...levels) : 0;
+    }
+
+    // Функция для проверки, является ли линия最高шего уровня
+    isHighestLevel(corner, level) {
+        const maxLevel = this.getMaxLevelInCorner(corner);
+        return level === maxLevel;
+    }
+
     redrawZonesOnly() {
         // Очищаем только зоны (не трогаем линии!)
         this.zones.forEach(zone => zone.remove());
@@ -731,6 +743,7 @@ class LineManager {
             lines.forEach(lineData => {
                 const level = lineData.level;
                 const container = this.containers[corner];
+                const isHighest = this.isHighestLevel(corner, level);
 
                 // Находим существующую линию
                 const existingLine = container.querySelector(`[data-line-id="${lineData.id}"]`);
@@ -740,154 +753,164 @@ class LineManager {
                 }
 
                 // Получаем параметры для этого угла и уровня
-                let offsetX, offsetY, widthLength, heightLength;
-
                 const baseOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
-                offsetX = this.pxToPercentX(baseOffset, w);
-                offsetY = this.pxToPercentY(baseOffset, h);
-                widthLength = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
-                heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
+                const offsetX = this.pxToPercentX(baseOffset, w);
+                const offsetY = this.pxToPercentY(baseOffset, h);
+                const widthLength = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
+                const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
+
+                // Дополнительные проценты для зон
+                const hoverExtra = 4; // +4% для зоны подсветки
+                const clickExtra = 1;  // +1% для зоны активации
 
                 // Создаём зоны в зависимости от угла
                 if (corner === 'tl') {
-                    // Толстые зоны для tl
-                    const horizontalZone = {
+                    // ЗОНЫ ПОДСВЕТКИ (для всех линий, с +4%)
+                    const hoverHorizontalZone = {
                         top: '0',
-                        left: offsetX + '%',
-                        width: widthLength + '%',
-                        height: (4 * offsetY) + '%'
+                        left: Math.max(0, offsetX - hoverExtra) + '%',
+                        width: Math.min(100 - (offsetX - hoverExtra), widthLength + 2 * hoverExtra) + '%',
+                        height: (offsetY + hoverExtra) + '%'
                     };
-                    const verticalZone = {
-                        top: offsetY + '%',
+                    const hoverVerticalZone = {
+                        top: Math.max(0, offsetY - hoverExtra) + '%',
                         left: '0',
-                        width: (4 * offsetX) + '%',
-                        height: heightLength + '%'
+                        width: (offsetX + hoverExtra) + '%',
+                        height: Math.min(100 - (offsetY - hoverExtra), heightLength + 2 * hoverExtra) + '%'
                     };
 
-                    this.createActivationZone(container, corner, level, horizontalZone, true, this);
-                    this.createActivationZone(container, corner, level, verticalZone, false, this);
+                    this.createActivationZone(container, corner, level, hoverHorizontalZone, true, this);
+                    this.createActivationZone(container, corner, level, hoverVerticalZone, false, this);
 
-                    // Точные зоны для tl
-                    const exactHorizontalZone = {
-                        top: offsetY + '%',
-                        left: offsetX + '%',
-                        width: widthLength + '%',
-                        height: (this.LINE_THICKNESS * 3) + 'px'
-                    };
-                    const exactVerticalZone = {
-                        top: offsetY + '%',
-                        left: offsetX + '%',
-                        width: (this.LINE_THICKNESS * 3) + 'px',
-                        height: heightLength + '%'
-                    };
+                    // ЗОНЫ АКТИВАЦИИ (только для линий уровня, с +1%)
+                    if (isHighest) {
+                        const clickHorizontalZone = {
+                            top: '0',
+                            left: Math.max(0, offsetX - clickExtra) + '%',
+                            width: Math.min(100 - (offsetX - clickExtra), widthLength + 2 * clickExtra) + '%',
+                            height: (offsetY + clickExtra) + '%'
+                        };
+                        const clickVerticalZone = {
+                            top: Math.max(0, offsetY - clickExtra) + '%',
+                            left: '0',
+                            width: (offsetX + clickExtra) + '%',
+                            height: Math.min(100 - (offsetY - clickExtra), heightLength + 2 * clickExtra) + '%'
+                        };
 
-                    this.createExactZone(container, corner, level, exactHorizontalZone, true, this);
-                    this.createExactZone(container, corner, level, exactVerticalZone, false, this);
+                        this.createExactZone(container, corner, level, clickHorizontalZone, true, this);
+                        this.createExactZone(container, corner, level, clickVerticalZone, false, this);
+                    }
 
                 } else if (corner === 'tr') {
-                    // Толстые зоны для tr
-                    const horizontalZone = {
+                    // ЗОНЫ ПОДСВЕТКИ
+                    const hoverHorizontalZone = {
                         top: '0',
-                        right: offsetX + '%',
-                        width: widthLength + '%',
-                        height: (4 * offsetY) + '%'
+                        right: Math.max(0, offsetX - hoverExtra) + '%',
+                        width: Math.min(100 - (offsetX - hoverExtra), widthLength + 2 * hoverExtra) + '%',
+                        height: (offsetY + hoverExtra) + '%'
                     };
-                    const verticalZone = {
-                        top: offsetY + '%',
+                    const hoverVerticalZone = {
+                        top: Math.max(0, offsetY - hoverExtra) + '%',
                         right: '0',
-                        width: (4 * offsetX) + '%',
-                        height: heightLength + '%'
+                        width: (offsetX + hoverExtra) + '%',
+                        height: Math.min(100 - (offsetY - hoverExtra), heightLength + 2 * hoverExtra) + '%'
                     };
 
-                    this.createActivationZone(container, corner, level, horizontalZone, true, this);
-                    this.createActivationZone(container, corner, level, verticalZone, false, this);
+                    this.createActivationZone(container, corner, level, hoverHorizontalZone, true, this);
+                    this.createActivationZone(container, corner, level, hoverVerticalZone, false, this);
 
-                    // Точные зоны для tr
-                    const exactHorizontalZone = {
-                        top: offsetY + '%',
-                        right: offsetX + '%',
-                        width: widthLength + '%',
-                        height: (this.LINE_THICKNESS * 3) + 'px'
-                    };
-                    const exactVerticalZone = {
-                        top: offsetY + '%',
-                        right: offsetX + '%',
-                        width: (this.LINE_THICKNESS * 3) + 'px',
-                        height: heightLength + '%'
-                    };
+                    // ЗОНЫ АКТИВАЦИИ (только для уровня)
+                    if (isHighest) {
+                        const clickHorizontalZone = {
+                            top: '0',
+                            right: Math.max(0, offsetX - clickExtra) + '%',
+                            width: Math.min(100 - (offsetX - clickExtra), widthLength + 2 * clickExtra) + '%',
+                            height: (offsetY + clickExtra) + '%'
+                        };
+                        const clickVerticalZone = {
+                            top: Math.max(0, offsetY - clickExtra) + '%',
+                            right: '0',
+                            width: (offsetX + clickExtra) + '%',
+                            height: Math.min(100 - (offsetY - clickExtra), heightLength + 2 * clickExtra) + '%'
+                        };
 
-                    this.createExactZone(container, corner, level, exactHorizontalZone, true, this);
-                    this.createExactZone(container, corner, level, exactVerticalZone, false, this);
+                        this.createExactZone(container, corner, level, clickHorizontalZone, true, this);
+                        this.createExactZone(container, corner, level, clickVerticalZone, false, this);
+                    }
 
                 } else if (corner === 'br') {
-                    // Толстые зоны для br
-                    const horizontalZone = {
+                    // ЗОНЫ ПОДСВЕТКИ
+                    const hoverHorizontalZone = {
                         bottom: '0',
-                        right: offsetX + '%',
-                        width: widthLength + '%',
-                        height: (4 * offsetY) + '%'
+                        right: Math.max(0, offsetX - hoverExtra) + '%',
+                        width: Math.min(100 - (offsetX - hoverExtra), widthLength + 2 * hoverExtra) + '%',
+                        height: (offsetY + hoverExtra) + '%'
                     };
-                    const verticalZone = {
-                        bottom: offsetY + '%',
+                    const hoverVerticalZone = {
+                        bottom: Math.max(0, offsetY - hoverExtra) + '%',
                         right: '0',
-                        width: (4 * offsetX) + '%',
-                        height: heightLength + '%'
+                        width: (offsetX + hoverExtra) + '%',
+                        height: Math.min(100 - (offsetY - hoverExtra), heightLength + 2 * hoverExtra) + '%'
                     };
 
-                    this.createActivationZone(container, corner, level, horizontalZone, true, this);
-                    this.createActivationZone(container, corner, level, verticalZone, false, this);
+                    this.createActivationZone(container, corner, level, hoverHorizontalZone, true, this);
+                    this.createActivationZone(container, corner, level, hoverVerticalZone, false, this);
 
-                    // Точные зоны для br
-                    const exactHorizontalZone = {
-                        bottom: offsetY + '%',
-                        right: offsetX + '%',
-                        width: widthLength + '%',
-                        height: (this.LINE_THICKNESS * 3) + 'px'
-                    };
-                    const exactVerticalZone = {
-                        bottom: offsetY + '%',
-                        right: offsetX + '%',
-                        width: (this.LINE_THICKNESS * 3) + 'px',
-                        height: heightLength + '%'
-                    };
+                    // ЗОНЫ АКТИВАЦИИ (только для уровня)
+                    if (isHighest) {
+                        const clickHorizontalZone = {
+                            bottom: '0',
+                            right: Math.max(0, offsetX - clickExtra) + '%',
+                            width: Math.min(100 - (offsetX - clickExtra), widthLength + 2 * clickExtra) + '%',
+                            height: (offsetY + clickExtra) + '%'
+                        };
+                        const clickVerticalZone = {
+                            bottom: Math.max(0, offsetY - clickExtra) + '%',
+                            right: '0',
+                            width: (offsetX + clickExtra) + '%',
+                            height: Math.min(100 - (offsetY - clickExtra), heightLength + 2 * clickExtra) + '%'
+                        };
 
-                    this.createExactZone(container, corner, level, exactHorizontalZone, true, this);
-                    this.createExactZone(container, corner, level, exactVerticalZone, false, this);
+                        this.createExactZone(container, corner, level, clickHorizontalZone, true, this);
+                        this.createExactZone(container, corner, level, clickVerticalZone, false, this);
+                    }
 
                 } else if (corner === 'bl') {
-                    // Толстые зоны для bl
-                    const horizontalZone = {
+                    // ЗОНЫ ПОДСВЕТКИ
+                    const hoverHorizontalZone = {
                         bottom: '0',
+                        left: Math.max(0, offsetX - hoverExtra) + '%',
+                        width: Math.min(100 - (offsetX - hoverExtra), widthLength + 2 * hoverExtra) + '%',
+                        height: (offsetY + hoverExtra) + '%'
+                    };
+                    const hoverVerticalZone = {
+                        bottom: Math.max(0, offsetY - hoverExtra) + '%',
                         left: '0',
-                        width: '100%',
-                        height: (offsetY + heightLength) + '%'
-                    };
-                    const verticalZone = {
-                        bottom: '0',
-                        left: '0',
-                        width: (offsetX + widthLength) + '%',
-                        height: '100%'
+                        width: (offsetX + hoverExtra) + '%',
+                        height: Math.min(100 - (offsetY - hoverExtra), heightLength + 2 * hoverExtra) + '%'
                     };
 
-                    this.createActivationZone(container, corner, level, horizontalZone, true, this);
-                    this.createActivationZone(container, corner, level, verticalZone, false, this);
+                    this.createActivationZone(container, corner, level, hoverHorizontalZone, true, this);
+                    this.createActivationZone(container, corner, level, hoverVerticalZone, false, this);
 
-                    // Точные зоны для bl
-                    const exactHorizontalZone = {
-                        bottom: offsetY + '%',
-                        left: offsetX + '%',
-                        width: widthLength + '%',
-                        height: (this.LINE_THICKNESS * 3) + 'px'
-                    };
-                    const exactVerticalZone = {
-                        bottom: offsetY + '%',
-                        left: offsetX + '%',
-                        width: (this.LINE_THICKNESS * 3) + 'px',
-                        height: heightLength + '%'
-                    };
+                    // ЗОНЫ АКТИВАЦИИ (только для уровня)
+                    if (isHighest) {
+                        const clickHorizontalZone = {
+                            bottom: '0',
+                            left: Math.max(0, offsetX - clickExtra) + '%',
+                            width: Math.min(100 - (offsetX - clickExtra), widthLength + 2 * clickExtra) + '%',
+                            height: (offsetY + clickExtra) + '%'
+                        };
+                        const clickVerticalZone = {
+                            bottom: Math.max(0, offsetY - clickExtra) + '%',
+                            left: '0',
+                            width: (offsetX + clickExtra) + '%',
+                            height: Math.min(100 - (offsetY - clickExtra), heightLength + 2 * clickExtra) + '%'
+                        };
 
-                    this.createExactZone(container, corner, level, exactHorizontalZone, true, this);
-                    this.createExactZone(container, corner, level, exactVerticalZone, false, this);
+                        this.createExactZone(container, corner, level, clickHorizontalZone, true, this);
+                        this.createExactZone(container, corner, level, clickVerticalZone, false, this);
+                    }
                 }
             });
         });
@@ -1049,6 +1072,11 @@ class LineManager {
         container.appendChild(svg);
     }
 
+    getMaxLevelInCorner(corner) {
+    const levels = this.linesState[corner]?.map(l => l.level) || [];
+    return levels.length > 0 ? Math.max(...levels) : 0;
+}
+
     createActivationZone(container, corner, level, styles, isHorizontal) {
         const zone = document.createElement('div');
         zone.className = `activation-zone zone-level-${level}`;
@@ -1113,73 +1141,50 @@ class LineManager {
 
     drawTopLeft(w, h) {
         const container = this.containers.tl;
-
+        
+        // Определяем максимальный уровень в этом углу
+        const maxLevel = this.getMaxLevelInCorner('tl');
+        
         // Находим ID линии из состояния
-        const lineData = this.linesState.tl.find(l => l.level === 1);
+        const lineData = this.linesState.tl.find(l => l.level === maxLevel);
         if (!lineData) return;
-
-        // Линия
-        const offset = this.pxToPercentX(this.BASE_OFFSET, w);
-        const offsetX = this.pxToPercentX(this.BASE_OFFSET, w);
-        const offsetY = this.pxToPercentY(this.BASE_OFFSET, h);
+        
+        const level = lineData.level;
+        
+        // Правильный отступ для уровня
+        const offsetX = this.pxToPercentX(this.BASE_OFFSET + (level - 1) * this.LINE_SPACING, w);
+        const offsetY = this.pxToPercentY(this.BASE_OFFSET + (level - 1) * this.LINE_SPACING, h);
+        const length = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
+        const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
         const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
         const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
-
-        const startX = offsetX + this.WIDTH_LENGTH_1;
-        const startY = offsetY;
-
-        const cornerX = offsetX;
-        const cornerY = offsetY;
-
+        
         const pathData = `
-                    M ${startX},${startY}
-                    L ${cornerX + radiusX},${cornerY}
-                    Q ${cornerX},${cornerY} ${cornerX},${cornerY + radiusY}
-                    L ${cornerX},${cornerY + this.HEIGHT_LENGTH_1}
-                `;
-
-        this.createSVG(container, pathData, 1, lineData.id);
-
-        // === ИСПРАВЛЕННЫЕ ЗОНЫ ===
-
-        // Горизонтальная зона (толстая горизонтальная линия)
-        // Ширина = длина линии, Высота = расстояние до края
-        const horizontalZone = {
+            M ${offsetX + length},${offsetY}
+            L ${offsetX + radiusX},${offsetY}
+            Q ${offsetX},${offsetY} ${offsetX},${offsetY + radiusY}
+            L ${offsetX},${offsetY + heightLength}
+        `;
+        
+        this.createSVG(container, pathData, level, lineData.id);
+        
+        // ТОЧНЫЕ ЗОНЫ (для клика) - ТОЛЬКО для максимального уровня
+        const clickHorizontalZone = {
             top: '0',
-            left: offset + '%',
-            width: this.WIDTH_LENGTH_1 + '%',
-            height: 4 * offset + '%'
-        };
-
-        // Вертикальная зона (толстая вертикальная линия)
-        // Ширина = расстояние до края, Высота = длина линии
-        const verticalZone = {
-            top: offset + '%',
             left: '0',
-            width: 4 * offset + '%',
-            height: this.HEIGHT_LENGTH_1 + '%'
+            width: (offsetX + length + 1) + '%', // До линии +1%
+            height: (offsetY + 1) + '%' // От верхнего края до линии +1%
         };
 
-        this.createActivationZone(container, 'tl', 1, horizontalZone, true, this);
-        this.createActivationZone(container, 'tl', 1, verticalZone, false, this);
-
-        // Точные зоны (повторяют форму линии)
-        const exactHorizontalZone = {
-            top: offset + '%',
-            left: offset + '%',
-            width: this.WIDTH_LENGTH_1 + '%',
-            height: (this.LINE_THICKNESS * 3) + 'px'
+        const clickVerticalZone = {
+            top: '0',
+            left: '0',
+            width: (offsetX + 1) + '%', // От левого края до линии +1%
+            height: (offsetY + heightLength + 1) + '%' // До линии +1%
         };
 
-        const exactVerticalZone = {
-            top: offset + '%',
-            left: offset + '%',
-            width: (this.LINE_THICKNESS * 3) + 'px',
-            height: this.HEIGHT_LENGTH_1 + '%'
-        };
-
-        this.createExactZone(container, 'tl', 1, exactHorizontalZone, true, this);
-        this.createExactZone(container, 'tl', 1, exactVerticalZone, false, this);
+        this.createExactZone(container, 'tl', level, clickHorizontalZone, true, this);
+        this.createExactZone(container, 'tl', level, clickVerticalZone, false, this);
     }
 
     drawTopRight(w, h) {
@@ -1251,129 +1256,113 @@ class LineManager {
 
     drawBottomRight(w, h) {
         const container = this.containers.br;
-
+        
         const baseOffsetX = this.pxToPercentX(this.BASE_OFFSET, w);
         const baseOffsetY = this.pxToPercentY(this.BASE_OFFSET, h);
         const spacingX = this.pxToPercentX(this.LINE_SPACING, w);
         const spacingY = this.pxToPercentY(this.LINE_SPACING, h);
         const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
         const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
-
+        
+        // Определяем максимальный уровень в этом углу
+        const maxLevel = this.getMaxLevelInCorner('br');
+        
         // Level 1 линия
         const lineData1 = this.linesState.br.find(l => l.level === 1);
         if (lineData1) {
             const startX1 = 100 - baseOffsetX;
             const startY1 = 100 - baseOffsetY - this.HEIGHT_LENGTH_1;
-
+            
             const cornerX1 = 100 - baseOffsetX;
             const cornerY1 = 100 - baseOffsetY;
-
+            
             const pathData1 = `
-                        M ${startX1},${startY1}
-                        L ${cornerX1},${cornerY1 - radiusY}
-                        Q ${cornerX1},${cornerY1} ${cornerX1 - radiusX},${cornerY1}
-                        L ${cornerX1 - this.WIDTH_LENGTH_1},${cornerY1}
-                    `;
-
+                M ${startX1},${startY1}
+                L ${cornerX1},${cornerY1 - radiusY}
+                Q ${cornerX1},${cornerY1} ${cornerX1 - radiusX},${cornerY1}
+                L ${cornerX1 - this.WIDTH_LENGTH_1},${cornerY1}
+            `;
+            
             this.createSVG(container, pathData1, 1, lineData1.id);
         }
-
+        
         // Level 2 линия
         const lineData2 = this.linesState.br.find(l => l.level === 2);
         if (lineData2) {
             const startX2 = 100 - baseOffsetX - spacingX;
             const startY2 = 100 - baseOffsetY - spacingY - this.HEIGHT_LENGTH_2;
-
+            
             const cornerX2 = 100 - baseOffsetX - spacingX;
             const cornerY2 = 100 - baseOffsetY - spacingY;
-
+            
             const pathData2 = `
-                        M ${startX2},${startY2}
-                        L ${cornerX2},${cornerY2 - radiusY}
-                        Q ${cornerX2},${cornerY2} ${cornerX2 - radiusX},${cornerY2}
-                        L ${cornerX2 - this.WIDTH_LENGTH_2},${cornerY2}
-                    `;
-
+                M ${startX2},${startY2}
+                L ${cornerX2},${cornerY2 - radiusY}
+                Q ${cornerX2},${cornerY2} ${cornerX2 - radiusX},${cornerY2}
+                L ${cornerX2 - this.WIDTH_LENGTH_2},${cornerY2}
+            `;
+            
             this.createSVG(container, pathData2, 2, lineData2.id);
         }
-
-        // ЗОНЫ ДЛЯ LEVEL 1
-
-        // Горизонтальная зона Level 1 (вдоль нижнего края)
-        const horizontalZone1 = {
-            bottom: '0',
-            right: baseOffsetX + '%',
-            width: this.WIDTH_LENGTH_1 + '%',
-            height: (4 * baseOffsetY) + '%'
-        };
-
-        // Вертикальная зона Level 1 (вдоль правого края)
-        const verticalZone1 = {
-            bottom: baseOffsetY + '%',
-            right: '0',
-            width: (4 * baseOffsetX) + '%',
-            height: this.HEIGHT_LENGTH_1 + '%'
-        };
-
-        this.createActivationZone(container, 'br', 1, horizontalZone1, true, this);
-        this.createActivationZone(container, 'br', 1, verticalZone1, false, this);
-
-        // ЗОНЫ ДЛЯ LEVEL 2
-
-        // Горизонтальная зона Level 2 (вдоль нижнего края)
-        const horizontalZone2 = {
-            bottom: '0',
-            right: (baseOffsetX + spacingX) + '%',
-            width: this.WIDTH_LENGTH_2 + '%',
-            height: (2 * (baseOffsetY + spacingY)) + '%'
-        };
-
-        // Вертикальная зона Level 2 (вдоль правого края)
-        const verticalZone2 = {
-            bottom: (baseOffsetY + spacingY) + '%',
-            right: '0',
-            width: (2 * (baseOffsetX + spacingX)) + '%',
-            height: this.HEIGHT_LENGTH_2 + '%'
-        };
-
-        this.createActivationZone(container, 'br', 2, horizontalZone2, true, this);
-        this.createActivationZone(container, 'br', 2, verticalZone2, false, this);
-
-        // Точные зоны для Level 1
-        const exactHorizontalZone1 = {
-            bottom: baseOffsetY + '%',
-            right: baseOffsetX + '%',
-            width: this.WIDTH_LENGTH_1 + '%',
-            height: (this.LINE_THICKNESS * 3) + 'px'
-        };
-
-        const exactVerticalZone1 = {
-            bottom: baseOffsetY + '%',
-            right: baseOffsetX + '%',
-            width: (this.LINE_THICKNESS * 3) + 'px',
-            height: this.HEIGHT_LENGTH_1 + '%'
-        };
-
-        this.createExactZone(container, 'br', 1, exactHorizontalZone1, true, this);
-        this.createExactZone(container, 'br', 1, exactVerticalZone1, false, this);
-
-        // Точные зоны для Level 2
-        const exactHorizontalZone2 = {
-            bottom: (baseOffsetY + spacingY) + '%',
-            right: (baseOffsetX + spacingX) + '%',
-            width: this.WIDTH_LENGTH_2 + '%',
-            height: (this.LINE_THICKNESS * 3) + 'px'
-        };
-
-        const exactVerticalZone2 = {
-            bottom: (baseOffsetY + spacingY) + '%',
-            right: (baseOffsetX + spacingX) + '%',
-            width: (this.LINE_THICKNESS * 3) + 'px',
-            height: this.HEIGHT_LENGTH_2 + '%'
-        };
-
-        this.createExactZone(container, 'br', 2, exactHorizontalZone2, true, this);
-        this.createExactZone(container, 'br', 2, exactVerticalZone2, false, this);
+        
+        // ЗОНЫ ПОДСВЕТКИ (толстые) - для всех уровней
+        if (lineData1) {
+            const horizontalZone1 = {
+                bottom: '0',
+                right: baseOffsetX + '%',
+                width: this.WIDTH_LENGTH_1 + '%',
+                height: (4 * baseOffsetY) + '%'
+            };
+            const verticalZone1 = {
+                bottom: baseOffsetY + '%',
+                right: '0',
+                width: (4 * baseOffsetX) + '%',
+                height: this.HEIGHT_LENGTH_1 + '%'
+            };
+            
+            this.createActivationZone(container, 'br', 1, horizontalZone1, true, this);
+            this.createActivationZone(container, 'br', 1, verticalZone1, false, this);
+        }
+        
+        if (lineData2) {
+            const horizontalZone2 = {
+                bottom: '0',
+                right: (baseOffsetX + spacingX) + '%',
+                width: this.WIDTH_LENGTH_2 + '%',
+                height: (4 * (baseOffsetY + spacingY)) + '%'
+            };
+            const verticalZone2 = {
+                bottom: (baseOffsetY + spacingY) + '%',
+                right: '0',
+                width: (4 * (baseOffsetX + spacingX)) + '%',
+                height: this.HEIGHT_LENGTH_2 + '%'
+            };
+            
+            this.createActivationZone(container, 'br', 2, horizontalZone2, true, this);
+            this.createActivationZone(container, 'br', 2, verticalZone2, false, this);
+        }
+        
+        // ТОЧНЫЕ ЗОНЫ (для клика) - ТОЛЬКО для максимального уровня
+        if (lineData2 && maxLevel === 2) {
+            // Горизонтальная зона (вдоль нижнего края) - от правого края влево до линии, от нижнего края вверх до линии
+            const clickHorizontalZone2 = {
+                bottom: '0',
+                right: '0',
+                width: (baseOffsetX + spacingX + this.WIDTH_LENGTH_2 + 1) + '%', // От правого края влево до линии +1%
+                height: (baseOffsetY + spacingY + 1) + '%' // От нижнего края вверх до линии +1%
+            };
+            
+            // Вертикальная зона (вдоль правого края) - от нижнего края вверх до линии, от правого края влево до линии
+            const clickVerticalZone2 = {
+                bottom: '0',
+                right: '0',
+                width: (baseOffsetX + spacingX + 1) + '%', // От правого края влево до линии +1%
+                height: (baseOffsetY + spacingY + this.HEIGHT_LENGTH_2 + 1) + '%' // От нижнего края вверх до линии +1%
+            };
+            
+            this.createExactZone(container, 'br', 2, clickHorizontalZone2, true, this);
+            this.createExactZone(container, 'br', 2, clickVerticalZone2, false, this);
+        }
     }
 
     drawBottomLeft(w, h) {
