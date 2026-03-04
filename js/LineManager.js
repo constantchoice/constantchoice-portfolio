@@ -236,164 +236,159 @@ class LineManager {
         const w = window.innerWidth;
         const h = window.innerHeight;
 
-        const offset = this.pxToPercentX(this.BASE_OFFSET, w);
-        const offsetY = this.pxToPercentY(this.BASE_OFFSET, h);
-        const length = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
-        const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
-        const radius = this.pxToPercentX(this.CORNER_RADIUS, w);
-        const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
-
+        // Вычисляем новый уровень для целевого угла
         let newLevel;
-
         if (toCorner === 'br' || toCorner === 'tl') {
             const existingLevels = this.linesState[toCorner].map(l => l.level);
-            if (existingLevels.length === 0) {
-                newLevel = 1;
-            } else {
-                newLevel = Math.max(...existingLevels) + 1;
-            }
+            newLevel = existingLevels.length === 0 ? 1 : Math.max(...existingLevels) + 1;
         } else {
             newLevel = 1;
         }
 
-        // НАЧАЛЬНЫЕ ТОЧКИ с правильным отступом для текущего уровня
-        let startPoints;
+        // Функция для получения точек линии с определенным отступом
+        const getPointsWithOffset = (corner, level, offset) => {
+            const offsetX = this.pxToPercentX(offset, w);
+            const offsetY = this.pxToPercentY(offset, h);
+            
+            const length = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
+            const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
+            const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
+            const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
+
+            if (corner === 'tl') {
+                return {
+                    p0: { x: offsetX + length, y: offsetY },           // M - начало
+                    p1: { x: offsetX + radiusX, y: offsetY },          // L1 - конец первой прямой
+                    p2: { x: offsetX, y: offsetY },                    // C1 - угол (первая контрольная)
+                    p3: { x: offsetX, y: offsetY + radiusY },          // C2 - точка после угла
+                    p4: { x: offsetX, y: offsetY + radiusY },          // L2 - конец скругления
+                    p5: { x: offsetX, y: offsetY + heightLength }      // L3 - конечная прямая
+                };
+            } else if (corner === 'tr') {
+                return {
+                    p0: { x: 100 - offsetX - length, y: offsetY },
+                    p1: { x: 100 - offsetX - radiusX, y: offsetY },
+                    p2: { x: 100 - offsetX, y: offsetY },
+                    p3: { x: 100 - offsetX, y: offsetY + radiusY },
+                    p4: { x: 100 - offsetX, y: offsetY + radiusY },
+                    p5: { x: 100 - offsetX, y: offsetY + heightLength }
+                };
+            } else if (corner === 'br') {
+                return {
+                    p0: { x: 100 - offsetX, y: 100 - offsetY - heightLength },
+                    p1: { x: 100 - offsetX, y: 100 - offsetY - radiusY },
+                    p2: { x: 100 - offsetX, y: 100 - offsetY },
+                    p3: { x: 100 - offsetX - radiusX, y: 100 - offsetY },
+                    p4: { x: 100 - offsetX - radiusX, y: 100 - offsetY },
+                    p5: { x: 100 - offsetX - length, y: 100 - offsetY }
+                };
+            } else if (corner === 'bl') {
+                return {
+                    p0: { x: offsetX, y: 100 - offsetY - heightLength },
+                    p1: { x: offsetX, y: 100 - offsetY - radiusY },
+                    p2: { x: offsetX, y: 100 - offsetY },
+                    p3: { x: offsetX + radiusX, y: 100 - offsetY },
+                    p4: { x: offsetX + radiusX, y: 100 - offsetY },
+                    p5: { x: offsetX + length, y: 100 - offsetY }
+                };
+            }
+        };
+
+        // Начальные точки
         const startOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
-        const startOffsetX = this.pxToPercentX(startOffset, w);
-        const startOffsetY = this.pxToPercentY(startOffset, h);
+        const startPoints = getPointsWithOffset(fromCorner, level, startOffset);
 
-        if (fromCorner === 'tl') {
-            startPoints = {
-                p1: { x: startOffsetX + length, y: startOffsetY },
-                p2: { x: startOffsetX + radius, y: startOffsetY },
-                ctrl: { x: startOffsetX, y: startOffsetY },
-                p3: { x: startOffsetX, y: startOffsetY + radiusY },
-                p4: { x: startOffsetX, y: startOffsetY + heightLength }
-            };
-        } else if (fromCorner === 'tr') {
-            startPoints = {
-                p1: { x: 100 - startOffsetX - length, y: startOffsetY },
-                p2: { x: 100 - startOffsetX - radius, y: startOffsetY },
-                ctrl: { x: 100 - startOffsetX, y: startOffsetY },
-                p3: { x: 100 - startOffsetX, y: startOffsetY + radiusY },
-                p4: { x: 100 - startOffsetX, y: startOffsetY + heightLength }
-            };
-        } else if (fromCorner === 'br') {
-            startPoints = {
-                p1: { x: 100 - startOffsetX, y: 100 - startOffsetY - heightLength },
-                p2: { x: 100 - startOffsetX, y: 100 - startOffsetY - radiusY },
-                ctrl: { x: 100 - startOffsetX, y: 100 - startOffsetY },
-                p3: { x: 100 - startOffsetX - radius, y: 100 - startOffsetY },
-                p4: { x: 100 - startOffsetX - length, y: 100 - startOffsetY }
-            };
-        } else if (fromCorner === 'bl') {
-            startPoints = {
-                p1: { x: startOffsetX, y: 100 - startOffsetY - heightLength },
-                p2: { x: startOffsetX, y: 100 - startOffsetY - radiusY },
-                ctrl: { x: startOffsetX, y: 100 - startOffsetY },
-                p3: { x: startOffsetX + radius, y: 100 - startOffsetY },
-                p4: { x: startOffsetX + length, y: 100 - startOffsetY }
-            };
-        }
+        // Конечные точки
+        const endOffset = this.BASE_OFFSET + (newLevel - 1) * this.LINE_SPACING;
+        const endPoints = getPointsWithOffset(toCorner, newLevel, endOffset);
 
-        // ТОЧКИ В СЕРЕДИНЕ с полусуммой отступов
-        const midOffset = (startOffset + (this.BASE_OFFSET + (newLevel - 1) * this.LINE_SPACING)) / 2;
-        const midOffsetX = this.pxToPercentX(midOffset, w);
-        const midOffsetY = this.pxToPercentY(midOffset, h);
-
+        // Точки в середине (полусумма отступов)
+        const midOffset = (startOffset + endOffset) / 2;
+        
+        // Определяем промежуточные точки в зависимости от пары углов
         let midPoints;
-
-        // Проверяем, какие углы участвуют в анимации
+        
         const isSpecialPair = (fromCorner === 'tr' && toCorner === 'bl') || 
                             (fromCorner === 'bl' && toCorner === 'tr');
+        const isBRTL = (fromCorner === 'br' && toCorner === 'tl');
+        const isTLBR = (fromCorner === 'tl' && toCorner === 'br');
+        const isBLTR = (fromCorner === 'bl' && toCorner === 'tr'); // bl -> tr
+        const isTRBL = (fromCorner === 'tr' && toCorner === 'bl'); // tr -> bl
 
         if (isSpecialPair) {
-            // Для пары верхний правый <-> нижний левый - оставляем как есть (работает правильно)
+            // Для пары tr <-> bl
+            const midOffsetX = this.pxToPercentX(midOffset, w);
+            const midOffsetY = this.pxToPercentY(midOffset, h);
+            
             midPoints = {
+                p0: { x: midOffsetX, y: midOffsetY },
                 p1: { x: midOffsetX, y: midOffsetY },
-                p2: { x: midOffsetX, y: midOffsetY },
-                ctrl: { x: midOffsetX, y: midOffsetY },
+                p2: { x: midOffsetX, y: midOffsetY },  // контрольные точки пока равны
                 p3: { x: 100 - midOffsetX, y: 100 - midOffsetY },
-                p4: { x: 100 - midOffsetX, y: 100 - midOffsetY }
+                p4: { x: 100 - midOffsetX, y: 100 - midOffsetY },
+                p5: { x: 100 - midOffsetX, y: 100 - midOffsetY }
             };
-        } 
-        else if (fromCorner === 'br' && toCorner === 'tl') {
-            // НИЖНИЙ ПРАВЫЙ -> ВЕРХНИЙ ЛЕВЫЙ
-            // Первая половина: увеличивается Y, уменьшается X
-            // Вторая половина: уменьшается X, увеличивается Y
+        } else if (isBRTL) {
+            // br -> tl
+            const midOffsetX = this.pxToPercentX(midOffset, w);
+            const midOffsetY = this.pxToPercentY(midOffset, h);
+            
             midPoints = {
-                p1: { x: 100 - midOffsetX, y: midOffsetY },      // X уменьшается к левому краю, Y к верху
-                p2: { x: 100 - midOffsetX, y: midOffsetY },      // То же для p2
-                ctrl: { x: 100 - midOffsetX, y: midOffsetY },    // Контрольная точка
-                p3: { x: midOffsetX, y: 100 - midOffsetY },      // X к левому краю, Y к низу
-                p4: { x: midOffsetX, y: 100 - midOffsetY }       // Конечная точка
+                p0: { x: 100 - midOffsetX, y: midOffsetY },
+                p1: { x: 100 - midOffsetX, y: midOffsetY },
+                p2: { x: 100 - midOffsetX, y: midOffsetY },
+                p3: { x: midOffsetX, y: 100 - midOffsetY },
+                p4: { x: midOffsetX, y: 100 - midOffsetY },
+                p5: { x: midOffsetX, y: 100 - midOffsetY }
             };
-        } 
-        else if (fromCorner === 'tl' && toCorner === 'br') {
-            // ВЕРХНИЙ ЛЕВЫЙ -> НИЖНИЙ ПРАВЫЙ
-            // Первая половина: увеличивается X, увеличивается Y
-            // Вторая половина: уменьшается Y, увеличивается X
+        } else if (isTLBR) {
+            // tl -> br
+            const midOffsetX = this.pxToPercentX(midOffset, w);
+            const midOffsetY = this.pxToPercentY(midOffset, h);
+            
             midPoints = {
-                p1: { x: 100 - midOffsetX, y: midOffsetY },      // X вправо, Y вниз
-                p2: { x: 100 - midOffsetX, y: midOffsetY },      // То же для p2
-                ctrl: { x: midOffsetX, y: 100 - midOffsetY },    // Контрольная точка
-                p3: { x: midOffsetX, y: 100 - midOffsetY },      // X вправо, Y вверх
-                p4: { x: midOffsetX, y: 100 - midOffsetY }       // Конечная точка
-            };
-        } 
-        else {
-            // Для всех остальных пар углов (на всякий случай)
-            midPoints = {
-                p1: { x: midOffsetX, y: midOffsetY },
-                p2: { x: midOffsetX, y: midOffsetY },
-                ctrl: { x: midOffsetX, y: midOffsetY },
-                p3: { x: 100 - midOffsetX, y: 100 - midOffsetY },
-                p4: { x: 100 - midOffsetX, y: 100 - midOffsetY }
+                p0: { x: 100 - midOffsetX, y: midOffsetY },
+                p1: { x: 100 - midOffsetX, y: midOffsetY },
+                p2: { x: 100 - midOffsetX, y: midOffsetY },
+                p3: { x: midOffsetX, y: 100 - midOffsetY },
+                p4: { x: midOffsetX, y: 100 - midOffsetY },
+                p5: { x: midOffsetX, y: 100 - midOffsetY }
             };
         }
 
-        // КОНЕЧНЫЕ ТОЧКИ с правильным отступом для нового уровня
-        let endPoints;
-        const endOffset = this.BASE_OFFSET + (newLevel - 1) * this.LINE_SPACING;
-        const endOffsetX = this.pxToPercentX(endOffset, w);
-        const endOffsetY = this.pxToPercentY(endOffset, h);
-
-        if (toCorner === 'tl') {
-            endPoints = {
-                p1: { x: endOffsetX + length, y: endOffsetY },
-                p2: { x: endOffsetX + radius, y: endOffsetY },
-                ctrl: { x: endOffsetX, y: endOffsetY },
-                p3: { x: endOffsetX, y: endOffsetY + radiusY },
-                p4: { x: endOffsetX, y: endOffsetY + heightLength }
+        // Функция интерполяции для 6 точек
+        const interpolatePoints = (start, end, t) => {
+            return {
+                p0: { 
+                    x: start.p0.x + (end.p0.x - start.p0.x) * t, 
+                    y: start.p0.y + (end.p0.y - start.p0.y) * t 
+                },
+                p1: { 
+                    x: start.p1.x + (end.p1.x - start.p1.x) * t, 
+                    y: start.p1.y + (end.p1.y - start.p1.y) * t 
+                },
+                p2: { 
+                    x: start.p2.x + (end.p2.x - start.p2.x) * t, 
+                    y: start.p2.y + (end.p2.y - start.p2.y) * t 
+                },
+                p3: { 
+                    x: start.p3.x + (end.p3.x - start.p3.x) * t, 
+                    y: start.p3.y + (end.p3.y - start.p3.y) * t 
+                },
+                p4: { 
+                    x: start.p4.x + (end.p4.x - start.p4.x) * t, 
+                    y: start.p4.y + (end.p4.y - start.p4.y) * t 
+                },
+                p5: { 
+                    x: start.p5.x + (end.p5.x - start.p5.x) * t, 
+                    y: start.p5.y + (end.p5.y - start.p5.y) * t 
+                }
             };
-        } else if (toCorner === 'tr') {
-            endPoints = {
-                p1: { x: 100 - endOffsetX - length, y: endOffsetY },
-                p2: { x: 100 - endOffsetX - radius, y: endOffsetY },
-                ctrl: { x: 100 - endOffsetX, y: endOffsetY },
-                p3: { x: 100 - endOffsetX, y: endOffsetY + radiusY },
-                p4: { x: 100 - endOffsetX, y: endOffsetY + heightLength }
-            };
-        } else if (toCorner === 'br') {
-            endPoints = {
-                p1: { x: 100 - endOffsetX, y: 100 - endOffsetY - heightLength },
-                p2: { x: 100 - endOffsetX, y: 100 - endOffsetY - radiusY },
-                ctrl: { x: 100 - endOffsetX, y: 100 - endOffsetY },
-                p3: { x: 100 - endOffsetX - radius, y: 100 - endOffsetY },
-                p4: { x: 100 - endOffsetX - length, y: 100 - endOffsetY }
-            };
-        } else if (toCorner === 'bl') {
-            endPoints = {
-                p1: { x: endOffsetX, y: 100 - endOffsetY - heightLength },
-                p2: { x: endOffsetX, y: 100 - endOffsetY - radiusY },
-                ctrl: { x: endOffsetX, y: 100 - endOffsetY },
-                p3: { x: endOffsetX + radius, y: 100 - endOffsetY },
-                p4: { x: endOffsetX + length, y: 100 - endOffsetY }
-            };
-        }
+        };
 
         const startTime = performance.now();
         const duration = 2000;
+        const amplitude = 29.5;
 
         const animate = (currentTime) => {
             const elapsed = currentTime - startTime;
@@ -401,245 +396,58 @@ class LineManager {
             
             let currentPoints;
             
-            // Определяем тип пары углов для анимации
-            const isSpecialPair = (fromCorner === 'tr' && toCorner === 'bl') || 
-                                (fromCorner === 'bl' && toCorner === 'tr');
-            const isBRTL = (fromCorner === 'br' && toCorner === 'tl');
-            const isTLBR = (fromCorner === 'tl' && toCorner === 'br');
+        if (progress < 0.5) {
+            const phaseProgress = progress * 2;
+            currentPoints = interpolatePoints(startPoints, midPoints, phaseProgress);
+            const offset = amplitude * Math.sin(phaseProgress * Math.PI);
             
-            if (progress < 0.5) {
-                // ПЕРВАЯ ПОЛОВИНА
-                const phaseProgress = progress * 2;
-                const offset = 29.5 * Math.sin(phaseProgress * Math.PI);
-                
-                if (isSpecialPair) {
-                    // Для пары верхний правый <-> нижний левый - стандартная интерполяция
-                    const p1x = startPoints.p1.x + (midPoints.p1.x - startPoints.p1.x) * phaseProgress;
-                    const p1y = startPoints.p1.y + (midPoints.p1.y - startPoints.p1.y) * phaseProgress;
-                    
-                    const p2x = startPoints.p2.x + (midPoints.p2.x - startPoints.p2.x) * phaseProgress;
-                    const p2y = startPoints.p2.y + (midPoints.p2.y - startPoints.p2.y) * phaseProgress;
-                    
-                    const p3x = startPoints.p3.x + (midPoints.p3.x - startPoints.p3.x) * phaseProgress;
-                    const p3y = startPoints.p3.y + (midPoints.p3.y - startPoints.p3.y) * phaseProgress;
-                    
-                    const p4x = startPoints.p4.x + (midPoints.p4.x - startPoints.p4.x) * phaseProgress;
-                    const p4y = startPoints.p4.y + (midPoints.p4.y - startPoints.p4.y) * phaseProgress;
-                    
-                    const baseCtrlX = startPoints.ctrl.x + (midPoints.ctrl.x - startPoints.ctrl.x) * phaseProgress;
-                    const baseCtrlY = startPoints.ctrl.y + (midPoints.ctrl.y - startPoints.ctrl.y) * phaseProgress;
-                    
-                    currentPoints = {
-                        p1: { x: p1x, y: p1y },
-                        p2: { x: p2x, y: p2y },
-                        ctrl: {
-                            x: baseCtrlX + (fromCorner === 'tl' || fromCorner === 'tr' ? offset : 0),
-                            y: baseCtrlY + (fromCorner === 'br' || fromCorner === 'bl' ? offset : 0)
-                        },
-                        p3: { x: p3x, y: p3y },
-                        p4: { x: p4x, y: p4y }
-                    };
-                } 
-                else if (isBRTL) {
-                    // НИЖНИЙ ПРАВЫЙ -> ВЕРХНИЙ ЛЕВЫЙ - первая половина
-                    // Для br -> tl контрольная точка смещается влево (отрицательный X)
-                    currentPoints = {
-                        p1: {
-                            x: startPoints.p1.x + (midPoints.p1.x - startPoints.p1.x) * phaseProgress,
-                            y: startPoints.p1.y + (midPoints.p1.y - startPoints.p1.y) * phaseProgress
-                        },
-                        p2: {
-                            x: startPoints.p2.x + (midPoints.p2.x - startPoints.p2.x) * phaseProgress,
-                            y: startPoints.p2.y + (midPoints.p2.y - startPoints.p2.y) * phaseProgress
-                        },
-                        ctrl: {
-                            x: startPoints.ctrl.x + (midPoints.ctrl.x - startPoints.ctrl.x) * phaseProgress,
-                            y: startPoints.ctrl.y + (midPoints.ctrl.y - startPoints.ctrl.y) * phaseProgress + offset
-                        },
-                        p3: {
-                            x: startPoints.p3.x + (midPoints.p3.x - startPoints.p3.x) * phaseProgress,
-                            y: startPoints.p3.y + (midPoints.p3.y - startPoints.p3.y) * phaseProgress
-                        },
-                        p4: {
-                            x: startPoints.p4.x + (midPoints.p4.x - startPoints.p4.x) * phaseProgress,
-                            y: startPoints.p4.y + (midPoints.p4.y - startPoints.p4.y) * phaseProgress
-                        }
-                    };
+            if (isSpecialPair) {
+                if (fromCorner === 'tr') {
+                    // tr -> bl (первая половина)
+                    currentPoints.p2.x += offset;
+                    currentPoints.p3.y -= offset;
+                } else if (fromCorner === 'bl') {
+                    // bl -> tr (первая половина)
+                    currentPoints.p2.y += offset;
+                    currentPoints.p3.x -= offset;
                 }
-                else if (isTLBR) {
-                    // ВЕРХНИЙ ЛЕВЫЙ -> НИЖНИЙ ПРАВЫЙ - первая половина
-                    // Для tl -> br контрольная точка смещается вправо (положительный X)
-                    currentPoints = {
-                        p1: {
-                            x: startPoints.p1.x + (midPoints.p1.x - startPoints.p1.x) * phaseProgress,
-                            y: startPoints.p1.y + (midPoints.p1.y - startPoints.p1.y) * phaseProgress
-                        },
-                        p2: {
-                            x: startPoints.p2.x + (midPoints.p2.x - startPoints.p2.x) * phaseProgress,
-                            y: startPoints.p2.y + (midPoints.p2.y - startPoints.p2.y) * phaseProgress
-                        },
-                        ctrl: {
-                            x: startPoints.ctrl.x + (midPoints.ctrl.x - startPoints.ctrl.x) * phaseProgress,
-                            y: startPoints.ctrl.y + (midPoints.ctrl.y - startPoints.ctrl.y) * phaseProgress - offset
-                        },
-                        p3: {
-                            x: startPoints.p3.x + (midPoints.p3.x - startPoints.p3.x) * phaseProgress,
-                            y: startPoints.p3.y + (midPoints.p3.y - startPoints.p3.y) * phaseProgress
-                        },
-                        p4: {
-                            x: startPoints.p4.x + (midPoints.p4.x - startPoints.p4.x) * phaseProgress,
-                            y: startPoints.p4.y + (midPoints.p4.y - startPoints.p4.y) * phaseProgress
-                        }
-                    };
-                }
-                else {
-                    // Стандартная интерполяция для остальных случаев
-                    const p1x = startPoints.p1.x + (midPoints.p1.x - startPoints.p1.x) * phaseProgress;
-                    const p1y = startPoints.p1.y + (midPoints.p1.y - startPoints.p1.y) * phaseProgress;
-                    
-                    const p2x = startPoints.p2.x + (midPoints.p2.x - startPoints.p2.x) * phaseProgress;
-                    const p2y = startPoints.p2.y + (midPoints.p2.y - startPoints.p2.y) * phaseProgress;
-                    
-                    const p3x = startPoints.p3.x + (midPoints.p3.x - startPoints.p3.x) * phaseProgress;
-                    const p3y = startPoints.p3.y + (midPoints.p3.y - startPoints.p3.y) * phaseProgress;
-                    
-                    const p4x = startPoints.p4.x + (midPoints.p4.x - startPoints.p4.x) * phaseProgress;
-                    const p4y = startPoints.p4.y + (midPoints.p4.y - startPoints.p4.y) * phaseProgress;
-                    
-                    const baseCtrlX = startPoints.ctrl.x + (midPoints.ctrl.x - startPoints.ctrl.x) * phaseProgress;
-                    const baseCtrlY = startPoints.ctrl.y + (midPoints.ctrl.y - startPoints.ctrl.y) * phaseProgress;
-                    
-                    currentPoints = {
-                        p1: { x: p1x, y: p1y },
-                        p2: { x: p2x, y: p2y },
-                        ctrl: {
-                            x: baseCtrlX + (fromCorner === 'tl' || fromCorner === 'tr' ? offset : 0),
-                            y: baseCtrlY + (fromCorner === 'br' || fromCorner === 'bl' ? offset : 0)
-                        },
-                        p3: { x: p3x, y: p3y },
-                        p4: { x: p4x, y: p4y }
-                    };
-                }
-                
-            } else {
-                // ВТОРАЯ ПОЛОВИНА
-                const phaseProgress = (progress - 0.5) * 2;
-                const offset = 29.5 * Math.sin(phaseProgress * Math.PI);
-                
-                if (isSpecialPair) {
-                    // Для пары верхний правый <-> нижний левый - стандартная интерполяция
-                    const p1x = midPoints.p1.x + (endPoints.p1.x - midPoints.p1.x) * phaseProgress;
-                    const p1y = midPoints.p1.y + (endPoints.p1.y - midPoints.p1.y) * phaseProgress;
-                    
-                    const p2x = midPoints.p2.x + (endPoints.p2.x - midPoints.p2.x) * phaseProgress;
-                    const p2y = midPoints.p2.y + (endPoints.p2.y - midPoints.p2.y) * phaseProgress;
-                    
-                    const p3x = midPoints.p3.x + (endPoints.p3.x - midPoints.p3.x) * phaseProgress;
-                    const p3y = midPoints.p3.y + (endPoints.p3.y - midPoints.p3.y) * phaseProgress;
-                    
-                    const p4x = midPoints.p4.x + (endPoints.p4.x - midPoints.p4.x) * phaseProgress;
-                    const p4y = midPoints.p4.y + (endPoints.p4.y - midPoints.p4.y) * phaseProgress;
-                    
-                    const baseCtrlX = midPoints.ctrl.x + (endPoints.ctrl.x - midPoints.ctrl.x) * phaseProgress;
-                    const baseCtrlY = midPoints.ctrl.y + (endPoints.ctrl.y - midPoints.ctrl.y) * phaseProgress;
-                    
-                    currentPoints = {
-                        p1: { x: p1x, y: p1y },
-                        p2: { x: p2x, y: p2y },
-                        ctrl: {
-                            x: baseCtrlX + (toCorner === 'tl' || toCorner === 'tr' ? offset : 0),
-                            y: baseCtrlY + (toCorner === 'br' || toCorner === 'bl' ? offset : 0)
-                        },
-                        p3: { x: p3x, y: p3y },
-                        p4: { x: p4x, y: p4y }
-                    };
-                }
-                else if (isBRTL) {
-                    // НИЖНИЙ ПРАВЫЙ -> ВЕРХНИЙ ЛЕВЫЙ - вторая половина
-                    currentPoints = {
-                        p1: {
-                            x: midPoints.p1.x + (endPoints.p1.x - midPoints.p1.x) * phaseProgress,
-                            y: midPoints.p1.y + (endPoints.p1.y - midPoints.p1.y) * phaseProgress
-                        },
-                        p2: {
-                            x: midPoints.p2.x + (endPoints.p2.x - midPoints.p2.x) * phaseProgress,
-                            y: midPoints.p2.y + (endPoints.p2.y - midPoints.p2.y) * phaseProgress
-                        },
-                        ctrl: {
-                            x: midPoints.ctrl.x + (endPoints.ctrl.x - midPoints.ctrl.x) * phaseProgress - offset,
-                            y: midPoints.ctrl.y + (endPoints.ctrl.y - midPoints.ctrl.y) * phaseProgress
-                        },
-                        p3: {
-                            x: midPoints.p3.x + (endPoints.p3.x - midPoints.p3.x) * phaseProgress,
-                            y: midPoints.p3.y + (endPoints.p3.y - midPoints.p3.y) * phaseProgress
-                        },
-                        p4: {
-                            x: midPoints.p4.x + (endPoints.p4.x - midPoints.p4.x) * phaseProgress,
-                            y: midPoints.p4.y + (endPoints.p4.y - midPoints.p4.y) * phaseProgress
-                        }
-                    };
-                }
-                else if (isTLBR) {
-                    // ВЕРХНИЙ ЛЕВЫЙ -> НИЖНИЙ ПРАВЫЙ - вторая половина
-                    currentPoints = {
-                        p1: {
-                            x: midPoints.p1.x + (endPoints.p1.x - midPoints.p1.x) * phaseProgress,
-                            y: midPoints.p1.y + (endPoints.p1.y - midPoints.p1.y) * phaseProgress
-                        },
-                        p2: {
-                            x: midPoints.p2.x + (endPoints.p2.x - midPoints.p2.x) * phaseProgress,
-                            y: midPoints.p2.y + (endPoints.p2.y - midPoints.p2.y) * phaseProgress
-                        },
-                        ctrl: {
-                            x: midPoints.ctrl.x + (endPoints.ctrl.x - midPoints.ctrl.x) * phaseProgress + offset,
-                            y: midPoints.ctrl.y + (endPoints.ctrl.y - midPoints.ctrl.y) * phaseProgress
-                        },
-                        p3: {
-                            x: midPoints.p3.x + (endPoints.p3.x - midPoints.p3.x) * phaseProgress,
-                            y: midPoints.p3.y + (endPoints.p3.y - midPoints.p3.y) * phaseProgress
-                        },
-                        p4: {
-                            x: midPoints.p4.x + (endPoints.p4.x - midPoints.p4.x) * phaseProgress,
-                            y: midPoints.p4.y + (endPoints.p4.y - midPoints.p4.y) * phaseProgress
-                        }
-                    };
-                }
-                else {
-                    // Стандартная интерполяция для остальных случаев
-                    const p1x = midPoints.p1.x + (endPoints.p1.x - midPoints.p1.x) * phaseProgress;
-                    const p1y = midPoints.p1.y + (endPoints.p1.y - midPoints.p1.y) * phaseProgress;
-                    
-                    const p2x = midPoints.p2.x + (endPoints.p2.x - midPoints.p2.x) * phaseProgress;
-                    const p2y = midPoints.p2.y + (endPoints.p2.y - midPoints.p2.y) * phaseProgress;
-                    
-                    const p3x = midPoints.p3.x + (endPoints.p3.x - midPoints.p3.x) * phaseProgress;
-                    const p3y = midPoints.p3.y + (endPoints.p3.y - midPoints.p3.y) * phaseProgress;
-                    
-                    const p4x = midPoints.p4.x + (endPoints.p4.x - midPoints.p4.x) * phaseProgress;
-                    const p4y = midPoints.p4.y + (endPoints.p4.y - midPoints.p4.y) * phaseProgress;
-                    
-                    const baseCtrlX = midPoints.ctrl.x + (endPoints.ctrl.x - midPoints.ctrl.x) * phaseProgress;
-                    const baseCtrlY = midPoints.ctrl.y + (endPoints.ctrl.y - midPoints.ctrl.y) * phaseProgress;
-                    
-                    currentPoints = {
-                        p1: { x: p1x, y: p1y },
-                        p2: { x: p2x, y: p2y },
-                        ctrl: {
-                            x: baseCtrlX + (toCorner === 'tl' || toCorner === 'tr' ? offset : 0),
-                            y: baseCtrlY + (toCorner === 'br' || toCorner === 'bl' ? offset : 0)
-                        },
-                        p3: { x: p3x, y: p3y },
-                        p4: { x: p4x, y: p4y }
-                    };
-                }
+            } else if (isBRTL) {
+                currentPoints.p2.y += offset;
+                currentPoints.p3.x += offset;
+            } else if (isTLBR) {
+                currentPoints.p2.x -= offset;
+                currentPoints.p3.y -= offset;
             }
+        } else {
+            const phaseProgress = (progress - 0.5) * 2;
+            currentPoints = interpolatePoints(midPoints, endPoints, phaseProgress);
+            const offset = amplitude * Math.sin(phaseProgress * Math.PI);
             
-            // Формируем путь
+            if (isSpecialPair) {
+                if (toCorner === 'bl') {
+                    // tr -> bl (вторая половина)
+                    currentPoints.p2.y += offset;
+                    currentPoints.p3.x -= offset;
+                } else if (toCorner === 'tr') {
+                    // bl -> tr (вторая половина)
+                    currentPoints.p2.x += offset;
+                    currentPoints.p3.y -= offset;
+                }
+            } else if (isBRTL) {
+                currentPoints.p2.x -= offset;
+                currentPoints.p3.y -= offset;
+            } else if (isTLBR) {
+                currentPoints.p2.y += offset;
+                currentPoints.p3.x += offset;
+            }
+        }
+            
+            // Формируем путь M L C L L
             const newPath = `
-                M ${currentPoints.p1.x},${currentPoints.p1.y}
-                L ${currentPoints.p2.x},${currentPoints.p2.y}
-                Q ${currentPoints.ctrl.x},${currentPoints.ctrl.y} ${currentPoints.p3.x},${currentPoints.p3.y}
-                L ${currentPoints.p4.x},${currentPoints.p4.y}
+                M ${currentPoints.p0.x},${currentPoints.p0.y}
+                L ${currentPoints.p1.x},${currentPoints.p1.y}
+                C ${currentPoints.p2.x},${currentPoints.p2.y} ${currentPoints.p3.x},${currentPoints.p3.y} ${currentPoints.p4.x},${currentPoints.p4.y}
+                L ${currentPoints.p5.x},${currentPoints.p5.y}
             `;
             
             line.setAttribute('d', newPath);
@@ -650,34 +458,7 @@ class LineManager {
                 // Перемещаем SVG в новый контейнер
                 toContainer.appendChild(svg);
 
-                // Вычисляем новый уровень в целевом углу
-                let newLevel;
-
-                if (toCorner === 'br') {
-                    // В правом нижнем углу линии сортируются от края (level 1) к центру
-                    const existingLevels = this.linesState[toCorner].map(l => l.level);
-                    if (existingLevels.length === 0) {
-                        newLevel = 1;
-                    } else {
-                        // Находим максимальный существующий уровень и добавляем 1
-                        newLevel = Math.max(...existingLevels) + 1;
-                    }
-                } else if (toCorner === 'tl') {
-                    // В левом верхнем углу линии сортируются от края (level 1) к центру
-                    const existingLevels = this.linesState[toCorner].map(l => l.level);
-                    if (existingLevels.length === 0) {
-                        newLevel = 1;
-                    } else {
-                        // Находим максимальный существующий уровень и добавляем 1
-                        newLevel = Math.max(...existingLevels) + 1;
-                    }
-                } else {
-                    // Для остальных углов пока level 1
-                    newLevel = 1;
-                }
-
                 console.log(`Из ${fromCorner} level ${level} в ${toCorner} level ${newLevel}`);
-                console.log(`Было в ${toCorner}:`, this.linesState[toCorner].map(l => l.level));
 
                 // Обновляем состояние
                 this.linesState[fromCorner] = this.linesState[fromCorner].filter(l => l.id !== lineId);
@@ -687,10 +468,7 @@ class LineManager {
                     corner: toCorner
                 });
 
-                // Сортируем линии в целевом углу по уровню
                 this.linesState[toCorner].sort((a, b) => a.level - b.level);
-
-                console.log(`Стало в ${toCorner}:`, this.linesState[toCorner].map(l => l.level));
 
                 // Перерисовываем только зоны
                 this.redrawZonesOnly();
@@ -935,52 +713,59 @@ class LineManager {
     getLinePoints(corner, level, w, h, customOffset = null) {
         const widthLength = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
         const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
-        const radius = this.pxToPercentX(this.CORNER_RADIUS, w);
-        const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
-
-        let offset, offsetX, offsetY;
+        
+        let offsetX, offsetY;
 
         if (customOffset !== null) {
             offsetX = this.pxToPercentX(customOffset, w);
             offsetY = this.pxToPercentY(customOffset, h);
-            offset = offsetX;
         } else {
-            // level 1 = BASE_OFFSET, level 2 = BASE_OFFSET + SPACING, level 3 = BASE_OFFSET + 2*SPACING и т.д.
             const baseOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
             offsetX = this.pxToPercentX(baseOffset, w);
             offsetY = this.pxToPercentY(baseOffset, h);
-            offset = offsetX;
         }
+
+        // Радиус скругления в процентах
+        const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
+        const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
 
         let points = {};
 
         if (corner === 'tl') {
             points = {
-                p1: { x: offset + widthLength, y: offset },
-                p2: { x: offset + radius, y: offset },
-                p3: { x: offset, y: offset },
-                p4: { x: offset, y: offset + heightLength }
+                p0: { x: offsetX + widthLength, y: offsetY },           // M - начало
+                p1: { x: offsetX + radiusX, y: offsetY },               // L1 - конец первой прямой
+                p2: { x: offsetX, y: offsetY },                         // C1 - угол (первая контрольная)
+                p3: { x: offsetX, y: offsetY + radiusY },               // C2 - точка после угла (вторая контрольная)
+                p4: { x: offsetX, y: offsetY + radiusY },               // L2 - конец скругления (бывший Q end)
+                p5: { x: offsetX, y: offsetY + heightLength }           // L3 - конечная прямая
             };
         } else if (corner === 'tr') {
             points = {
-                p1: { x: 100 - offset - widthLength, y: offset },
-                p2: { x: 100 - offset - radius, y: offset },
-                p3: { x: 100 - offset, y: offset },
-                p4: { x: 100 - offset, y: offset + heightLength }
+                p0: { x: 100 - offsetX - widthLength, y: offsetY },
+                p1: { x: 100 - offsetX - radiusX, y: offsetY },
+                p2: { x: 100 - offsetX, y: offsetY },
+                p3: { x: 100 - offsetX, y: offsetY + radiusY },
+                p4: { x: 100 - offsetX, y: offsetY + radiusY },
+                p5: { x: 100 - offsetX, y: offsetY + heightLength }
             };
         } else if (corner === 'br') {
             points = {
-                p1: { x: 100 - offsetX, y: 100 - offsetY - heightLength },
-                p2: { x: 100 - offsetX, y: 100 - offsetY - radiusY },
-                p3: { x: 100 - offsetX, y: 100 - offsetY },
-                p4: { x: 100 - offsetX - widthLength, y: 100 - offsetY }
+                p0: { x: 100 - offsetX, y: 100 - offsetY - heightLength },
+                p1: { x: 100 - offsetX, y: 100 - offsetY - radiusY },
+                p2: { x: 100 - offsetX, y: 100 - offsetY },
+                p3: { x: 100 - offsetX - radiusX, y: 100 - offsetY },
+                p4: { x: 100 - offsetX - radiusX, y: 100 - offsetY },
+                p5: { x: 100 - offsetX - widthLength, y: 100 - offsetY }
             };
         } else if (corner === 'bl') {
             points = {
-                p1: { x: offsetX, y: 100 - offsetY - heightLength },
-                p2: { x: offsetX, y: 100 - offsetY - radiusY },
-                p3: { x: offsetX, y: 100 - offsetY },
-                p4: { x: offsetX + widthLength, y: 100 - offsetY }
+                p0: { x: offsetX, y: 100 - offsetY - heightLength },
+                p1: { x: offsetX, y: 100 - offsetY - radiusY },
+                p2: { x: offsetX, y: 100 - offsetY },
+                p3: { x: offsetX + radiusX, y: 100 - offsetY },
+                p4: { x: offsetX + radiusX, y: 100 - offsetY },
+                p5: { x: offsetX + widthLength, y: 100 - offsetY }
             };
         }
 
@@ -988,23 +773,28 @@ class LineManager {
     }
 
     createPathFromPoints(points, corner) {
-        if (corner === 'tl' || corner === 'tr') {
-            // Для верхних углов: горизонтальная -> скругление -> вертикальная
-            return `
-                        M ${points.p1.x},${points.p1.y}
-                        L ${points.p2.x},${points.p2.y}
-                        Q ${points.p3.x},${points.p3.y} ${points.p3.x},${points.p3.y}
-                        L ${points.p4.x},${points.p4.y}
-                    `;
-        } else {
-            // Для нижних углов: вертикальная -> скругление -> горизонтальная
-            return `
-                        M ${points.p1.x},${points.p1.y}
-                        L ${points.p2.x},${points.p2.y}
-                        Q ${points.p3.x},${points.p3.y} ${points.p3.x},${points.p3.y}
-                        L ${points.p4.x},${points.p4.y}
-                    `;
-        }
+        // M - начало
+        // L - прямая к началу скругления
+        // C - кубическая кривая (скругление)
+        // L - прямая после скругления (бывший Q end)
+        // L - конечная прямая
+        return `
+            M ${points.p0.x},${points.p0.y}
+            L ${points.p1.x},${points.p1.y}
+            C ${points.p2.x},${points.p2.y} ${points.p3.x},${points.p3.y} ${points.p4.x},${points.p4.y}
+            L ${points.p5.x},${points.p5.y}
+        `;
+    }
+
+    interpolatePoints(start, end, t) {
+        return {
+            p0: { x: start.p0.x + (end.p0.x - start.p0.x) * t, y: start.p0.y + (end.p0.y - start.p0.y) * t },
+            p1: { x: start.p1.x + (end.p1.x - start.p1.x) * t, y: start.p1.y + (end.p1.y - start.p1.y) * t },
+            p2: { x: start.p2.x + (end.p2.x - start.p2.x) * t, y: start.p2.y + (end.p2.y - start.p2.y) * t },
+            p3: { x: start.p3.x + (end.p3.x - start.p3.x) * t, y: start.p3.y + (end.p3.y - start.p3.y) * t },
+            p4: { x: start.p4.x + (end.p4.x - start.p4.x) * t, y: start.p4.y + (end.p4.y - start.p4.y) * t },
+            p5: { x: start.p5.x + (end.p5.x - start.p5.x) * t, y: start.p5.y + (end.p5.y - start.p5.y) * t }
+        };
     }
 
     interpolatePoint(p1, p2, t) {
