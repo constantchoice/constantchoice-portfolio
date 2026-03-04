@@ -1,7 +1,6 @@
-// Конфигурация приложения
 const CONFIG = {
     // Общие параметры
-    LINE_THICKNESS: 3,
+    LINE_THICKNESS: 1,
     BASE_OFFSET: 20,
     LINE_SPACING: 15,
     CORNER_RADIUS: 20,

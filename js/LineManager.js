@@ -148,12 +148,13 @@ class LineManager {
         zone.dataset.level = level;
         zone.dataset.type = isHorizontal ? 'horizontal' : 'vertical';
         zone.dataset.exact = 'true';
-
+        
         Object.assign(zone.style, styles);
-
+        
+        let hoverTimer = null;
+        
         // При наведении на точную зону - затемняем линию
         zone.addEventListener('mouseenter', () => {
-            // Находим линию по ID из состояния
             const lineData = this.linesState[corner]?.find(l => l.level === level);
             if (lineData) {
                 const line = container.querySelector(`[data-line-id="${lineData.id}"]`);
@@ -162,9 +163,30 @@ class LineManager {
                     line.setAttribute('stroke-width', this.LINE_THICKNESS + 1);
                 }
             }
+            
+            // Запускаем анимацию с небольшой задержкой
+            if (hoverTimer) clearTimeout(hoverTimer);
+            hoverTimer = setTimeout(() => {
+                if (this.isAnimating) return;
+                
+                console.log(`Запуск анимации по наведению: ${corner} level ${level}`);
+                
+                const lineDataForAnim = this.linesState[corner]?.find(l => l.level === level);
+                if (lineDataForAnim) {
+                    const line = container.querySelector(`[data-line-id="${lineDataForAnim.id}"]`);
+                    if (line) {
+                        this.animateLineTransition(line, corner, level);
+                    }
+                }
+            }, 150); // Задержка 150мс
         });
-
+        
         zone.addEventListener('mouseleave', () => {
+            if (hoverTimer) {
+                clearTimeout(hoverTimer);
+                hoverTimer = null;
+            }
+            
             if (!this.isAnimating) {
                 const lineData = this.linesState[corner]?.find(l => l.level === level);
                 if (lineData) {
@@ -176,24 +198,7 @@ class LineManager {
                 }
             }
         });
-
-        // При клике запускаем анимацию
-        zone.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (this.isAnimating) return;
-
-            console.log(`Запуск анимации: ${corner} level ${level}`);
-
-            // Находим линию по ID из состояния
-            const lineData = this.linesState[corner]?.find(l => l.level === level);
-            if (lineData) {
-                const line = container.querySelector(`[data-line-id="${lineData.id}"]`);
-                if (line) {
-                    this.animateLineTransition(line, corner, level);
-                }
-            }
-        });
-
+        
         container.appendChild(zone);
         this.zones.push(zone);
         return zone;
@@ -1168,21 +1173,43 @@ class LineManager {
         
         this.createSVG(container, pathData, level, lineData.id);
         
-        // ТОЧНЫЕ ЗОНЫ (для клика) - ТОЛЬКО для максимального уровня
+        // ЗОНЫ ПОДСВЕТКИ (толстые) - для плавного затемнения при приближении
+        const hoverExtra = 4; // +4% для зоны подсветки
+        
+        const hoverHorizontalZone = {
+            top: '0',
+            left: '0',
+            width: (offsetX + length + hoverExtra) + '%', // От левого края до линии +4%
+            height: (offsetY + hoverExtra) + '%' // От верхнего края до линии +4%
+        };
+        
+        const hoverVerticalZone = {
+            top: '0',
+            left: '0',
+            width: (offsetX + hoverExtra) + '%', // От левого края до отступа +4%
+            height: (offsetY + heightLength + hoverExtra) + '%' // От верхнего края до линии +4%
+        };
+        
+        this.createActivationZone(container, 'tl', level, hoverHorizontalZone, true, this);
+        this.createActivationZone(container, 'tl', level, hoverVerticalZone, false, this);
+        
+        // ТОЧНЫЕ ЗОНЫ (для активации) - от края до линии +1%
+        const clickExtra = 1;
+        
         const clickHorizontalZone = {
             top: '0',
             left: '0',
-            width: (offsetX + length + 1) + '%', // До линии +1%
-            height: (offsetY + 1) + '%' // От верхнего края до линии +1%
+            width: (offsetX + length + clickExtra) + '%', // От левого края до линии +1%
+            height: (offsetY + clickExtra) + '%' // От верхнего края до линии +1%
         };
-
+        
         const clickVerticalZone = {
             top: '0',
             left: '0',
-            width: (offsetX + 1) + '%', // От левого края до линии +1%
-            height: (offsetY + heightLength + 1) + '%' // До линии +1%
+            width: (offsetX + clickExtra) + '%', // От левого края до отступа +1%
+            height: (offsetY + heightLength + clickExtra) + '%' // От верхнего края до линии +1%
         };
-
+        
         this.createExactZone(container, 'tl', level, clickHorizontalZone, true, this);
         this.createExactZone(container, 'tl', level, clickVerticalZone, false, this);
     }
@@ -1207,23 +1234,21 @@ class LineManager {
         const cornerY = offsetY;
 
         const pathData = `
-                    M ${startX},${startY}
-                    L ${cornerX - radiusX},${cornerY}
-                    Q ${cornerX},${cornerY} ${cornerX},${cornerY + radiusY}
-                    L ${cornerX},${cornerY + this.HEIGHT_LENGTH_1}
-                `;
+            M ${startX},${startY}
+            L ${cornerX - radiusX},${cornerY}
+            Q ${cornerX},${cornerY} ${cornerX},${cornerY + radiusY}
+            L ${cornerX},${cornerY + this.HEIGHT_LENGTH_1}
+        `;
 
         this.createSVG(container, pathData, 1, lineData.id);
 
-        // Горизонтальная зона (вдоль верхнего края)
+        // ЗОНЫ ПОДСВЕТКИ (толстые) - для плавного затемнения при приближении
         const horizontalZone = {
             top: '0',
             right: offset + '%',
             width: this.WIDTH_LENGTH_1 + '%',
             height: (4 * offset) + '%'
         };
-
-        // Вертикальная зона (вдоль правого края)
         const verticalZone = {
             top: offset + '%',
             right: '0',
@@ -1234,20 +1259,23 @@ class LineManager {
         this.createActivationZone(container, 'tr', 1, horizontalZone, true, this);
         this.createActivationZone(container, 'tr', 1, verticalZone, false, this);
 
-
-        // Точные зоны
+        // ТОЧНЫЕ ЗОНЫ (для активации) - от края до линии +1%
+        const clickExtra = 1;
+        
+        // Горизонтальная зона активации - от верхнего края до линии
         const exactHorizontalZone = {
-            top: offset + '%',
-            right: offset + '%',
-            width: this.WIDTH_LENGTH_1 + '%',
-            height: (this.LINE_THICKNESS * 3) + 'px'
+            top: '0',
+            right: '0',
+            width: (offsetX + this.WIDTH_LENGTH_1 + clickExtra) + '%', // От правого края влево до линии +1%
+            height: (offsetY + clickExtra) + '%' // От верхнего края вниз до линии +1%
         };
 
+        // Вертикальная зона активации - от правого края до линии
         const exactVerticalZone = {
-            top: offset + '%',
-            right: offset + '%',
-            width: (this.LINE_THICKNESS * 3) + 'px',
-            height: this.HEIGHT_LENGTH_1 + '%'
+            top: '0',
+            right: '0',
+            width: (offsetX + clickExtra) + '%', // От правого края влево до линии +1%
+            height: (offsetY + this.HEIGHT_LENGTH_1 + clickExtra) + '%' // От верхнего края вниз до линии +1%
         };
 
         this.createExactZone(container, 'tr', 1, exactHorizontalZone, true, this);
