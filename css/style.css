@@ -101,10 +101,10 @@ body {
 }
 
 /* Цвета страниц */
-.page-1 { background-color: #ffffff; } /* Белая */
-.page-2 { background-color: #ff6b6b; } /* Красная */
-.page-3 { background-color: #4ecdc4; } /* Синяя */
-.page-4 { background-color: #96ceb4; } /* Зеленая */
+.page-1 { background-color: white; }
+.page-2 { background-color: white; }
+.page-3 { background-color: white; }
+.page-4 { background-color: white; }
 
 /* Белая подложка - СРЕДНИЙ слой */
 .white-mask {
@@ -175,6 +175,6 @@ body {
 }
 
 .white-frame path {
-    fill: red;
+    fill: white;
     stroke: none; /* убираем обводку, так как линии сверху */
 }

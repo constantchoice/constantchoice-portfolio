@@ -245,7 +245,6 @@ getMaskPointsFromLinePoints(linePoints, fromCorner, startOffset, endOffset, prog
     const w = window.innerWidth;
     const h = window.innerHeight;
     
-    // Базовые фиксированные углы
     const fixed = {
         tl: { x: 0, y: 0 },
         tr: { x: 100, y: 0 },
@@ -253,10 +252,15 @@ getMaskPointsFromLinePoints(linePoints, fromCorner, startOffset, endOffset, prog
         bl: { x: 0, y: 100 }
     };
     
-    // Текущий offset (интерполяция между startOffset и endOffset)
+    // Для br и tl используем currentOffset (как было)
     const currentOffset = startOffset + (endOffset - startOffset) * progress;
     const currentOffsetX = this.pxToPercentX(currentOffset, w);
     const currentOffsetY = this.pxToPercentY(currentOffset, h);
+
+    // Для tr и bl используем midOffset (константа)
+    const midOffset = (startOffset + endOffset) / 2;
+    const midOffsetX = this.pxToPercentX(midOffset, w);
+    const midOffsetY = this.pxToPercentY(midOffset, h);
     
     let maskPoints = {};
     
@@ -283,21 +287,21 @@ getMaskPointsFromLinePoints(linePoints, fromCorner, startOffset, endOffset, prog
     else if (fromCorner === 'tr') {
         maskPoints = {
             p0: fixed.bl,
-            p1: { x: 0, y: currentOffsetY },
+            p1: { x: 0, y: midOffsetY },  // ← ИСПРАВЛЕНО: midOffsetY вместо currentOffsetY
             p2: linePoints.p0,
             p3: linePoints.p1,
             p4: linePoints.p4,
-            p5: { x: 100 - currentOffsetX, y: 100 }
+            p5: { x: 100 - midOffsetX, y: 100 }  // ← ИСПРАВЛЕНО: midOffsetX вместо currentOffsetX
         };
     }
     else if (fromCorner === 'bl') {
         maskPoints = {
             p0: fixed.tr,
-            p1: { x: 0, y: currentOffsetY },
+            p1: { x: 0, y: midOffsetY },  // ← ИСПРАВЛЕНО: midOffsetY вместо currentOffsetY
             p2: linePoints.p0,
             p3: linePoints.p1,
             p4: linePoints.p4,
-            p5: { x: 100 - currentOffsetX, y: 100 }
+            p5: { x: 100 - midOffsetX, y: 100 }  // ← ИСПРАВЛЕНО: midOffsetX вместо currentOffsetX
         };
     }
     
@@ -492,8 +496,18 @@ animateLineTransition(line, fromCorner, level) {
         else if (tlCount + 1 === 2 && brCount - 1 === 1) targetPage = 2;
         else if (tlCount + 1 === 3 && brCount - 1 === 0) targetPage = 3;
         else if (tlCount + 1 === 0 && brCount - 1 === 3) targetPage = 4;
-    } else {
-        targetPage = currentPage;
+    } else if (fromCorner === 'tr') {
+        // tr -> bl
+        if (tlCount === 1 && brCount === 2) targetPage = 2; // красный
+        else if (tlCount === 2 && brCount === 1) targetPage = 1; // белый
+        else if (tlCount === 3 && brCount === 0) targetPage = 4; // зеленый
+        else if (tlCount === 0 && brCount === 3) targetPage = 3; // бирюзовый
+    } else if (fromCorner === 'bl') {
+        // bl -> tr
+        if (tlCount === 1 && brCount === 2) targetPage = 3; // бирюзовый
+        else if (tlCount === 2 && brCount === 1) targetPage = 4; // зеленый
+        else if (tlCount === 3 && brCount === 0) targetPage = 1; // белый
+        else if (tlCount === 0 && brCount === 3) targetPage = 2; // красный
     }
     
     console.log(`Переход: ${currentPage} -> ${targetPage}`);
@@ -520,14 +534,12 @@ animateLineTransition(line, fromCorner, level) {
         targetPageElement.classList.add('active');
     }
 
-    // ===== СОЗДАЁМ МАСКУ КАК В ТЕСТЕ =====
-    // Создаём SVG элемент для маски (размер 0)
+    // ===== СОЗДАЁМ МАСКУ =====
     const maskSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     maskSVG.setAttribute('width', '0');
     maskSVG.setAttribute('height', '0');
     maskSVG.style.position = 'absolute';
 
-    // Создаём mask с правильными атрибутами
     const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
     mask.setAttribute('id', 'animation-mask');
     mask.setAttribute('maskContentUnits', 'objectBoundingBox');
@@ -536,17 +548,13 @@ animateLineTransition(line, fromCorner, level) {
     mask.setAttribute('width', '1');
     mask.setAttribute('height', '1');
 
-    // Создаём path для маски
     const maskPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    maskPath.setAttribute('fill', 'white'); // Белый = видимая область
+    maskPath.setAttribute('fill', 'white');
     maskPath.setAttribute('stroke', 'none');
     mask.appendChild(maskPath);
     maskSVG.appendChild(mask);
-
-    // Добавляем маску на страницу
     document.body.appendChild(maskSVG);
 
-    // Применяем маску к текущей странице
     if (currentPageElement) {
         currentPageElement.style.mask = 'url(#animation-mask)';
         currentPageElement.style.webkitMask = 'url(#animation-mask)';
@@ -635,10 +643,28 @@ animateLineTransition(line, fromCorner, level) {
     let midPoints;
     const isBRTL = (fromCorner === 'br' && toCorner === 'tl');
     const isTLBR = (fromCorner === 'tl' && toCorner === 'br');
+    const isTRBL = (fromCorner === 'tr' && toCorner === 'bl');
+    const isBLTR = (fromCorner === 'bl' && toCorner === 'tr');
 
-    if (isBRTL) {
+    // ===== ВАЖНО: правильные midPoints для каждой пары углов =====
+    if (isTRBL || isBLTR) {
+        // Для пары tr <-> bl
         const midOffsetX = this.pxToPercentX(midOffset, w);
         const midOffsetY = this.pxToPercentY(midOffset, h);
+        
+        midPoints = {
+            p0: { x: midOffsetX, y: midOffsetY },
+            p1: { x: midOffsetX, y: midOffsetY },
+            p2: { x: midOffsetX, y: midOffsetY },
+            p3: { x: 100 - midOffsetX, y: 100 - midOffsetY },
+            p4: { x: 100 - midOffsetX, y: 100 - midOffsetY },
+            p5: { x: 100 - midOffsetX, y: 100 - midOffsetY }
+        };
+    } else if (isBRTL) {
+        // br -> tl
+        const midOffsetX = this.pxToPercentX(midOffset, w);
+        const midOffsetY = this.pxToPercentY(midOffset, h);
+        
         midPoints = {
             p0: { x: 100 - midOffsetX, y: midOffsetY },
             p1: { x: 100 - midOffsetX, y: midOffsetY },
@@ -648,8 +674,10 @@ animateLineTransition(line, fromCorner, level) {
             p5: { x: midOffsetX, y: 100 - midOffsetY }
         };
     } else if (isTLBR) {
+        // tl -> br
         const midOffsetX = this.pxToPercentX(midOffset, w);
         const midOffsetY = this.pxToPercentY(midOffset, h);
+        
         midPoints = {
             p0: { x: 100 - midOffsetX, y: midOffsetY },
             p1: { x: 100 - midOffsetX, y: midOffsetY },
@@ -661,6 +689,7 @@ animateLineTransition(line, fromCorner, level) {
     } else {
         midPoints = startPoints;
     }
+    // ===== КОНЕЦ =====
 
     // Функция интерполяции
     const interpolatePoints = (start, end, t) => ({
@@ -687,7 +716,17 @@ animateLineTransition(line, fromCorner, level) {
             currentPoints = interpolatePoints(startPoints, midPoints, phaseProgress);
             const offset = amplitude * Math.sin(phaseProgress * Math.PI);
             
-            if (isBRTL) {
+            if (isTRBL) {
+                if (fromCorner === 'tr') {
+                    currentPoints.p2.x += offset;
+                    currentPoints.p3.y -= offset;
+                }
+            } else if (isBLTR) {
+                if (fromCorner === 'bl') {
+                    currentPoints.p2.y += offset;
+                    currentPoints.p3.x -= offset;
+                }
+            } else if (isBRTL) {
                 currentPoints.p2.y += offset;
                 currentPoints.p3.x += offset;
             } else if (isTLBR) {
@@ -699,7 +738,17 @@ animateLineTransition(line, fromCorner, level) {
             currentPoints = interpolatePoints(midPoints, endPoints, phaseProgress);
             const offset = amplitude * Math.sin(phaseProgress * Math.PI);
             
-            if (isBRTL) {
+            if (isTRBL) {
+                if (toCorner === 'bl') {
+                    currentPoints.p2.y += offset;
+                    currentPoints.p3.x -= offset;
+                }
+            } else if (isBLTR) {
+                if (toCorner === 'tr') {
+                    currentPoints.p2.x += offset;
+                    currentPoints.p3.y -= offset;
+                }
+            } else if (isBRTL) {
                 currentPoints.p2.x -= offset;
                 currentPoints.p3.y -= offset;
             } else if (isTLBR) {
@@ -741,43 +790,38 @@ animateLineTransition(line, fromCorner, level) {
         if (progress < 1) {
             requestAnimationFrame(animate);
         } else {
-    // Перемещаем линию
-    toContainer.appendChild(svg);
+            // Перемещаем линию
+            toContainer.appendChild(svg);
 
-    // Обновляем состояние
-    this.linesState[fromCorner] = this.linesState[fromCorner].filter(l => l.id !== lineId);
-    this.linesState[toCorner].push({
-        id: lineId,
-        level: newLevel,
-        corner: toCorner
-    });
+            // Обновляем состояние
+            this.linesState[fromCorner] = this.linesState[fromCorner].filter(l => l.id !== lineId);
+            this.linesState[toCorner].push({
+                id: lineId,
+                level: newLevel,
+                corner: toCorner
+            });
 
-    if (currentPageElement) {
-        currentPageElement.style.zIndex = '';
-    }
-    if (targetPageElement) {
-        targetPageElement.style.zIndex = '';
-    }
+            if (currentPageElement) {
+                currentPageElement.style.zIndex = '';
+            }
+            if (targetPageElement) {
+                targetPageElement.style.zIndex = '';
+            }
 
-    // ===== ИСПРАВЛЕННАЯ КОНЦОВКА =====
-    // 1. СНАЧАЛА убираем active (страница исчезает)
-    if (currentPageElement) {
-        currentPageElement.classList.remove('active');
-    }
-    
-    // 2. ПОТОМ убираем маску (уже не важно, что там видно)
-    if (currentPageElement) {
-        currentPageElement.style.mask = '';
-        currentPageElement.style.webkitMask = '';
-    }
-    
-    // 3. Удаляем SVG маски
-    maskSVG.remove();
-    // ===== КОНЕЦ ИСПРАВЛЕНИЯ =====
+            if (currentPageElement) {
+                currentPageElement.classList.remove('active');
+            }
+            
+            if (currentPageElement) {
+                currentPageElement.style.mask = '';
+                currentPageElement.style.webkitMask = '';
+            }
+            
+            maskSVG.remove();
 
-    this.linesState[toCorner].sort((a, b) => a.level - b.level);
-    this.redrawZonesOnly();
-    this.isAnimating = false;
+            this.linesState[toCorner].sort((a, b) => a.level - b.level);
+            this.redrawZonesOnly();
+            this.isAnimating = false;
         }
     };
 
