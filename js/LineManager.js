@@ -26,9 +26,14 @@ class LineManager {
         this.showAllZones = true;
 
         this.init();
-        window.addEventListener('resize', () => this.init());
+        window.addEventListener('resize', () => {
+            this.init();
+            this.updateWhiteFrame(); // добавляем обновление рамки
+        });
         this.setupControls();
     }
+
+    
 
     setupControls() {
         const updateValue = (id, value) => {
@@ -94,6 +99,236 @@ class LineManager {
         });
     }
 
+
+    // Определение текущей страницы по состоянию линий
+    getCurrentPageFromState() {
+        const tlCount = this.linesState.tl.length;
+        const brCount = this.linesState.br.length;
+        
+        if (tlCount === 1 && brCount === 2) return 1;
+        if (tlCount === 2 && brCount === 1) return 2;
+        if (tlCount === 3 && brCount === 0) return 3;
+        if (tlCount === 0 && brCount === 3) return 4;
+        
+        return 1;
+    }
+
+    // Переключение на страницу
+    switchToPage(pageNum) {
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+        
+        const targetPage = document.getElementById(`page${pageNum}`);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+    }
+
+    createWhiteFrame() {
+    let frame = document.getElementById('whiteFrame');
+    if (!frame) {
+        frame = document.createElement('div');
+        frame.id = 'whiteFrame';
+        frame.className = 'white-frame';
+        document.body.appendChild(frame);
+    }
+    return frame;
+}
+
+    // Рамка строится как замкнутый контур из 4 скругленных углов
+    // Используем максимальный уровень (3) для всех углов
+updateWhiteFrame() {
+    const frame = this.createWhiteFrame();
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    
+    // Отступ для 3-го уровня
+    const offset = this.BASE_OFFSET + 2 * this.LINE_SPACING;
+    const offsetX = this.pxToPercentX(offset, w);
+    const offsetY = this.pxToPercentY(offset, h);
+    
+    const length = this.WIDTH_LENGTH_3;
+    const heightLength = this.HEIGHT_LENGTH_3;
+    const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
+    const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
+    
+    // Внешний контур (весь экран) - движемся ПО ЧАСОВОЙ СТРЕЛКЕ
+    const outerRect = "M 0,0 L 100,0 L 100,100 L 0,100 Z";
+    
+    // Внутренний контур (вырез) - движемся ПРОТИВ ЧАСОВОЙ СТРЕЛКИ
+    // Левый верхний угол
+    const tlCorner = `
+        M ${offsetX + length},${offsetY}
+        L ${offsetX + radiusX},${offsetY}
+        C ${offsetX},${offsetY} ${offsetX},${offsetY + radiusY} ${offsetX},${offsetY + radiusY}
+    `;
+    
+    // Левая сторона вниз
+    const leftEdge = `L ${offsetX},${100 - offsetY - heightLength}`;
+    
+    // Левый нижний угол
+    const blCorner = `
+        L ${offsetX},${100 - offsetY - radiusY}
+        C ${offsetX},${100 - offsetY} ${offsetX + radiusX},${100 - offsetY} ${offsetX + radiusX},${100 - offsetY}
+    `;
+    
+    // Нижняя сторона вправо
+    const bottomEdge = `L ${100 - offsetX - length},${100 - offsetY}`;
+    
+    // Правый нижний угол
+    const brCorner = `
+        L ${100 - offsetX - radiusX},${100 - offsetY}
+        C ${100 - offsetX},${100 - offsetY} ${100 - offsetX},${100 - offsetY - radiusY} ${100 - offsetX},${100 - offsetY - radiusY}
+    `;
+    
+    // Правая сторона вверх
+    const rightEdge = `L ${100 - offsetX},${offsetY + heightLength}`;
+    
+    // Правый верхний угол
+    const trCorner = `
+        L ${100 - offsetX},${offsetY + radiusY}
+        C ${100 - offsetX},${offsetY} ${100 - offsetX - radiusX},${offsetY} ${100 - offsetX - radiusX},${offsetY}
+    `;
+    
+    // Верхняя сторона влево к началу
+    const topEdge = `L ${offsetX + length},${offsetY}`;
+    
+    // Собираем внутренний контур (против часовой стрелки)
+    const innerPath = `
+        ${tlCorner}
+        ${leftEdge}
+        ${blCorner}
+        ${bottomEdge}
+        ${brCorner}
+        ${rightEdge}
+        ${trCorner}
+        ${topEdge}
+        Z
+    `;
+    
+    const pathData = outerRect + " " + innerPath;
+    
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathData);
+    path.setAttribute('fill', 'white');
+    path.setAttribute('fill-rule', 'evenodd'); // Оставляем, но теперь направления правильные
+    path.setAttribute('stroke', 'none');
+    
+    svg.appendChild(path);
+    frame.innerHTML = '';
+    frame.appendChild(svg);
+}
+
+    // Создание белой подложки
+    createWhiteMask() {
+        let mask = document.getElementById('white-mask');
+        if (!mask) {
+            mask = document.createElement('div');
+            mask.id = 'white-mask';
+            mask.className = 'white-mask';
+            document.body.appendChild(mask);
+        }
+        mask.classList.remove('hidden'); // Показываем маску
+        mask.innerHTML = ''; // Очищаем
+        return mask;
+    }
+
+    // Получение точек для подложки на основе точек линии
+getMaskPointsFromLinePoints(linePoints, fromCorner, startOffset, endOffset, progress) {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    
+    // Базовые фиксированные углы
+    const fixed = {
+        tl: { x: 0, y: 0 },
+        tr: { x: 100, y: 0 },
+        br: { x: 100, y: 100 },
+        bl: { x: 0, y: 100 }
+    };
+    
+    // Текущий offset (интерполяция между startOffset и endOffset)
+    const currentOffset = startOffset + (endOffset - startOffset) * progress;
+    const currentOffsetX = this.pxToPercentX(currentOffset, w);
+    const currentOffsetY = this.pxToPercentY(currentOffset, h);
+    
+    let maskPoints = {};
+    
+    if (fromCorner === 'br') {
+        maskPoints = {
+            p0: fixed.tl,
+            p1: { x: 100, y: currentOffsetY },
+            p2: linePoints.p0,
+            p3: linePoints.p1,
+            p4: linePoints.p4,
+            p5: { x: currentOffsetX, y: 100 }
+        };
+    }
+    else if (fromCorner === 'tl') {
+        maskPoints = {
+            p0: fixed.br,
+            p1: { x: 100, y: currentOffsetY },
+            p2: linePoints.p0,
+            p3: linePoints.p1,
+            p4: linePoints.p4,
+            p5: { x: currentOffsetX, y: 100 }
+        };
+    }
+    else if (fromCorner === 'tr') {
+        maskPoints = {
+            p0: fixed.bl,
+            p1: { x: 0, y: currentOffsetY },
+            p2: linePoints.p0,
+            p3: linePoints.p1,
+            p4: linePoints.p4,
+            p5: { x: 100 - currentOffsetX, y: 100 }
+        };
+    }
+    else if (fromCorner === 'bl') {
+        maskPoints = {
+            p0: fixed.tr,
+            p1: { x: 0, y: currentOffsetY },
+            p2: linePoints.p0,
+            p3: linePoints.p1,
+            p4: linePoints.p4,
+            p5: { x: 100 - currentOffsetX, y: 100 }
+        };
+    }
+    
+    return maskPoints;
+}
+
+    // Создание SVG для подложки
+    createMaskSVG(maskPoints) {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('height', '100%');
+        svg.setAttribute('viewBox', '0 0 100 100');
+        svg.setAttribute('preserveAspectRatio', 'none');
+        
+        const pathData = `
+            M ${maskPoints.p0.x},${maskPoints.p0.y}
+            L ${maskPoints.p1.x},${maskPoints.p1.y}
+            L ${maskPoints.p2.x},${maskPoints.p2.y}
+            C ${maskPoints.p2.x},${maskPoints.p2.y} ${maskPoints.p3.x},${maskPoints.p3.y} ${maskPoints.p4.x},${maskPoints.p4.y}
+            L ${maskPoints.p5.x},${maskPoints.p5.y}
+            Z
+        `;
+        
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('fill', 'white'); // белый = видимая область
+        
+        svg.appendChild(path);
+        return svg;
+    }
+
     updateZonesVisibility() {
         this.zones.forEach(zone => {
             if (this.showAllZones) {
@@ -137,6 +372,9 @@ class LineManager {
         this.drawTopLeft(w, h);
         this.drawTopRight(w, h);
         this.drawBottomRight(w, h);
+
+        // ВАЖНО: вызываем обновление белой рамки
+        this.updateWhiteFrame();
 
         this.updateZonesVisibility();
     }
@@ -204,214 +442,252 @@ class LineManager {
         return zone;
     }
 
-    animateLineTransition(line, fromCorner, level) {
-        console.log(`Анимация: ${fromCorner} level ${level}`);
-        this.isAnimating = true;
+animateLineTransition(line, fromCorner, level) {
+    console.log(`Анимация: ${fromCorner} level ${level}`);
+    this.isAnimating = true;
 
-        // Определяем противоположный угол
-        const oppositeCorners = {
-            'tl': 'br',
-            'tr': 'bl',
-            'br': 'tl',
-            'bl': 'tr'
-        };
-        const toCorner = oppositeCorners[fromCorner];
+    // Определяем противоположный угол
+    const oppositeCorners = {
+        'tl': 'br',
+        'tr': 'bl',
+        'br': 'tl',
+        'bl': 'tr'
+    };
+    const toCorner = oppositeCorners[fromCorner];
 
-        const lineData = this.linesState[fromCorner].find(l => l.level === level);
-        if (!lineData) {
-            this.isAnimating = false;
-            return;
+    const lineData = this.linesState[fromCorner].find(l => l.level === level);
+    if (!lineData) {
+        this.isAnimating = false;
+        return;
+    }
+
+    // Сохраняем ID линии
+    const lineId = lineData.id;
+
+    // Получаем контейнеры
+    const fromContainer = this.containers[fromCorner];
+    const toContainer = this.containers[toCorner];
+
+    // Сохраняем родительский SVG линии
+    const svg = line.closest('svg');
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    // Определяем текущую страницу ДО переключения
+    const currentPage = this.getCurrentPageFromState();
+    
+    // Определяем целевую страницу
+    let targetPage;
+    const tlCount = this.linesState.tl.length;
+    const brCount = this.linesState.br.length;
+    
+    if (fromCorner === 'tl') {
+        if (tlCount - 1 === 1 && brCount + 1 === 2) targetPage = 1;
+        else if (tlCount - 1 === 2 && brCount + 1 === 1) targetPage = 2;
+        else if (tlCount - 1 === 3 && brCount + 1 === 0) targetPage = 3;
+        else if (tlCount - 1 === 0 && brCount + 1 === 3) targetPage = 4;
+    } else if (fromCorner === 'br') {
+        if (tlCount + 1 === 1 && brCount - 1 === 2) targetPage = 1;
+        else if (tlCount + 1 === 2 && brCount - 1 === 1) targetPage = 2;
+        else if (tlCount + 1 === 3 && brCount - 1 === 0) targetPage = 3;
+        else if (tlCount + 1 === 0 && brCount - 1 === 3) targetPage = 4;
+    } else {
+        targetPage = currentPage;
+    }
+    
+    console.log(`Переход: ${currentPage} -> ${targetPage}`);
+
+    // СОХРАНЯЕМ ЭЛЕМЕНТЫ СТРАНИЦ
+    const currentPageElement = document.getElementById(`page${currentPage}`);
+    const targetPageElement = document.getElementById(`page${targetPage}`);
+
+    // Поднимаем текущую страницу выше целевой
+    if (currentPageElement) {
+        currentPageElement.style.zIndex = '3';
+    }
+    if (targetPageElement) {
+        targetPageElement.style.zIndex = '2';
+    }
+
+    // ПОКАЗЫВАЕМ ЦЕЛЕВУЮ СТРАНИЦУ, НО НЕ ПРЯЧЕМ ТЕКУЩУЮ
+    document.querySelectorAll('.page').forEach(page => {
+        if (page.id !== `page${currentPage}`) {
+            page.classList.remove('active');
         }
+    });
+    if (targetPageElement) {
+        targetPageElement.classList.add('active');
+    }
 
-        // Сохраняем ID линии
-        const lineId = lineData.id;
+    // ===== СОЗДАЁМ МАСКУ КАК В ТЕСТЕ =====
+    // Создаём SVG элемент для маски (размер 0)
+    const maskSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    maskSVG.setAttribute('width', '0');
+    maskSVG.setAttribute('height', '0');
+    maskSVG.style.position = 'absolute';
 
-        // Получаем контейнеры
-        const fromContainer = this.containers[fromCorner];
-        const toContainer = this.containers[toCorner];
+    // Создаём mask с правильными атрибутами
+    const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
+    mask.setAttribute('id', 'animation-mask');
+    mask.setAttribute('maskContentUnits', 'objectBoundingBox');
+    mask.setAttribute('x', '0');
+    mask.setAttribute('y', '0');
+    mask.setAttribute('width', '1');
+    mask.setAttribute('height', '1');
 
-        // Сохраняем родительский SVG линии
-        const svg = line.closest('svg');
+    // Создаём path для маски
+    const maskPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    maskPath.setAttribute('fill', 'white'); // Белый = видимая область
+    maskPath.setAttribute('stroke', 'none');
+    mask.appendChild(maskPath);
+    maskSVG.appendChild(mask);
 
-        const w = window.innerWidth;
-        const h = window.innerHeight;
+    // Добавляем маску на страницу
+    document.body.appendChild(maskSVG);
 
-        // Вычисляем новый уровень для целевого угла
-        let newLevel;
-        if (toCorner === 'br' || toCorner === 'tl') {
-            const existingLevels = this.linesState[toCorner].map(l => l.level);
-            newLevel = existingLevels.length === 0 ? 1 : Math.max(...existingLevels) + 1;
-        } else {
-            newLevel = 1;
-        }
+    // Применяем маску к текущей странице
+    if (currentPageElement) {
+        currentPageElement.style.mask = 'url(#animation-mask)';
+        currentPageElement.style.webkitMask = 'url(#animation-mask)';
+    }
+    // ===== КОНЕЦ СОЗДАНИЯ МАСКИ =====
 
-        // Функция для получения точек линии с определенным отступом
-        const getPointsWithOffset = (corner, level, offset) => {
-            const offsetX = this.pxToPercentX(offset, w);
-            const offsetY = this.pxToPercentY(offset, h);
-            
-            const length = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
-            const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
-            const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
-            const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
+    // Вычисляем новый уровень для целевого угла
+    let newLevel;
+    if (toCorner === 'br' || toCorner === 'tl') {
+        const existingLevels = this.linesState[toCorner].map(l => l.level);
+        newLevel = existingLevels.length === 0 ? 1 : Math.max(...existingLevels) + 1;
+    } else {
+        newLevel = 1;
+    }
 
-            if (corner === 'tl') {
-                return {
-                    p0: { x: offsetX + length, y: offsetY },           // M - начало
-                    p1: { x: offsetX + radiusX, y: offsetY },          // L1 - конец первой прямой
-                    p2: { x: offsetX, y: offsetY },                    // C1 - угол (первая контрольная)
-                    p3: { x: offsetX, y: offsetY + radiusY },          // C2 - точка после угла
-                    p4: { x: offsetX, y: offsetY + radiusY },          // L2 - конец скругления
-                    p5: { x: offsetX, y: offsetY + heightLength }      // L3 - конечная прямая
-                };
-            } else if (corner === 'tr') {
-                return {
-                    p0: { x: 100 - offsetX - length, y: offsetY },
-                    p1: { x: 100 - offsetX - radiusX, y: offsetY },
-                    p2: { x: 100 - offsetX, y: offsetY },
-                    p3: { x: 100 - offsetX, y: offsetY + radiusY },
-                    p4: { x: 100 - offsetX, y: offsetY + radiusY },
-                    p5: { x: 100 - offsetX, y: offsetY + heightLength }
-                };
-            } else if (corner === 'br') {
-                return {
-                    p0: { x: 100 - offsetX, y: 100 - offsetY - heightLength },
-                    p1: { x: 100 - offsetX, y: 100 - offsetY - radiusY },
-                    p2: { x: 100 - offsetX, y: 100 - offsetY },
-                    p3: { x: 100 - offsetX - radiusX, y: 100 - offsetY },
-                    p4: { x: 100 - offsetX - radiusX, y: 100 - offsetY },
-                    p5: { x: 100 - offsetX - length, y: 100 - offsetY }
-                };
-            } else if (corner === 'bl') {
-                return {
-                    p0: { x: offsetX, y: 100 - offsetY - heightLength },
-                    p1: { x: offsetX, y: 100 - offsetY - radiusY },
-                    p2: { x: offsetX, y: 100 - offsetY },
-                    p3: { x: offsetX + radiusX, y: 100 - offsetY },
-                    p4: { x: offsetX + radiusX, y: 100 - offsetY },
-                    p5: { x: offsetX + length, y: 100 - offsetY }
-                };
-            }
-        };
-
-        // Начальные точки
-        const startOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
-        const startPoints = getPointsWithOffset(fromCorner, level, startOffset);
-
-        // Конечные точки
-        const endOffset = this.BASE_OFFSET + (newLevel - 1) * this.LINE_SPACING;
-        const endPoints = getPointsWithOffset(toCorner, newLevel, endOffset);
-
-        // Точки в середине (полусумма отступов)
-        const midOffset = (startOffset + endOffset) / 2;
+    // Функция для получения точек линии (возвращает в процентах 0-100)
+    const getPointsWithOffset = (corner, level, offset) => {
+        const offsetX = this.pxToPercentX(offset, w);
+        const offsetY = this.pxToPercentY(offset, h);
         
-        // Определяем промежуточные точки в зависимости от пары углов
-        let midPoints;
-        
-        const isSpecialPair = (fromCorner === 'tr' && toCorner === 'bl') || 
-                            (fromCorner === 'bl' && toCorner === 'tr');
-        const isBRTL = (fromCorner === 'br' && toCorner === 'tl');
-        const isTLBR = (fromCorner === 'tl' && toCorner === 'br');
-        const isBLTR = (fromCorner === 'bl' && toCorner === 'tr'); // bl -> tr
-        const isTRBL = (fromCorner === 'tr' && toCorner === 'bl'); // tr -> bl
+        const length = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
+        const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
+        const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
+        const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
 
-        if (isSpecialPair) {
-            // Для пары tr <-> bl
-            const midOffsetX = this.pxToPercentX(midOffset, w);
-            const midOffsetY = this.pxToPercentY(midOffset, h);
-            
-            midPoints = {
-                p0: { x: midOffsetX, y: midOffsetY },
-                p1: { x: midOffsetX, y: midOffsetY },
-                p2: { x: midOffsetX, y: midOffsetY },  // контрольные точки пока равны
-                p3: { x: 100 - midOffsetX, y: 100 - midOffsetY },
-                p4: { x: 100 - midOffsetX, y: 100 - midOffsetY },
-                p5: { x: 100 - midOffsetX, y: 100 - midOffsetY }
-            };
-        } else if (isBRTL) {
-            // br -> tl
-            const midOffsetX = this.pxToPercentX(midOffset, w);
-            const midOffsetY = this.pxToPercentY(midOffset, h);
-            
-            midPoints = {
-                p0: { x: 100 - midOffsetX, y: midOffsetY },
-                p1: { x: 100 - midOffsetX, y: midOffsetY },
-                p2: { x: 100 - midOffsetX, y: midOffsetY },
-                p3: { x: midOffsetX, y: 100 - midOffsetY },
-                p4: { x: midOffsetX, y: 100 - midOffsetY },
-                p5: { x: midOffsetX, y: 100 - midOffsetY }
-            };
-        } else if (isTLBR) {
-            // tl -> br
-            const midOffsetX = this.pxToPercentX(midOffset, w);
-            const midOffsetY = this.pxToPercentY(midOffset, h);
-            
-            midPoints = {
-                p0: { x: 100 - midOffsetX, y: midOffsetY },
-                p1: { x: 100 - midOffsetX, y: midOffsetY },
-                p2: { x: 100 - midOffsetX, y: midOffsetY },
-                p3: { x: midOffsetX, y: 100 - midOffsetY },
-                p4: { x: midOffsetX, y: 100 - midOffsetY },
-                p5: { x: midOffsetX, y: 100 - midOffsetY }
-            };
-        }
-
-        // Функция интерполяции для 6 точек
-        const interpolatePoints = (start, end, t) => {
+        if (corner === 'tl') {
             return {
-                p0: { 
-                    x: start.p0.x + (end.p0.x - start.p0.x) * t, 
-                    y: start.p0.y + (end.p0.y - start.p0.y) * t 
-                },
-                p1: { 
-                    x: start.p1.x + (end.p1.x - start.p1.x) * t, 
-                    y: start.p1.y + (end.p1.y - start.p1.y) * t 
-                },
-                p2: { 
-                    x: start.p2.x + (end.p2.x - start.p2.x) * t, 
-                    y: start.p2.y + (end.p2.y - start.p2.y) * t 
-                },
-                p3: { 
-                    x: start.p3.x + (end.p3.x - start.p3.x) * t, 
-                    y: start.p3.y + (end.p3.y - start.p3.y) * t 
-                },
-                p4: { 
-                    x: start.p4.x + (end.p4.x - start.p4.x) * t, 
-                    y: start.p4.y + (end.p4.y - start.p4.y) * t 
-                },
-                p5: { 
-                    x: start.p5.x + (end.p5.x - start.p5.x) * t, 
-                    y: start.p5.y + (end.p5.y - start.p5.y) * t 
-                }
+                p0: { x: offsetX + length, y: offsetY },
+                p1: { x: offsetX + radiusX, y: offsetY },
+                p2: { x: offsetX, y: offsetY },
+                p3: { x: offsetX, y: offsetY + radiusY },
+                p4: { x: offsetX, y: offsetY + radiusY },
+                p5: { x: offsetX, y: offsetY + heightLength }
             };
+        } else if (corner === 'tr') {
+            return {
+                p0: { x: 100 - offsetX - length, y: offsetY },
+                p1: { x: 100 - offsetX - radiusX, y: offsetY },
+                p2: { x: 100 - offsetX, y: offsetY },
+                p3: { x: 100 - offsetX, y: offsetY + radiusY },
+                p4: { x: 100 - offsetX, y: offsetY + radiusY },
+                p5: { x: 100 - offsetX, y: offsetY + heightLength }
+            };
+        } else if (corner === 'br') {
+            return {
+                p0: { x: 100 - offsetX, y: 100 - offsetY - heightLength },
+                p1: { x: 100 - offsetX, y: 100 - offsetY - radiusY },
+                p2: { x: 100 - offsetX, y: 100 - offsetY },
+                p3: { x: 100 - offsetX - radiusX, y: 100 - offsetY },
+                p4: { x: 100 - offsetX - radiusX, y: 100 - offsetY },
+                p5: { x: 100 - offsetX - length, y: 100 - offsetY }
+            };
+        } else if (corner === 'bl') {
+            return {
+                p0: { x: offsetX, y: 100 - offsetY - heightLength },
+                p1: { x: offsetX, y: 100 - offsetY - radiusY },
+                p2: { x: offsetX, y: 100 - offsetY },
+                p3: { x: offsetX + radiusX, y: 100 - offsetY },
+                p4: { x: offsetX + radiusX, y: 100 - offsetY },
+                p5: { x: offsetX + length, y: 100 - offsetY }
+            };
+        }
+    };
+
+    // Функция для конвертации процентов в relative (0-1)
+    const toRelative = (points) => ({
+        p0: { x: points.p0.x / 100, y: points.p0.y / 100 },
+        p1: { x: points.p1.x / 100, y: points.p1.y / 100 },
+        p2: { x: points.p2.x / 100, y: points.p2.y / 100 },
+        p3: { x: points.p3.x / 100, y: points.p3.y / 100 },
+        p4: { x: points.p4.x / 100, y: points.p4.y / 100 },
+        p5: { x: points.p5.x / 100, y: points.p5.y / 100 }
+    });
+
+    // Начальные точки
+    const startOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
+    const startPoints = getPointsWithOffset(fromCorner, level, startOffset);
+
+    // Конечные точки
+    const endOffset = this.BASE_OFFSET + (newLevel - 1) * this.LINE_SPACING;
+    const endPoints = getPointsWithOffset(toCorner, newLevel, endOffset);
+
+    // Промежуточные точки
+    const midOffset = (startOffset + endOffset) / 2;
+    
+    let midPoints;
+    const isBRTL = (fromCorner === 'br' && toCorner === 'tl');
+    const isTLBR = (fromCorner === 'tl' && toCorner === 'br');
+
+    if (isBRTL) {
+        const midOffsetX = this.pxToPercentX(midOffset, w);
+        const midOffsetY = this.pxToPercentY(midOffset, h);
+        midPoints = {
+            p0: { x: 100 - midOffsetX, y: midOffsetY },
+            p1: { x: 100 - midOffsetX, y: midOffsetY },
+            p2: { x: 100 - midOffsetX, y: midOffsetY },
+            p3: { x: midOffsetX, y: 100 - midOffsetY },
+            p4: { x: midOffsetX, y: 100 - midOffsetY },
+            p5: { x: midOffsetX, y: 100 - midOffsetY }
         };
+    } else if (isTLBR) {
+        const midOffsetX = this.pxToPercentX(midOffset, w);
+        const midOffsetY = this.pxToPercentY(midOffset, h);
+        midPoints = {
+            p0: { x: 100 - midOffsetX, y: midOffsetY },
+            p1: { x: 100 - midOffsetX, y: midOffsetY },
+            p2: { x: 100 - midOffsetX, y: midOffsetY },
+            p3: { x: midOffsetX, y: 100 - midOffsetY },
+            p4: { x: midOffsetX, y: 100 - midOffsetY },
+            p5: { x: midOffsetX, y: 100 - midOffsetY }
+        };
+    } else {
+        midPoints = startPoints;
+    }
 
-        const startTime = performance.now();
-        const duration = 2000;
-        const amplitude = 29.5;
+    // Функция интерполяции
+    const interpolatePoints = (start, end, t) => ({
+        p0: { x: start.p0.x + (end.p0.x - start.p0.x) * t, y: start.p0.y + (end.p0.y - start.p0.y) * t },
+        p1: { x: start.p1.x + (end.p1.x - start.p1.x) * t, y: start.p1.y + (end.p1.y - start.p1.y) * t },
+        p2: { x: start.p2.x + (end.p2.x - start.p2.x) * t, y: start.p2.y + (end.p2.y - start.p2.y) * t },
+        p3: { x: start.p3.x + (end.p3.x - start.p3.x) * t, y: start.p3.y + (end.p3.y - start.p3.y) * t },
+        p4: { x: start.p4.x + (end.p4.x - start.p4.x) * t, y: start.p4.y + (end.p4.y - start.p4.y) * t },
+        p5: { x: start.p5.x + (end.p5.x - start.p5.x) * t, y: start.p5.y + (end.p5.y - start.p5.y) * t }
+    });
 
-        const animate = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            let progress = Math.min(elapsed / duration, 1);
-            
-            let currentPoints;
-            
+    const startTime = performance.now();
+    const duration = 2000;
+    const amplitude = 29.5;
+
+    const animate = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        let progress = Math.min(elapsed / duration, 1);
+        
+        let currentPoints;
+        
         if (progress < 0.5) {
             const phaseProgress = progress * 2;
             currentPoints = interpolatePoints(startPoints, midPoints, phaseProgress);
             const offset = amplitude * Math.sin(phaseProgress * Math.PI);
             
-            if (isSpecialPair) {
-                if (fromCorner === 'tr') {
-                    // tr -> bl (первая половина)
-                    currentPoints.p2.x += offset;
-                    currentPoints.p3.y -= offset;
-                } else if (fromCorner === 'bl') {
-                    // bl -> tr (первая половина)
-                    currentPoints.p2.y += offset;
-                    currentPoints.p3.x -= offset;
-                }
-            } else if (isBRTL) {
+            if (isBRTL) {
                 currentPoints.p2.y += offset;
                 currentPoints.p3.x += offset;
             } else if (isTLBR) {
@@ -423,17 +699,7 @@ class LineManager {
             currentPoints = interpolatePoints(midPoints, endPoints, phaseProgress);
             const offset = amplitude * Math.sin(phaseProgress * Math.PI);
             
-            if (isSpecialPair) {
-                if (toCorner === 'bl') {
-                    // tr -> bl (вторая половина)
-                    currentPoints.p2.y += offset;
-                    currentPoints.p3.x -= offset;
-                } else if (toCorner === 'tr') {
-                    // bl -> tr (вторая половина)
-                    currentPoints.p2.x += offset;
-                    currentPoints.p3.y -= offset;
-                }
-            } else if (isBRTL) {
+            if (isBRTL) {
                 currentPoints.p2.x -= offset;
                 currentPoints.p3.y -= offset;
             } else if (isTLBR) {
@@ -441,44 +707,82 @@ class LineManager {
                 currentPoints.p3.x += offset;
             }
         }
-            
-            // Формируем путь M L C L L
-            const newPath = `
-                M ${currentPoints.p0.x},${currentPoints.p0.y}
-                L ${currentPoints.p1.x},${currentPoints.p1.y}
-                C ${currentPoints.p2.x},${currentPoints.p2.y} ${currentPoints.p3.x},${currentPoints.p3.y} ${currentPoints.p4.x},${currentPoints.p4.y}
-                L ${currentPoints.p5.x},${currentPoints.p5.y}
-            `;
-            
-            line.setAttribute('d', newPath);
 
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                // Перемещаем SVG в новый контейнер
-                toContainer.appendChild(svg);
+        // Обновляем линию (в процентах)
+        const newPath = `
+            M ${currentPoints.p0.x},${currentPoints.p0.y}
+            L ${currentPoints.p1.x},${currentPoints.p1.y}
+            C ${currentPoints.p2.x},${currentPoints.p2.y} ${currentPoints.p3.x},${currentPoints.p3.y} ${currentPoints.p4.x},${currentPoints.p4.y}
+            L ${currentPoints.p5.x},${currentPoints.p5.y}
+        `;
+        line.setAttribute('d', newPath);
+        
+        // Получаем точки для маски и конвертируем в relative
+        const maskPoints = this.getMaskPointsFromLinePoints(
+            currentPoints, 
+            fromCorner, 
+            startOffset, 
+            endOffset, 
+            progress 
+        );
+        
+        const relativePoints = toRelative(maskPoints);
+        
+        const maskPathData = `
+            M ${relativePoints.p0.x},${relativePoints.p0.y}
+            L ${relativePoints.p1.x},${relativePoints.p1.y}
+            L ${relativePoints.p2.x},${relativePoints.p2.y}
+            C ${relativePoints.p2.x},${relativePoints.p2.y} ${relativePoints.p3.x},${relativePoints.p3.y} ${relativePoints.p4.x},${relativePoints.p4.y}
+            L ${relativePoints.p5.x},${relativePoints.p5.y}
+            Z
+        `;
+        maskPath.setAttribute('d', maskPathData);
 
-                console.log(`Из ${fromCorner} level ${level} в ${toCorner} level ${newLevel}`);
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        } else {
+    // Перемещаем линию
+    toContainer.appendChild(svg);
 
-                // Обновляем состояние
-                this.linesState[fromCorner] = this.linesState[fromCorner].filter(l => l.id !== lineId);
-                this.linesState[toCorner].push({
-                    id: lineId,
-                    level: newLevel,
-                    corner: toCorner
-                });
+    // Обновляем состояние
+    this.linesState[fromCorner] = this.linesState[fromCorner].filter(l => l.id !== lineId);
+    this.linesState[toCorner].push({
+        id: lineId,
+        level: newLevel,
+        corner: toCorner
+    });
 
-                this.linesState[toCorner].sort((a, b) => a.level - b.level);
-
-                // Перерисовываем только зоны
-                this.redrawZonesOnly();
-
-                this.isAnimating = false;
-            }
-        };
-
-        requestAnimationFrame(animate);
+    if (currentPageElement) {
+        currentPageElement.style.zIndex = '';
     }
+    if (targetPageElement) {
+        targetPageElement.style.zIndex = '';
+    }
+
+    // ===== ИСПРАВЛЕННАЯ КОНЦОВКА =====
+    // 1. СНАЧАЛА убираем active (страница исчезает)
+    if (currentPageElement) {
+        currentPageElement.classList.remove('active');
+    }
+    
+    // 2. ПОТОМ убираем маску (уже не важно, что там видно)
+    if (currentPageElement) {
+        currentPageElement.style.mask = '';
+        currentPageElement.style.webkitMask = '';
+    }
+    
+    // 3. Удаляем SVG маски
+    maskSVG.remove();
+    // ===== КОНЕЦ ИСПРАВЛЕНИЯ =====
+
+    this.linesState[toCorner].sort((a, b) => a.level - b.level);
+    this.redrawZonesOnly();
+    this.isAnimating = false;
+        }
+    };
+
+    requestAnimationFrame(animate);
+}
 
     // Вспомогательная функция для создания пути из точек
     endPointsToPath(corner, points) {
