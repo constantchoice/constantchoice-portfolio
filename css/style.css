@@ -95,16 +95,83 @@ body {
     visibility: visible;
 }
 
-.page.active {
-    opacity: 1;
-    visibility: visible;
+/* Цвета страниц */
+.page-1 { background-color: white; }
+.page-2 { background-color: white; }
+.page-3 { background-color: white; }
+.page-4 { background-color: white; }
+
+.page-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    pointer-events: none;
+    z-index: 10;
+    
+    padding: 20px; /* Базовый отступ */
+    box-sizing: border-box;
 }
 
-/* Цвета страниц */
-.page-1 { background-color: #FF9800; }
-.page-2 { background-color: #F44336; }
-.page-3 { background-color: #9C27B0; }
-.page-4 { background-color: #4CAF50; }
+/* Дополнительный отступ для контента, чтобы быть внутри рамки */
+.page-content {
+    padding: calc(0px + 0px); /* BASE_OFFSET + LINE_SPACING для level 1 */
+}
+
+.page-content h1 {
+    font-size: 8rem;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    letter-spacing: -2px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.page-content p {
+    font-size: 1.8rem;
+    margin: 1rem 0 0;
+    opacity: 0.9;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    max-width: 95%; /* MAIN WIDTH */
+    word-wrap: break-word;
+}
+
+/* Цвета текста для разных страниц */
+#page1 .page-content h1,
+#page1 .page-content p {
+    color: white;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+}
+
+#page2 .page-content h1,
+#page2 .page-content p {
+    color: white;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+}
+
+#page3 .page-content h1,
+#page3 .page-content p {
+    color: white;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+}
+
+#page4 .page-content h1,
+#page4 .page-content p {
+    color: white;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+}
+/* ===== КОНЕЦ СТИЛЕЙ ДЛЯ КОНТЕНТА ===== */
 
 /* Белая подложка - СРЕДНИЙ слой */
 .white-mask {
@@ -114,7 +181,7 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    background: transparent; /* фон будет через SVG */
+    background: transparent;
 }
 
 .white-mask svg {
@@ -174,6 +241,6 @@ body {
 }
 
 .white-frame path {
-    fill: darkcyan;
+    fill: white;
     stroke: none;
 }
