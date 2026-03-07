@@ -241,72 +241,72 @@ updateWhiteFrame() {
     }
 
     // Получение точек для подложки на основе точек линии
-getMaskPointsFromLinePoints(linePoints, fromCorner, startOffset, endOffset, progress) {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    
-    const fixed = {
-        tl: { x: 0, y: 0 },
-        tr: { x: 100, y: 0 },
-        br: { x: 100, y: 100 },
-        bl: { x: 0, y: 100 }
-    };
-    
-    // Для br и tl используем currentOffset (как было)
-    const currentOffset = startOffset + (endOffset - startOffset) * progress;
-    const currentOffsetX = this.pxToPercentX(currentOffset, w);
-    const currentOffsetY = this.pxToPercentY(currentOffset, h);
+    getMaskPointsFromLinePoints(linePoints, fromCorner, startOffset, endOffset, progress) {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        
+        const fixed = {
+            tl: { x: 0, y: 0 },
+            tr: { x: 100, y: 0 },
+            br: { x: 100, y: 100 },
+            bl: { x: 0, y: 100 }
+        };
+        
+        // Для br и tl используем currentOffset (как было)
+        const currentOffset = startOffset + (endOffset - startOffset) * progress;
+        const currentOffsetX = this.pxToPercentX(currentOffset, w);
+        const currentOffsetY = this.pxToPercentY(currentOffset, h);
 
-    // Для tr и bl используем midOffset (константа)
-    const midOffset = (startOffset + endOffset) / 2;
-    const midOffsetX = this.pxToPercentX(midOffset, w);
-    const midOffsetY = this.pxToPercentY(midOffset, h);
-    
-    let maskPoints = {};
-    
-    if (fromCorner === 'br') {
-        maskPoints = {
-            p0: fixed.tl,
-            p1: { x: 100, y: currentOffsetY },
-            p2: linePoints.p0,
-            p3: linePoints.p1,
-            p4: linePoints.p4,
-            p5: { x: currentOffsetX, y: 100 }
-        };
+        // Для tr и bl используем midOffset (константа)
+        const midOffset = (startOffset + endOffset) / 2;
+        const midOffsetX = this.pxToPercentX(midOffset, w);
+        const midOffsetY = this.pxToPercentY(midOffset, h);
+        
+        let maskPoints = {};
+        
+        if (fromCorner === 'br') {
+            maskPoints = {
+                p0: fixed.tl,
+                p1: { x: 100, y: currentOffsetY },
+                p2: linePoints.p0,
+                p3: linePoints.p1,
+                p4: linePoints.p4,
+                p5: { x: currentOffsetX, y: 100 }
+            };
+        }
+        else if (fromCorner === 'tl') {
+            maskPoints = {
+                p0: fixed.br,
+                p1: { x: 100, y: currentOffsetY },
+                p2: linePoints.p0,
+                p3: linePoints.p1,
+                p4: linePoints.p4,
+                p5: { x: currentOffsetX, y: 100 }
+            };
+        }
+        else if (fromCorner === 'tr') {
+            maskPoints = {
+                p0: fixed.bl,
+                p1: { x: 0, y: midOffsetY },
+                p2: linePoints.p0,
+                p3: linePoints.p1,
+                p4: linePoints.p4,
+                p5: { x: 100 - midOffsetX, y: 100 }
+            };
+        }
+        else if (fromCorner === 'bl') {
+            maskPoints = {
+                p0: fixed.tr,
+                p1: { x: 0, y: midOffsetY },
+                p2: linePoints.p0,
+                p3: linePoints.p1,
+                p4: linePoints.p4,
+                p5: { x: 100 - midOffsetX, y: 100 }
+            };
+        }
+        
+        return maskPoints;
     }
-    else if (fromCorner === 'tl') {
-        maskPoints = {
-            p0: fixed.br,
-            p1: { x: 100, y: currentOffsetY },
-            p2: linePoints.p0,
-            p3: linePoints.p1,
-            p4: linePoints.p4,
-            p5: { x: currentOffsetX, y: 100 }
-        };
-    }
-    else if (fromCorner === 'tr') {
-        maskPoints = {
-            p0: fixed.bl,
-            p1: { x: 0, y: midOffsetY },  // ← ИСПРАВЛЕНО: midOffsetY вместо currentOffsetY
-            p2: linePoints.p0,
-            p3: linePoints.p1,
-            p4: linePoints.p4,
-            p5: { x: 100 - midOffsetX, y: 100 }  // ← ИСПРАВЛЕНО: midOffsetX вместо currentOffsetX
-        };
-    }
-    else if (fromCorner === 'bl') {
-        maskPoints = {
-            p0: fixed.tr,
-            p1: { x: 0, y: midOffsetY },  // ← ИСПРАВЛЕНО: midOffsetY вместо currentOffsetY
-            p2: linePoints.p0,
-            p3: linePoints.p1,
-            p4: linePoints.p4,
-            p5: { x: 100 - midOffsetX, y: 100 }  // ← ИСПРАВЛЕНО: midOffsetX вместо currentOffsetX
-        };
-    }
-    
-    return maskPoints;
-}
 
     // Создание SVG для подложки
     createMaskSVG(maskPoints) {
@@ -498,16 +498,10 @@ animateLineTransition(line, fromCorner, level) {
         else if (tlCount + 1 === 0 && brCount - 1 === 3) targetPage = 4;
     } else if (fromCorner === 'tr') {
         // tr -> bl
-        if (tlCount === 1 && brCount === 2) targetPage = 2; // красный
-        else if (tlCount === 2 && brCount === 1) targetPage = 1; // белый
-        else if (tlCount === 3 && brCount === 0) targetPage = 4; // зеленый
-        else if (tlCount === 0 && brCount === 3) targetPage = 3; // бирюзовый
+        targetPage = currentPage;
     } else if (fromCorner === 'bl') {
         // bl -> tr
-        if (tlCount === 1 && brCount === 2) targetPage = 3; // бирюзовый
-        else if (tlCount === 2 && brCount === 1) targetPage = 4; // зеленый
-        else if (tlCount === 3 && brCount === 0) targetPage = 1; // белый
-        else if (tlCount === 0 && brCount === 3) targetPage = 2; // красный
+        targetPage = currentPage;
     }
     
     console.log(`Переход: ${currentPage} -> ${targetPage}`);
@@ -780,8 +774,8 @@ animateLineTransition(line, fromCorner, level) {
         const maskPathData = `
             M ${relativePoints.p0.x},${relativePoints.p0.y}
             L ${relativePoints.p1.x},${relativePoints.p1.y}
-            L ${relativePoints.p2.x},${relativePoints.p2.y}
-            C ${relativePoints.p2.x},${relativePoints.p2.y} ${relativePoints.p3.x},${relativePoints.p3.y} ${relativePoints.p4.x},${relativePoints.p4.y}
+            L ${currentPoints.p1.x / 100},${currentPoints.p1.y / 100}
+            C ${currentPoints.p2.x / 100},${currentPoints.p2.y / 100} ${currentPoints.p3.x / 100},${currentPoints.p3.y / 100} ${currentPoints.p4.x / 100},${currentPoints.p4.y / 100}
             L ${relativePoints.p5.x},${relativePoints.p5.y}
             Z
         `;
