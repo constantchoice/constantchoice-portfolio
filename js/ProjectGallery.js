@@ -14,13 +14,13 @@ class ProjectGallery {
         this.images = [];
         
         // Параметры для ветвления
-        this.minDistance = 200; // Мин. расстояние между проектами
+        this.minDistance = 300; // Мин. расстояние между проектами
         this.baseImageSize = 60; // Базовый размер изображения в пикселях
 
         this.branchCount = 4;           // Количество ветвей
-        this.imagesPerBranch = 4;       // Максимум изображений на ветку
+        this.imagesPerBranch = 5;       // Максимум изображений на ветку
         this.baseRadius = 80;           // Базовый радиус для первого уровня
-        this.radiusStep = 50;           // Увеличение радиуса для следующих уровней
+        this.radiusStep = 40;           // Увеличение радиуса для следующих уровней
         this.branchAngleSpread = 0.4;   // Разброс углов внутри ветки (в радианах)
     
         // Параметры коллизий
@@ -283,8 +283,28 @@ class ProjectGallery {
             // Радиус увеличивается с удалением от центра
             const radius = this.baseRadius + positionInBranch * this.radiusStep;
             
-            // Размер уменьшается с удалением
-            const sizeMultiplier = 1.0 - positionInBranch * 0.1;
+            // Размер уменьшается с удалением (дальше = мельче)
+            const sizeMultiplier = Math.max(0.5, 1.0 - positionInBranch * 0.1);
+            const baseSize = this.baseImageSize * sizeMultiplier;
+            
+            //  вычисляем пропорции
+            const aspect = img.width / img.height;
+            
+            let width, height;
+            if (aspect > 1) {
+                // Горизонтальное изображение
+                width = baseSize;
+                height = baseSize / aspect;
+            } else {
+                // Вертикальное или квадратное
+                height = baseSize;
+                width = baseSize * aspect;
+            }
+            
+            // Минимальный размер, чтобы совсем мелкие не терялись
+            const MIN_SIZE = 30;
+            if (width < MIN_SIZE) width = MIN_SIZE;
+            if (height < MIN_SIZE) height = MIN_SIZE;
             
             // Создаем текстуру
             const texture = new THREE.CanvasTexture(img);
@@ -301,16 +321,7 @@ class ProjectGallery {
             });
             
             const sprite = new THREE.Sprite(material);
-            
-            // Вычисляем размер с сохранением пропорций
-            const aspect = img.width / img.height;
-            const baseSize = this.baseImageSize * sizeMultiplier;
-            
-            if (aspect > 1) {
-                sprite.scale.set(baseSize * aspect, baseSize, 1);
-            } else {
-                sprite.scale.set(baseSize, baseSize / aspect, 1);
-            }
+            sprite.scale.set(width, height, 1);
             
             // Сохраняем метаданные для анимации
             sprite.userData = {
@@ -318,6 +329,7 @@ class ProjectGallery {
                 positionInBranch,
                 baseAngle: angle,
                 targetRadius: radius,
+                sizeMultiplier,
                 homePosition: {
                     x: project.position.x + Math.cos(angle) * radius,
                     y: project.position.y + Math.sin(angle) * radius
