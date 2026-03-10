@@ -36,6 +36,19 @@ class LineManager {
     
 
     setupControls() {
+
+        const requiredIds = [
+                'thickness', 'offset', 'spacing', 'radius',
+                'widthLength1', 'heightLength1', 'widthLength2', 'heightLength2', 'updateBtn'
+            ];
+            
+            for (let id of requiredIds) {
+                if (!document.getElementById(id)) {
+                    console.warn(`Element #${id} not found in DOM`);
+                    return; // Прерываем инициализацию, если чего-то нет
+                }
+            }
+
         const updateValue = (id, value) => {
             document.getElementById(id).textContent = value;
         };
@@ -78,20 +91,6 @@ class LineManager {
         document.getElementById('heightLength2').addEventListener('input', (e) => {
             this.HEIGHT_LENGTH_2 = parseFloat(e.target.value);
             updateValue('heightLength2Value', this.HEIGHT_LENGTH_2);
-        });
-
-        document.getElementById('showAllZones').addEventListener('click', (e) => {
-            this.showAllZones = true;
-            e.target.classList.add('active');
-            document.getElementById('showHighestOnly').classList.remove('active');
-            this.updateZonesVisibility();
-        });
-
-        document.getElementById('showHighestOnly').addEventListener('click', (e) => {
-            this.showAllZones = false;
-            e.target.classList.add('active');
-            document.getElementById('showAllZones').classList.remove('active');
-            this.updateZonesVisibility();
         });
 
         document.getElementById('updateBtn').addEventListener('click', () => {
