@@ -144,6 +144,20 @@ class ProjectGallery {
     addProject(projectData) {
         const { name, url, images = [] } = projectData;
         
+        // Сохраняем оригинальные значения
+        const originalBranchCount = this.branchCount;
+        const originalImagesPerBranch = this.imagesPerBranch;
+        
+        // Если изображений больше 50, увеличиваем количество ветвей
+        if (images.length > 50) {
+            console.log(`Проект "${name}" содержит ${images.length} изображений, увеличиваем ветви до 5`);
+            this.branchCount = 5;
+            this.imagesPerBranch = Math.ceil(images.length / this.branchCount); // Пересчитываем изображений на ветку
+        } else {
+            this.branchCount = 4;
+            this.imagesPerBranch = 5;
+        }
+        
         // Сохраняем данные
         const project = {
             name,
@@ -175,6 +189,9 @@ class ProjectGallery {
         
         // Запускаем симуляцию для позиционирования
         this.runSimulation();
+        
+        this.branchCount = originalBranchCount;
+        this.imagesPerBranch = originalImagesPerBranch;
         
         return project;
     }
@@ -285,26 +302,39 @@ class ProjectGallery {
             
             // Размер уменьшается с удалением (дальше = мельче)
             const sizeMultiplier = Math.max(0.5, 1.0 - positionInBranch * 0.1);
-            const baseSize = this.baseImageSize * sizeMultiplier;
-            
-            //  вычисляем пропорции
+            const baseSize = this.baseImageSize;
             const aspect = img.width / img.height;
+
+            // Масштабируем пропорционально, сохраняя высоту = baseSize
+            let height = baseSize;
+            let width = baseSize * aspect;
             
-            let width, height;
-            if (aspect > 1) {
-                // Горизонтальное изображение
-                width = baseSize;
-                height = baseSize / aspect;
-            } else {
-                // Вертикальное или квадратное
-                height = baseSize;
-                width = baseSize * aspect;
+            const MAX_SIZE = 100; // Максимальный размер любой стороны
+            
+            if (width > MAX_SIZE) {
+                // Если ширина превышает лимит, масштабируем по ширине
+                width = MAX_SIZE;
+                height = width / aspect;
+            }
+            
+            if (height > MAX_SIZE) {
+                // Если высота превышает лимит, масштабируем по высоте
+                height = MAX_SIZE;
+                width = height * aspect;
             }
             
             // Минимальный размер, чтобы совсем мелкие не терялись
             const MIN_SIZE = 30;
-            if (width < MIN_SIZE) width = MIN_SIZE;
-            if (height < MIN_SIZE) height = MIN_SIZE;
+            if (width < MIN_SIZE && height < MIN_SIZE) {
+                // Если оба размера меньше минимума, увеличиваем до минимума по большей стороне
+                if (aspect > 1) {
+                    width = MIN_SIZE;
+                    height = width / aspect;
+                } else {
+                    height = MIN_SIZE;
+                    width = height * aspect;
+                }
+            }
             
             // Создаем текстуру
             const texture = new THREE.CanvasTexture(img);
