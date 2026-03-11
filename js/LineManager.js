@@ -568,14 +568,26 @@ animateLineTransition(line, fromCorner, level) {
         const offsetX = this.pxToPercentX(offset, w);
         const offsetY = this.pxToPercentY(offset, h);
         
-        const length = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
-        const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
+        // Выбираем правильные длины для уровня
+        let widthLength, heightLength;
+        
+        if (level === 1) {
+            widthLength = this.WIDTH_LENGTH_1;
+            heightLength = this.HEIGHT_LENGTH_1;
+        } else if (level === 2) {
+            widthLength = this.WIDTH_LENGTH_2;
+            heightLength = this.HEIGHT_LENGTH_2;
+        } else {
+            widthLength = this.WIDTH_LENGTH_3;
+            heightLength = this.HEIGHT_LENGTH_3;
+        }
+        
         const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
         const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
 
         if (corner === 'tl') {
             return {
-                p0: { x: offsetX + length, y: offsetY },
+                p0: { x: offsetX + widthLength, y: offsetY },
                 p1: { x: offsetX + radiusX, y: offsetY },
                 p2: { x: offsetX, y: offsetY },
                 p3: { x: offsetX, y: offsetY + radiusY },
@@ -584,7 +596,7 @@ animateLineTransition(line, fromCorner, level) {
             };
         } else if (corner === 'tr') {
             return {
-                p0: { x: 100 - offsetX - length, y: offsetY },
+                p0: { x: 100 - offsetX - widthLength, y: offsetY },
                 p1: { x: 100 - offsetX - radiusX, y: offsetY },
                 p2: { x: 100 - offsetX, y: offsetY },
                 p3: { x: 100 - offsetX, y: offsetY + radiusY },
@@ -598,7 +610,7 @@ animateLineTransition(line, fromCorner, level) {
                 p2: { x: 100 - offsetX, y: 100 - offsetY },
                 p3: { x: 100 - offsetX - radiusX, y: 100 - offsetY },
                 p4: { x: 100 - offsetX - radiusX, y: 100 - offsetY },
-                p5: { x: 100 - offsetX - length, y: 100 - offsetY }
+                p5: { x: 100 - offsetX - widthLength, y: 100 - offsetY }
             };
         } else if (corner === 'bl') {
             return {
@@ -607,7 +619,7 @@ animateLineTransition(line, fromCorner, level) {
                 p2: { x: offsetX, y: 100 - offsetY },
                 p3: { x: offsetX + radiusX, y: 100 - offsetY },
                 p4: { x: offsetX + radiusX, y: 100 - offsetY },
-                p5: { x: offsetX + length, y: 100 - offsetY }
+                p5: { x: offsetX + widthLength, y: 100 - offsetY }
             };
         }
     };
@@ -880,8 +892,17 @@ animateLineTransition(line, fromCorner, level) {
                 const baseOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
                 const offsetX = this.pxToPercentX(baseOffset, w);
                 const offsetY = this.pxToPercentY(baseOffset, h);
-                const widthLength = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
-                const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
+                let widthLength, heightLength;
+                if (level === 1) {
+                    widthLength = this.WIDTH_LENGTH_1;
+                    heightLength = this.HEIGHT_LENGTH_1;
+                } else if (level === 2) {
+                    widthLength = this.WIDTH_LENGTH_2;
+                    heightLength = this.HEIGHT_LENGTH_2;
+                } else {
+                    widthLength = this.WIDTH_LENGTH_3;
+                    heightLength = this.HEIGHT_LENGTH_3;
+                }
 
                 // Дополнительные проценты для зон
                 const hoverExtra = 4; // +4% для зоны подсветки
@@ -1052,8 +1073,19 @@ animateLineTransition(line, fromCorner, level) {
     }
 
     getLinePoints(corner, level, w, h, customOffset = null) {
-        const widthLength = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
-        const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
+        // Выбираем правильные длины для уровня
+        let widthLength, heightLength;
+        
+        if (level === 1) {
+            widthLength = this.WIDTH_LENGTH_1;
+            heightLength = this.HEIGHT_LENGTH_1;
+        } else if (level === 2) {
+            widthLength = this.WIDTH_LENGTH_2;
+            heightLength = this.HEIGHT_LENGTH_2;
+        } else {
+            widthLength = this.WIDTH_LENGTH_3;
+            heightLength = this.HEIGHT_LENGTH_3;
+        }
         
         let offsetX, offsetY;
 
@@ -1074,12 +1106,12 @@ animateLineTransition(line, fromCorner, level) {
 
         if (corner === 'tl') {
             points = {
-                p0: { x: offsetX + widthLength, y: offsetY },           // M - начало
-                p1: { x: offsetX + radiusX, y: offsetY },               // L1 - конец первой прямой
-                p2: { x: offsetX, y: offsetY },                         // C1 - угол (первая контрольная)
-                p3: { x: offsetX, y: offsetY + radiusY },               // C2 - точка после угла (вторая контрольная)
-                p4: { x: offsetX, y: offsetY + radiusY },               // L2 - конец скругления (бывший Q end)
-                p5: { x: offsetX, y: offsetY + heightLength }           // L3 - конечная прямая
+                p0: { x: offsetX + widthLength, y: offsetY },
+                p1: { x: offsetX + radiusX, y: offsetY },
+                p2: { x: offsetX, y: offsetY },
+                p3: { x: offsetX, y: offsetY + radiusY },
+                p4: { x: offsetX, y: offsetY + radiusY },
+                p5: { x: offsetX, y: offsetY + heightLength }
             };
         } else if (corner === 'tr') {
             points = {
@@ -1290,8 +1322,17 @@ animateLineTransition(line, fromCorner, level) {
         // Правильный отступ для уровня
         const offsetX = this.pxToPercentX(this.BASE_OFFSET + (level - 1) * this.LINE_SPACING, w);
         const offsetY = this.pxToPercentY(this.BASE_OFFSET + (level - 1) * this.LINE_SPACING, h);
-        const length = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
-        const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
+        let length, heightLength;
+        if (level === 1) {
+            length = this.WIDTH_LENGTH_1;
+            heightLength = this.HEIGHT_LENGTH_1;
+        } else if (level === 2) {
+            length = this.WIDTH_LENGTH_2;
+            heightLength = this.HEIGHT_LENGTH_2;
+        } else {
+            length = this.WIDTH_LENGTH_3;
+            heightLength = this.HEIGHT_LENGTH_3;
+        }
         const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
         const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
         
@@ -1430,7 +1471,8 @@ animateLineTransition(line, fromCorner, level) {
         const lineData1 = this.linesState.br.find(l => l.level === 1);
         if (lineData1) {
             const startX1 = 100 - baseOffsetX;
-            const startY1 = 100 - baseOffsetY - this.HEIGHT_LENGTH_1;
+            const heightLength1 = this.HEIGHT_LENGTH_1; // level 1
+            const startY1 = 100 - baseOffsetY - heightLength1;
             
             const cornerX1 = 100 - baseOffsetX;
             const cornerY1 = 100 - baseOffsetY;
@@ -1449,7 +1491,8 @@ animateLineTransition(line, fromCorner, level) {
         const lineData2 = this.linesState.br.find(l => l.level === 2);
         if (lineData2) {
             const startX2 = 100 - baseOffsetX - spacingX;
-            const startY2 = 100 - baseOffsetY - spacingY - this.HEIGHT_LENGTH_2;
+            const heightLength2 = this.HEIGHT_LENGTH_2; // level 2
+            const startY2 = 100 - baseOffsetY - spacingY - heightLength2;
             
             const cornerX2 = 100 - baseOffsetX - spacingX;
             const cornerY2 = 100 - baseOffsetY - spacingY;
@@ -1541,7 +1584,10 @@ animateLineTransition(line, fromCorner, level) {
             const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
             const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
             const widthLength = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
-            const heightLength = level === 1 ? this.HEIGHT_LENGTH_1 : this.HEIGHT_LENGTH_2;
+            let heightLength;
+            if (level === 1) heightLength = this.HEIGHT_LENGTH_1;
+            else if (level === 2) heightLength = this.HEIGHT_LENGTH_2;
+            else heightLength = this.HEIGHT_LENGTH_3;
 
             // Рисуем линию для нижнего левого угла
             const pathData = `
