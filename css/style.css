@@ -151,25 +151,25 @@ body {
 #page1 .page-content h1,
 #page1 .page-content p {
     color: white;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+    text-shadow: none;
 }
 
 #page2 .page-content h1,
 #page2 .page-content p {
     color: white;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+    text-shadow: none;
 }
 
 #page3 .page-content h1,
 #page3 .page-content p {
     color: white;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+    text-shadow: none;
 }
 
 #page4 .page-content h1,
 #page4 .page-content p {
     color: white;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+    text-shadow: none;
 }
 /* ===== КОНЕЦ СТИЛЕЙ ДЛЯ КОНТЕНТА ===== */
 

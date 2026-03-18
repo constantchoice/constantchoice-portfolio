@@ -6,8 +6,17 @@ window.addEventListener('load', () => {
     // Создаем галерею для страницы 2
     setTimeout(() => {
         initGallery();
-    }, 100); // Небольшая задержка, чтобы страница успела активироваться
+    }, 100);
+    
+    // Создаем менеджер для страницы 3
+    setTimeout(() => {
+        initPage3();
+    }, 200);
 });
+
+function initPage3() {
+    window.page3Manager = new Page3Manager();
+}
 
 function initGallery() {
     const gallery = new ProjectGallery('page2');

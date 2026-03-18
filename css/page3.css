@@ -1,0 +1,250 @@
+/* ===== СТРАНИЦА 3 ===== */
+.page3-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0 90px;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+/* Включаем интерактивность для кликабельных элементов */
+.floating-link,
+.skill-icon,
+.link-center,
+.link-left,
+.link-right,
+.small-link {
+    pointer-events: auto;
+}
+
+/* Общие стили для блоков */
+.block {
+    width: 100%;
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    padding: 0 90px;
+    box-sizing: border-box;
+}
+
+.block-title {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: #999999;
+    text-align: center;
+    margin: 0 0 15px 0;
+    padding: 0;
+    letter-spacing: 0.5px;
+    text-shadow: none;
+    pointer-events: none;
+}
+
+/* ===== ВЕРХНИЙ БЛОК ===== */
+.top-block {
+    /* top и height через JS */
+}
+
+.top-block .block-title {
+    position: relative;
+    width: 100%;
+    z-index: 2;
+}
+
+.floating-images {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 40px);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.floating-link {
+    position: absolute;
+    display: block;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: transform 0.2s;
+}
+
+.floating-link:hover {
+    transform: scale(1.02);
+    z-index: 10;
+}
+
+.floating-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* ===== СРЕДНИЙ БЛОК ===== */
+.middle-block {
+    /* bottom и height через JS */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.middle-block .block-title {
+    margin-bottom: 15px;
+}
+
+.skills-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    pointer-events: auto;
+}
+
+.skill-icon {
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.skill-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ===== НИЖНИЙ БЛОК ===== */
+.bottom-block {
+    /* bottom и height через JS */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bottom-block .block-title {
+    margin-bottom: 15px;
+}
+
+/* Первая строка */
+.row-1 {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+/* Вторая строка */
+.row-2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Левая группа маленьких */
+.left-small-group {
+    display: flex;
+    gap: 15px;
+    margin-right: 15px;
+}
+
+/* Правая группа маленьких */
+.right-small-group {
+    display: flex;
+    gap: 15px;
+    margin-left: 15px;
+}
+
+/* ===== ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ ССЫЛОК ===== */
+.link-center,
+.link-left,
+.link-right,
+.small-link {
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.link-center:hover,
+.link-left:hover,
+.link-right:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.small-link:hover {
+    transform: scale(1.15);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+.link-center img,
+.link-left img,
+.link-right img,
+.small-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Индивидуальные размеры и отступы (будут переопределены JS, но для резерва) */
+.link-center,
+.link-left,
+.link-right {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+}
+
+.small-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+}
+
+.link-left {
+    margin-right: 40px;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 1920px) {
+    .page3-container {
+        padding: 0 60px;
+    }
+    
+    .block-title {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 1366px) {
+    .page3-container {
+        padding: 0 40px;
+    }
+    
+    .block-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page3-container {
+        padding: 0 20px;
+    }
+    
+    .block-title {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .skills-row {
+        gap: 10px;
+    }
+}
