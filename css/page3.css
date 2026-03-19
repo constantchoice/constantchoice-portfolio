@@ -44,10 +44,6 @@
 }
 
 /* ===== ВЕРХНИЙ БЛОК ===== */
-.top-block {
-    /* top и height через JS */
-}
-
 .top-block .block-title {
     position: relative;
     width: 100%;

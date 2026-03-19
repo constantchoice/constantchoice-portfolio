@@ -30,12 +30,12 @@ class LineManager {
             this.init();
             this.updateWhiteFrame(); // добавляем обновление рамки
         });
-        this.setupControls();
+        // this.setupControls();
     }
 
     
 
-    setupControls() {
+/*     setupControls() {
 
         const requiredIds = [
                 'thickness', 'offset', 'spacing', 'radius',
@@ -96,7 +96,7 @@ class LineManager {
         document.getElementById('updateBtn').addEventListener('click', () => {
             this.init();
         });
-    }
+    } */
 
 
     // Определение текущей страницы по состоянию линий

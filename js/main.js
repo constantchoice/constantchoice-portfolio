@@ -12,10 +12,18 @@ window.addEventListener('load', () => {
     setTimeout(() => {
         initPage3();
     }, 200);
+
+    setTimeout(() => {
+        initPage4(); // страница 4
+    }, 300);
 });
 
 function initPage3() {
     window.page3Manager = new Page3Manager();
+}
+
+function initPage4() {
+    window.page4Manager = new Page4Manager();
 }
 
 function initGallery() {

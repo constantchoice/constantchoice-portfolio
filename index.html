@@ -8,9 +8,10 @@
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/corners.css">
-    <link rel="stylesheet" href="css/controls.css">
+    <!-- <link rel="stylesheet" href="css/controls.css"> -->
     <link rel="stylesheet" href="css/gallery.css">
     <link rel="stylesheet" href="css/page3.css">
+    <link rel="stylesheet" href="css/page4.css">
 
     <link rel="icon" type="images/webp" sizes="32x32" href="images/icon/constantchoice_icon.webp">
 </head>
@@ -18,8 +19,7 @@
     <div class="pages-container">
         <div class="page page-1 active" id="page1" data-page="1">
             <div class="page-content">
-                <h1>01</h1>
-                <p>Главная</p>
+                <p>constantchoice</p>
             </div>
         </div>
         <div class="page page-2" id="page2" data-page="2">
@@ -45,9 +45,14 @@
             </div>
         </div>
         <div class="page page-4" id="page4" data-page="4">
-            <div class="page-content">
-                <h1>04</h1>
-                <p>Контакты</p>
+            <div class="page4-container">
+                <!-- Контейнер для карточек товаров -->
+                <div class="items-grid" id="itemsGrid"></div>
+                
+                <!-- Нижняя плашка с изображением -->
+                <div class="bottom-banner" id="bottomBanner">
+                    <img src="" alt="" class="banner-image" id="bannerImage">
+                </div>
             </div>
         </div>
     </div>
@@ -62,7 +67,7 @@
     <div class="corner corner-br"></div>
     <div class="corner corner-bl"></div>
     
-    <div class="controls">
+<!--     <div class="controls">
         <h3>🎨 Настройки линий</h3>
         
         <h4>📏 Общие параметры</h4>
@@ -110,7 +115,7 @@
         </div>
         
         <button class="update-btn" id="updateBtn">🔄 Обновить</button>
-    </div>
+    </div> -->
     
     <div class="resolution-info" id="resolutionInfo">Загрузка...</div>
 
@@ -126,6 +131,7 @@
     <script src="js/LineManager.js"></script>
     <script src="js/ProjectGallery.js"></script>
     <script src="js/Page3Manager.js"></script>
+    <script src="js/Page4Manager.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

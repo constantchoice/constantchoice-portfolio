@@ -75,8 +75,8 @@ const CONFIG = {
         // Плавающие ссылки (верхний блок)
         FLOATING_LINKS: [
             { url: 'https://www.youtube.com/@luxgoth', image: 'images/floating/LUXGOTH.webp' },
-            { url: 'https://github.com/your-profile', image: 'images/floating/2.png' },
-            { url: 'https://linkedin.com/in/your-profile', image: 'images/floating/3.png' },
+            { url: 'ANONYMOUS', image: 'images/floating/LIZARD_TAIL.webp' },
+            { url: 'WHY ME ANONYMOUS', image: 'images/floating/CANDY.webp' },
             { url: 'https://twitter.com/your-profile', image: 'images/floating/4.png' },
             { url: 'https://instagram.com/your-profile', image: 'images/floating/5.png' }
         ],
@@ -114,6 +114,63 @@ const CONFIG = {
                 { url: 'https://twitter.com/constantchoice', image: 'images/links/X.webp' },
                 { url: 'https://www.threads.com/@constantchoice?igshid=NTc4MTIwNjQ2YQ==', image: 'images/links/THREADS.webp' }
             ]
+        }
+    },
+
+    PAGE4: {
+        ITEMS: [
+            {
+                image: 'images/page4/item1/main.webp',
+                title: 'SOON ITEM 1',
+                description: 'There might be a description of your work, including all the important and interesting research that went into it',
+                meta: [
+                    { label: 'size    ', value: 'its size is, for example, M' },
+                    { label: 'format  ', value: 'the format of your product' },
+                    { label: 'author  ', value: '????' },
+                    { label: 'article ', value: 'ART-????' }
+                ],
+                thumbnails: [
+                    { image: 'images/page4/item1/thumb1.webp', url: 'WHERE' },
+                    { image: 'images/page4/item1/thumb2.webp', url: 'WHERE' }
+                ]
+            },
+            {
+                image: 'images/page4/item2/main.webp',
+                title: 'SOON ITEM 2',
+                description: 'What do you want to show here?',
+                meta: [
+                    { label: 'size    ', value: '????' },
+                    { label: 'format  ', value: '????' },
+                    { label: 'author  ', value: 'Maybe you?' }
+                ],
+                thumbnails: [
+                    { image: 'images/page4/item2/thumb1.webp', url: 'WHERE' },
+                    { image: 'images/page4/item2/thumb2.webp', url: 'WHERE' }
+                ]
+            },
+            {
+                image: 'images/page4/item3/main.webp',
+                title: 'SOON ITEM 3',
+                description: 'WHY',
+                meta: [
+                    { label: 'size    ', value: '????' },
+                    { label: 'format  ', value: 'HMM' },
+                    { label: 'author  ', value: 'WHO' },
+                    { label: 'article ', value: 'WHAT' },
+                    { label: 'year    ', value: 'WHEN' }
+                ],
+                thumbnails: [
+                    { image: 'images/page4/item3/thumb1.webp', url: 'WHERE' },
+                    { image: 'images/page4/item3/thumb2.webp', url: 'WHERE' }
+                ]
+            }
+        ],
+        
+        // Нижний баннер
+        BOTTOM_IMAGE: {
+            src: 'images/page4/bottom-banner.webp',
+            alt: 'Bottom banner', 
+            url: 'https://www.behance.net/constantchoice'
         }
     }
 };

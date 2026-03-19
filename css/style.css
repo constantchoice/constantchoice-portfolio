@@ -137,38 +137,34 @@ body {
 }
 
 .page-content p {
-    font-size: 1.8rem;
-    margin: 1rem 0 0;
-    opacity: 0.9;
-    font-weight: 400;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    max-width: 95%; /* MAIN WIDTH */
+    font-size: 24px;
+    color: #999999;
+    font-weight: 350;
     word-wrap: break-word;
 }
 
 /* Цвета текста для разных страниц */
 #page1 .page-content h1,
 #page1 .page-content p {
-    color: white;
+    color: #999999;
     text-shadow: none;
 }
 
 #page2 .page-content h1,
 #page2 .page-content p {
-    color: white;
+    color: #999999;
     text-shadow: none;
 }
 
 #page3 .page-content h1,
 #page3 .page-content p {
-    color: white;
+    color: #999999;
     text-shadow: none;
 }
 
 #page4 .page-content h1,
 #page4 .page-content p {
-    color: white;
+    color: #999999;
     text-shadow: none;
 }
 /* ===== КОНЕЦ СТИЛЕЙ ДЛЯ КОНТЕНТА ===== */

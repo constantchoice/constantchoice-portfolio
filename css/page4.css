@@ -1,0 +1,288 @@
+/* ===== СТРАНИЦА 4 ===== */
+.page4-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 90px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.page4-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Сетка для карточек (2 колонки) */
+.items-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+/* Базовая карточка */
+.item-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    padding: 15px;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    height: auto;
+}
+
+/* Контейнер для верхней части */
+.card-top {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+/* Левая часть - изображение */
+.card-image-container {
+    flex: 1;
+    max-width: calc(50% - 7.5px);
+}
+
+.card-image {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    border-radius: 15px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Правая часть - текст */
+.card-text-container {
+    flex: 1;
+    max-width: calc(50% - 7.5px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Стили текста */
+.card-title {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: #999999;
+    margin: 0 0 15px 0;
+    text-align: center;
+    text-shadow: none;
+    background: transparent;
+    border: none;
+}
+
+.card-description {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px; /* Базовый размер */
+    line-height: 1.6;
+    color: #999999;
+    margin: 0 15px;
+    flex: 1;
+    word-wrap: break-word;
+    background: transparent;
+    border: none;
+}
+
+/* Нижняя часть карточки */
+.card-bottom {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    min-height: 100px;
+}
+
+/* Левая нижняя часть - метаданные */
+.card-meta {
+    flex: 1;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px; /* Базовый размер */
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.8;
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.card-meta p {
+    margin: 5px 0;
+    color: #999999;
+}
+
+.card-meta strong {
+    color: #999999;
+    font-weight: 500;
+    min-width: 60px;
+    display: inline-block;
+}
+
+/* Правая нижняя часть - маленькие изображения */
+.card-thumbnails {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.thumbnail-link {
+    display: block;
+    width: 100%;
+    max-width: calc(100% - 30px);
+    margin: 0;
+    text-decoration: none;
+}
+
+.thumbnail {
+    width: 100%;
+    height: 35px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.thumbnail:hover {
+    transform: scale(1.02);
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.bottom-banner {
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 80px;
+    margin-bottom: 0px;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+.banner-image {
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    border-radius: 20px;
+    object-fit: cover;
+    display: block;
+}
+
+/* ===== АДАПТИВНОСТЬ ТЕКСТА ===== */
+
+/* Для больших экранов (2560x1440 и выше) */
+@media (min-width: 2000px) {
+    .card-description,
+    .card-meta {
+        font-size: 21px;
+    }
+    
+    .card-title {
+        font-size: 24px;
+    }
+}
+
+/* Для средних экранов (1920x1080) */
+@media (min-width: 1600px) and (max-width: 1999px) {
+    .card-description,
+    .card-meta {
+        font-size: 18px;
+    }
+    
+    .card-title {
+        font-size: 28px;
+    }
+}
+
+/* Базовый размер уже 14px для 1920x1080 и ниже */
+
+/* Для маленьких экранов */
+@media (max-width: 1366px) {
+    .card-description,
+    .card-meta {
+        font-size: 14px;
+    }
+    
+    .card-title {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page4-container {
+        padding: 30px;
+    }
+    
+    .items-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .card-top {
+        flex-direction: column;
+    }
+    
+    .card-image-container,
+    .card-text-container {
+        max-width: 100%;
+    }
+    
+    .card-description,
+    .card-meta {
+        font-size: 14px; /* Возвращаем базовый размер на мобилках */
+    }
+    
+    .card-title {
+        font-size: 24px;
+    }
+    
+    .thumbnail {
+        height: 35px;
+    }
+    
+    .bottom-banner {
+        padding: 0;
+    }
+}
+
+/* Для очень больших экранов (4K и выше) */
+@media (min-width: 3000px) {
+    .card-description,
+    .card-meta {
+        font-size: 24px;
+    }
+    
+    .card-title {
+        font-size: 36px;
+    }
+    
+    .thumbnail {
+        height: 50px;
+    }
+    
+    .card-meta p {
+        margin: 10px 0;
+    }
+}
