@@ -8,7 +8,7 @@ body {
     background-color: white;
     min-height: 100vh;
     overflow: hidden;
-    font-family: system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
 }
 
 .info-panel {
@@ -112,7 +112,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    font-family: system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     pointer-events: none;
     z-index: 10;
     

@@ -11,7 +11,7 @@
 
 /* Базовые стили для названий проектов */
 .project-label {
-    font-family: system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 16px;
     font-weight: 600;
     color: white;
