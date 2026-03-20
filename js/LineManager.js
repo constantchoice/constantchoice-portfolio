@@ -350,10 +350,10 @@ updateWhiteFrame() {
         });
     }
 
+    // Вспомогательная функция для определения максимального уровня в углу
     getMaxLevelInCorner(corner) {
-        if (corner === 'br') return 2;
-        if (corner === 'tl' || corner === 'tr') return 1;
-        return 0;
+        const levels = this.linesState[corner]?.map(l => l.level) || [];
+        return levels.length > 0 ? Math.max(...levels) : 0;
     }
 
     init() {
@@ -447,6 +447,8 @@ updateWhiteFrame() {
 
 animateLineTransition(line, fromCorner, level) {
     console.log(`Анимация: ${fromCorner} level ${level}`);
+    line.setAttribute('stroke', '#999');
+    line.setAttribute('stroke-width', this.LINE_THICKNESS);
     this.isAnimating = true;
 
     // Определяем противоположный угол
@@ -806,6 +808,10 @@ animateLineTransition(line, fromCorner, level) {
                 corner: toCorner
             });
 
+            // Возвращаем линии исходный цвет и толщину
+            line.setAttribute('stroke', '#999');
+            line.setAttribute('stroke-width', this.LINE_THICKNESS);
+
             if (currentPageElement) {
                 currentPageElement.style.zIndex = '';
             }
@@ -852,12 +858,6 @@ animateLineTransition(line, fromCorner, level) {
         }
     }
 
-    // Вспомогательная функция для определения максимального уровня в углу
-    getMaxLevelInCorner(corner) {
-        const levels = this.linesState[corner].map(l => l.level);
-        return levels.length > 0 ? Math.max(...levels) : 0;
-    }
-
     // Функция для проверки, является ли линия最高шего уровня
     isHighestLevel(corner, level) {
         const maxLevel = this.getMaxLevelInCorner(corner);
@@ -892,6 +892,8 @@ animateLineTransition(line, fromCorner, level) {
                 const baseOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
                 const offsetX = this.pxToPercentX(baseOffset, w);
                 const offsetY = this.pxToPercentY(baseOffset, h);
+                
+                // Используем актуальные значения из this
                 let widthLength, heightLength;
                 if (level === 1) {
                     widthLength = this.WIDTH_LENGTH_1;
@@ -908,9 +910,9 @@ animateLineTransition(line, fromCorner, level) {
                 const hoverExtra = 4; // +4% для зоны подсветки
                 const clickExtra = 1;  // +1% для зоны активации
 
-                // Создаём зоны в зависимости от угла
+                // Создаём зоны в зависимости от угла (исправлено для всех углов)
                 if (corner === 'tl') {
-                    // ЗОНЫ ПОДСВЕТКИ (для всех линий, с +4%)
+                    // ЗОНЫ ПОДСВЕТКИ
                     const hoverHorizontalZone = {
                         top: '0',
                         left: Math.max(0, offsetX - hoverExtra) + '%',
@@ -927,7 +929,7 @@ animateLineTransition(line, fromCorner, level) {
                     this.createActivationZone(container, corner, level, hoverHorizontalZone, true, this);
                     this.createActivationZone(container, corner, level, hoverVerticalZone, false, this);
 
-                    // ЗОНЫ АКТИВАЦИИ (только для линий уровня, с +1%)
+                    // ЗОНЫ АКТИВАЦИИ (только для высшего уровня)
                     if (isHighest) {
                         const clickHorizontalZone = {
                             top: '0',
@@ -964,7 +966,7 @@ animateLineTransition(line, fromCorner, level) {
                     this.createActivationZone(container, corner, level, hoverHorizontalZone, true, this);
                     this.createActivationZone(container, corner, level, hoverVerticalZone, false, this);
 
-                    // ЗОНЫ АКТИВАЦИИ (только для уровня)
+                    // ЗОНЫ АКТИВАЦИИ (только для высшего уровня)
                     if (isHighest) {
                         const clickHorizontalZone = {
                             top: '0',
@@ -1001,7 +1003,7 @@ animateLineTransition(line, fromCorner, level) {
                     this.createActivationZone(container, corner, level, hoverHorizontalZone, true, this);
                     this.createActivationZone(container, corner, level, hoverVerticalZone, false, this);
 
-                    // ЗОНЫ АКТИВАЦИИ (только для уровня)
+                    // ЗОНЫ АКТИВАЦИИ (только для высшего уровня)
                     if (isHighest) {
                         const clickHorizontalZone = {
                             bottom: '0',
@@ -1038,7 +1040,7 @@ animateLineTransition(line, fromCorner, level) {
                     this.createActivationZone(container, corner, level, hoverHorizontalZone, true, this);
                     this.createActivationZone(container, corner, level, hoverVerticalZone, false, this);
 
-                    // ЗОНЫ АКТИВАЦИИ (только для уровня)
+                    // ЗОНЫ АКТИВАЦИИ (только для высшего уровня)
                     if (isHighest) {
                         const clickHorizontalZone = {
                             bottom: '0',
@@ -1240,11 +1242,6 @@ animateLineTransition(line, fromCorner, level) {
         container.appendChild(svg);
     }
 
-    getMaxLevelInCorner(corner) {
-    const levels = this.linesState[corner]?.map(l => l.level) || [];
-    return levels.length > 0 ? Math.max(...levels) : 0;
-}
-
     createActivationZone(container, corner, level, styles, isHorizontal) {
         const zone = document.createElement('div');
         zone.className = `activation-zone zone-level-${level}`;
@@ -1256,50 +1253,48 @@ animateLineTransition(line, fromCorner, level) {
 
         // При движении мыши внутри зоны
         zone.addEventListener('mousemove', (e) => {
-            // Получаем размеры зоны
             const rect = zone.getBoundingClientRect();
-
+            
             let distance = 0;
             let maxDistance = 0;
-
+            
             if (isHorizontal) {
-                // Для горизонтальной зоны - расстояние до середины по высоте
                 const centerY = rect.top + rect.height / 2;
                 distance = Math.abs(e.clientY - centerY);
                 maxDistance = rect.height / 2;
             } else {
-                // Для вертикальной зоны - расстояние до середины по ширине
                 const centerX = rect.left + rect.width / 2;
                 distance = Math.abs(e.clientX - centerX);
                 maxDistance = rect.width / 2;
             }
-
-            // Нормализуем расстояние (0 = у края, 1 = в центре)
+            
             const proximity = 1 - (distance / maxDistance);
-
-            // Находим линии этого уровня
-            const lines = container.querySelectorAll(`.corner-path.level-${level}`);
-
-            // Рассчитываем цвет: от #999 (далеко) до #333 (близко)
-            const grayValue = Math.floor(150 + (proximity * 70)); // 150-220
-            const color = `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
-
-            // Рассчитываем толщину: от 3px до 5px
-            const thickness = this.LINE_THICKNESS + (proximity * 2);
-
-            lines.forEach(line => {
-                line.setAttribute('stroke', color);
-                line.setAttribute('stroke-width', thickness);
-            });
+            
+            // Находим ТОЛЬКО ОДНУ линию - ту, которая соответствует этому углу и уровню
+            const lineData = this.linesState[corner]?.find(l => l.level === level);
+            if (lineData) {
+                const line = container.querySelector(`[data-line-id="${lineData.id}"]`);
+                if (line) {
+                    const grayValue = Math.floor(150 + (proximity * 70));
+                    const color = `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
+                    const thickness = this.LINE_THICKNESS + (proximity * 2);
+                    
+                    line.setAttribute('stroke', color);
+                    line.setAttribute('stroke-width', thickness);
+                }
+            }
         });
 
-        // При уходе с зоны - возвращаем исходный цвет
         zone.addEventListener('mouseleave', () => {
-            const lines = container.querySelectorAll(`.corner-path.level-${level}`);
-            lines.forEach(line => {
-                line.setAttribute('stroke', '#999');
-                line.setAttribute('stroke-width', this.LINE_THICKNESS);
-            });
+            // Находим ТУ ЖЕ САМУЮ линию
+            const lineData = this.linesState[corner]?.find(l => l.level === level);
+            if (lineData) {
+                const line = container.querySelector(`[data-line-id="${lineData.id}"]`);
+                if (line) {
+                    line.setAttribute('stroke', '#999');
+                    line.setAttribute('stroke-width', this.LINE_THICKNESS);
+                }
+            }
         });
 
         container.appendChild(zone);
