@@ -9,27 +9,26 @@
     pointer-events: auto;
 }
 
-/* Стили для названий проектов (кликабельные) */
+/* Базовые стили для названий проектов */
 .project-label {
     font-family: system-ui, sans-serif;
     font-size: 16px;
     font-weight: 600;
     color: white;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.1);
     padding: 8px 16px;
     border-radius: 30px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+    transition: transform 0.2s, background 0.2s, border-color 0.2s;
     white-space: nowrap;
     user-select: none;
     pointer-events: auto;
 }
 
 .project-label:hover {
-    background: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
 }
 
@@ -37,6 +36,72 @@
     color: white;
     text-decoration: none;
     display: block;
+}
+
+/* Цвета для разных платформ при наведении */
+.project-label[data-platform="behance"]:hover {
+    background: rgba(23, 105, 255, 0.66); /* Behance */
+}
+
+.project-label[data-platform="youtube"]:hover {
+    background: rgba(255, 0, 0, 0.66); /* YouTube */
+}
+
+.project-label[data-platform="github"]:hover {
+    background: rgba(0, 3, 51, 0.66); /* GitHub Mine Shaft */
+}
+
+.project-label[data-platform="instagram"]:hover {
+    background: linear-gradient(45deg, rgba(255, 220, 128, 0.66),
+                                      rgba(252, 175, 69, 0.66), 
+                                      rgba(247, 119, 55, 0.66), 
+                                      rgba(245, 96, 64, 0.66), 
+                                      rgba(253, 29, 29, 0.66), 
+                                      rgba(225, 48, 108, 0.66), 
+                                      rgba(193, 53, 132, 0.66), 
+                                      rgba(131, 58, 180, 0.66), 
+                                      rgba(88, 81, 219, 0.66), 
+                                      rgba(64, 93, 230, 0.66));/* Градиент Instagram */
+}
+
+.project-label[data-platform="twitter"]:hover {
+    background: rgba(20, 23, 26, 0.66); /* X */
+}
+
+.project-label[data-platform="pinterest"]:hover {
+    background: rgba(230, 0, 35, 0.66); /* Pinterest */
+}
+
+.project-label[data-platform="dribbble"]:hover {
+    background: rgba(234, 76, 137, 0.66); /* Dribbble */
+}
+
+.project-label[data-platform="tiktok"]:hover {
+    background: rgba(0, 0, 0, 0.66); /* TikTok */
+}
+
+.project-label[data-platform="telegram"]:hover {
+    background: rgba(0, 136, 204, 0.66); /* Telegram */
+}
+
+.project-label[data-platform="gmail"]:hover {
+    background: rgba(8,133,27, 0.66); /* Gmail */
+}
+
+.project-label[data-platform="kavyar"]:hover {
+    background: rgba(0, 133, 255, 0.66); /* Kavyar */
+}
+
+.project-label[data-platform="gumroad"]:hover {
+    background: rgba(255, 144, 232, 0.66); /* Gumroad */
+}
+
+.project-label[data-platform="threads"]:hover {
+    background: rgba(0, 0, 0, 0.66); /* Threads */
+}
+
+.project-label[data-platform="default"]:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 /* Изображения проектов */

@@ -144,24 +144,30 @@ class ProjectGallery {
     addProject(projectData) {
         const { name, url, images = [] } = projectData;
         
+        // Определяем платформу по URL
+        const platform = this.getPlatformFromUrl(url);
+        
+        // ===== ДИНАМИЧЕСКОЕ ИЗМЕНЕНИЕ КОЛИЧЕСТВА ВЕТВЕЙ =====
         // Сохраняем оригинальные значения
         const originalBranchCount = this.branchCount;
         const originalImagesPerBranch = this.imagesPerBranch;
         
         // Если изображений больше 50, увеличиваем количество ветвей
         if (images.length > 50) {
-            console.log(`Проект "${name}" содержит ${images.length} изображений, увеличиваем ветви до 5`);
-            this.branchCount = 5;
-            this.imagesPerBranch = Math.ceil(images.length / this.branchCount); // Пересчитываем изображений на ветку
+            console.log(`Проект "${name}" содержит ${images.length} изображений, увеличиваем ветви до 6`);
+            this.branchCount = 6;
+            this.imagesPerBranch = Math.ceil(images.length / this.branchCount);
         } else {
             this.branchCount = 4;
             this.imagesPerBranch = 5;
         }
+        // ===== КОНЕЦ ДИНАМИЧЕСКОГО ИЗМЕНЕНИЯ =====
         
         // Сохраняем данные
         const project = {
             name,
             url,
+            platform,
             images: [],
             position: this.findFreePosition(),
             label: null,
@@ -171,6 +177,7 @@ class ProjectGallery {
         // Создаем название (кликабельное)
         const div = document.createElement('div');
         div.className = 'project-label';
+        div.setAttribute('data-platform', platform);
         div.innerHTML = `<a href="${url}" target="_blank">${name}</a>`;
         
         const label = new THREE.CSS2DObject(div);
@@ -194,6 +201,25 @@ class ProjectGallery {
         this.imagesPerBranch = originalImagesPerBranch;
         
         return project;
+    }
+
+    getPlatformFromUrl(url) {
+        if (url.includes('behance.net')) return 'behance';
+        if (url.includes('youtube.com')) return 'youtube';
+        if (url.includes('github.com')) return 'github';
+        if (url.includes('instagram.com')) return 'instagram';
+        if (url.includes('twitter.com') || url.includes('x.com')) return 'twitter';
+        if (url.includes('pinterest.com')) return 'pinterest';
+        if (url.includes('dribbble.com')) return 'dribbble';
+        if (url.includes('tiktok.com')) return 'tiktok';
+        if (url.includes('t.me')) return 'telegram';
+        if (url.includes('gmail.com') || url.includes('mailto:')) return 'gmail';
+        if (url.includes('kavyar.com')) return 'kavyar';
+        if (url.includes('gumroad.com')) return 'gumroad';
+        if (url.includes('threads.com')) return 'threads';
+        
+        // По умолчанию
+        return 'default';
     }
 
 
