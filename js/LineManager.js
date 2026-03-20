@@ -1277,7 +1277,7 @@ animateLineTransition(line, fromCorner, level) {
                 if (line) {
                     const grayValue = Math.floor(150 + (proximity * 70));
                     const color = `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
-                    const thickness = this.LINE_THICKNESS + (proximity * 2);
+                    const thickness = this.LINE_THICKNESS + (proximity);
                     
                     line.setAttribute('stroke', color);
                     line.setAttribute('stroke-width', thickness);
