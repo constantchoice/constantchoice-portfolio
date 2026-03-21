@@ -361,13 +361,13 @@ updateWhiteFrame() {
         const h = window.innerHeight;
 
         document.getElementById('resolutionInfo').innerHTML =
-            `<strong>📱 Разрешение:</strong> ${w} x ${h}<br>` +
+            `<strong>📱 Resolution:</strong> ${w} x ${h}<br>` /* +
             `<strong>⚙️ Толщина:</strong> ${this.LINE_THICKNESS}px<br>` +
             `<strong>📍 Отступ Level 1:</strong> ${this.BASE_OFFSET}px<br>` +
             `<strong>🔲 Интервал:</strong> ${this.LINE_SPACING}px<br>` +
             `<strong>⚪ Радиус:</strong> ${this.CORNER_RADIUS}px<br>` +
             `<strong>📐 Level 1:</strong> ${this.WIDTH_LENGTH_1}% / ${this.HEIGHT_LENGTH_1}%<br>` +
-            `<strong>📐 Level 2:</strong> ${this.WIDTH_LENGTH_2}% / ${this.HEIGHT_LENGTH_2}%`;
+            `<strong>📐 Level 2:</strong> ${this.WIDTH_LENGTH_2}% / ${this.HEIGHT_LENGTH_2}%`; */
 
         Object.values(this.containers).forEach(c => c.innerHTML = '');
         this.zones = [];

@@ -205,7 +205,7 @@ class ProjectGallery {
 
     getPlatformFromUrl(url) {
         if (url.includes('behance.net')) return 'behance';
-        if (url.includes('youtube.com')) return 'youtube';
+        if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
         if (url.includes('github.com')) return 'github';
         if (url.includes('instagram.com')) return 'instagram';
         if (url.includes('twitter.com') || url.includes('x.com')) return 'twitter';

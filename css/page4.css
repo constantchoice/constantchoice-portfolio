@@ -89,7 +89,7 @@
 .card-description {
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 14px; /* Базовый размер */
-    line-height: 1.6;
+    line-height: 29px;
     color: #999999;
     margin: 0 15px;
     flex: 1;
@@ -112,7 +112,7 @@
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 14px; /* Базовый размер */
     color: rgba(255, 255, 255, 0.8);
-    line-height: 1.8;
+    line-height: 28px;
     background: transparent;
     border: none;
     display: flex;
@@ -128,7 +128,7 @@
 .card-meta strong {
     color: #999999;
     font-weight: 500;
-    min-width: 60px;
+    min-width: 82px;
     display: inline-block;
 }
 

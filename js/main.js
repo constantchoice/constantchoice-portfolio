@@ -295,7 +295,41 @@ function initGallery() {
                 'images/projects/I_wanted_to_show_you/7.webp',
                 'images/projects/I_wanted_to_show_you/8.webp'
             ]
+        },
+        {
+            name: 'HOTEL - Love, Death & Robots EDIT',
+            url: 'https://youtu.be/DpeKJaiLOd0?si=_2VfZz1Ee1K-YLTj',
+            images: [
+                'images/projects/HOTEL_LDR/1.webp'
+            ]
+        },
+        {
+            name: 'Ergo Proxy',
+            url: 'https://www.youtube.com/watch?v=WwaHwI6gaf0&t=855s',
+            images: [
+                'images/projects/Ergo_Proxy/1.webp'
+            ]
+        },
+        {
+            name: 'Luxgoth YT Attribute',
+            url: 'https://www.youtube.com/@luxgoth',
+            images: [
+                'images/projects/Luxgoth_YT_Attribute/1.webp',
+                'images/projects/Luxgoth_YT_Attribute/2.webp'
+            ]
         }
+        
+/*         ,
+        {
+            name: 'Luxgoth YT Covers',
+            url: 'https://www.youtube.com/@luxgoth',
+            images: [
+                'images/projects/Luxgoth_YT_Covers/1.webp',
+                'images/projects/Luxgoth_YT_Covers/2.webp',
+                'images/projects/Luxgoth_YT_Covers/3.webp',
+                'images/projects/Luxgoth_YT_Covers/4.webp'
+            ]
+        } */
     ];
     
     // Добавляем проекты в галерею
