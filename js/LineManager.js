@@ -20,6 +20,8 @@ class LineManager {
             bl: document.querySelector('.corner-bl')
         };
 
+        this.currentTheme = 'light';
+
         this.linesState = JSON.parse(JSON.stringify(CONFIG.INITIAL_STATE));
         this.isAnimating = false;
         this.zones = [];
@@ -31,6 +33,17 @@ class LineManager {
             this.updateWhiteFrame(); // добавляем обновление рамки
         });
         // this.setupControls();
+    }
+
+    switchTheme() {
+        if (this.currentTheme === 'light') {
+            document.body.classList.add('dark-theme');
+            this.currentTheme = 'dark';
+        } else {
+            document.body.classList.remove('dark-theme');
+            this.currentTheme = 'light';
+        }
+        console.log(`Тема переключена на: ${this.currentTheme}`);
     }
 
     
@@ -451,7 +464,18 @@ animateLineTransition(line, fromCorner, level) {
     line.setAttribute('stroke-width', this.LINE_THICKNESS);
     this.isAnimating = true;
 
-    // Определяем противоположный угол
+    // ===== БЛОКИРУЕМ ПРОКРУТКУ =====
+    // Сохраняем текущее состояние overflow для body
+    this.originalBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    
+    // Также блокируем прокрутку для всех прокручиваемых контейнеров на странице 4
+    const page4Container = document.querySelector('.page4-container');
+    if (page4Container) {
+        this.originalPage4Overflow = page4Container.style.overflow;
+        page4Container.style.overflow = 'hidden';
+    }
+
     const oppositeCorners = {
         'tl': 'br',
         'tr': 'bl',
@@ -466,26 +490,21 @@ animateLineTransition(line, fromCorner, level) {
         return;
     }
 
-    // Сохраняем ID линии
     const lineId = lineData.id;
-
-    // Получаем контейнеры
     const fromContainer = this.containers[fromCorner];
     const toContainer = this.containers[toCorner];
-
-    // Сохраняем родительский SVG линии
     const svg = line.closest('svg');
 
     const w = window.innerWidth;
     const h = window.innerHeight;
 
-    // Определяем текущую страницу ДО переключения
     const currentPage = this.getCurrentPageFromState();
     
-    // Определяем целевую страницу
     let targetPage;
     const tlCount = this.linesState.tl.length;
     const brCount = this.linesState.br.length;
+    
+    const isThemeSwitch = (fromCorner === 'tr' || fromCorner === 'bl');
     
     if (fromCorner === 'tl') {
         if (tlCount - 1 === 1 && brCount + 1 === 2) targetPage = 1;
@@ -497,36 +516,109 @@ animateLineTransition(line, fromCorner, level) {
         else if (tlCount + 1 === 2 && brCount - 1 === 1) targetPage = 2;
         else if (tlCount + 1 === 3 && brCount - 1 === 0) targetPage = 3;
         else if (tlCount + 1 === 0 && brCount - 1 === 3) targetPage = 4;
-    } else if (fromCorner === 'tr') {
-        // tr -> bl
-        targetPage = currentPage;
-    } else if (fromCorner === 'bl') {
-        // bl -> tr
+    } else if (fromCorner === 'tr' || fromCorner === 'bl') {
         targetPage = currentPage;
     }
     
     console.log(`Переход: ${currentPage} -> ${targetPage}`);
 
-    // СОХРАНЯЕМ ЭЛЕМЕНТЫ СТРАНИЦ
     const currentPageElement = document.getElementById(`page${currentPage}`);
     const targetPageElement = document.getElementById(`page${targetPage}`);
 
-    // Поднимаем текущую страницу выше целевой
-    if (currentPageElement) {
-        currentPageElement.style.zIndex = '3';
-    }
-    if (targetPageElement) {
-        targetPageElement.style.zIndex = '2';
+    // Временная страница для смены темы
+    let tempPageElement = null;
+    
+    if (isThemeSwitch && targetPageElement) {
+        tempPageElement = targetPageElement.cloneNode(true);
+        tempPageElement.id = 'temp-theme-page';
+        
+        if (this.currentTheme === 'light') {
+            tempPageElement.classList.add('dark-theme-content');
+        } else {
+            tempPageElement.classList.add('light-theme-content');
+        }
+        
+        // ===== НАХОДИМ ПРОКРУЧИВАЕМЫЙ КОНТЕЙНЕР =====
+        // Ищем .page4-container внутри страницы
+        let scrollableContainer = null;
+        let scrollTop = 0;
+        
+        if (targetPageElement.id === 'page4') {
+            scrollableContainer = targetPageElement.querySelector('.page4-container');
+            if (scrollableContainer) {
+                scrollTop = scrollableContainer.scrollTop;
+                console.log('Найден page4-container, scrollTop:', scrollTop);
+            }
+        } else {
+            // Для других страниц (если есть прокрутка)
+            const possibleContainers = targetPageElement.querySelectorAll('[style*="overflow-y"]');
+            for (let container of possibleContainers) {
+                if (container.scrollHeight > container.clientHeight) {
+                    scrollableContainer = container;
+                    scrollTop = container.scrollTop;
+                    break;
+                }
+            }
+        }
+        // ============================================
+        
+        tempPageElement.style.position = 'fixed';
+        tempPageElement.style.top = '0';
+        tempPageElement.style.left = '0';
+        tempPageElement.style.width = '100%';
+        tempPageElement.style.height = '100%';
+        tempPageElement.style.zIndex = '2';
+        tempPageElement.style.visibility = 'visible';
+        tempPageElement.style.pointerEvents = 'none';
+        
+        document.body.appendChild(tempPageElement);
+        
+        // ===== ВОССТАНАВЛИВАЕМ ПРОКРУТКУ =====
+        if (scrollableContainer) {
+            // Ищем такой же контейнер в клоне
+            let clonedContainer = null;
+            
+            if (targetPageElement.id === 'page4') {
+                clonedContainer = tempPageElement.querySelector('.page4-container');
+            } else {
+                // По классу или по позиции
+                const containerClass = scrollableContainer.className;
+                clonedContainer = tempPageElement.querySelector('.' + containerClass.split(' ')[0]);
+            }
+            
+            if (clonedContainer) {
+                // Временно отключаем анимацию прокрутки
+                clonedContainer.style.scrollBehavior = 'auto';
+                clonedContainer.scrollTop = scrollTop;
+                console.log('Восстановлен scrollTop:', scrollTop);
+            }
+        }
+        // ====================================
     }
 
-    // ПОКАЗЫВАЕМ ЦЕЛЕВУЮ СТРАНИЦУ, НО НЕ ПРЯЧЕМ ТЕКУЩУЮ
+    if (currentPageElement && currentPageElement !== targetPageElement) {
+        currentPageElement.style.zIndex = '3';
+    }
+    if (targetPageElement && targetPageElement !== currentPageElement && !isThemeSwitch) {
+        targetPageElement.style.zIndex = '2';
+    }
+    
+    if (isThemeSwitch && tempPageElement) {
+        currentPageElement.style.zIndex = '3';
+        tempPageElement.style.zIndex = '2';
+    }
+
     document.querySelectorAll('.page').forEach(page => {
         if (page.id !== `page${currentPage}`) {
             page.classList.remove('active');
         }
     });
-    if (targetPageElement) {
+    if (targetPageElement && !isThemeSwitch) {
         targetPageElement.classList.add('active');
+    }
+    
+    if (isThemeSwitch && tempPageElement) {
+        tempPageElement.classList.add('active');
     }
 
     // ===== СОЗДАЁМ МАСКУ =====
@@ -550,13 +642,15 @@ animateLineTransition(line, fromCorner, level) {
     maskSVG.appendChild(mask);
     document.body.appendChild(maskSVG);
 
-    if (currentPageElement) {
+    if (isThemeSwitch && tempPageElement) {
+        tempPageElement.style.mask = 'url(#animation-mask)';
+        tempPageElement.style.webkitMask = 'url(#animation-mask)';
+    } else if (currentPageElement) {
         currentPageElement.style.mask = 'url(#animation-mask)';
         currentPageElement.style.webkitMask = 'url(#animation-mask)';
     }
     // ===== КОНЕЦ СОЗДАНИЯ МАСКИ =====
 
-    // Вычисляем новый уровень для целевого угла
     let newLevel;
     if (toCorner === 'br' || toCorner === 'tl') {
         const existingLevels = this.linesState[toCorner].map(l => l.level);
@@ -565,12 +659,10 @@ animateLineTransition(line, fromCorner, level) {
         newLevel = 1;
     }
 
-    // Функция для получения точек линии (возвращает в процентах 0-100)
     const getPointsWithOffset = (corner, level, offset) => {
         const offsetX = this.pxToPercentX(offset, w);
         const offsetY = this.pxToPercentY(offset, h);
         
-        // Выбираем правильные длины для уровня
         let widthLength, heightLength;
         
         if (level === 1) {
@@ -626,7 +718,6 @@ animateLineTransition(line, fromCorner, level) {
         }
     };
 
-    // Функция для конвертации процентов в relative (0-1)
     const toRelative = (points) => ({
         p0: { x: points.p0.x / 100, y: points.p0.y / 100 },
         p1: { x: points.p1.x / 100, y: points.p1.y / 100 },
@@ -636,15 +727,12 @@ animateLineTransition(line, fromCorner, level) {
         p5: { x: points.p5.x / 100, y: points.p5.y / 100 }
     });
 
-    // Начальные точки
     const startOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
     const startPoints = getPointsWithOffset(fromCorner, level, startOffset);
 
-    // Конечные точки
     const endOffset = this.BASE_OFFSET + (newLevel - 1) * this.LINE_SPACING;
     const endPoints = getPointsWithOffset(toCorner, newLevel, endOffset);
 
-    // Промежуточные точки
     const midOffset = (startOffset + endOffset) / 2;
     
     let midPoints;
@@ -653,9 +741,7 @@ animateLineTransition(line, fromCorner, level) {
     const isTRBL = (fromCorner === 'tr' && toCorner === 'bl');
     const isBLTR = (fromCorner === 'bl' && toCorner === 'tr');
 
-    // ===== ВАЖНО: правильные midPoints для каждой пары углов =====
     if (isTRBL || isBLTR) {
-        // Для пары tr <-> bl
         const midOffsetX = this.pxToPercentX(midOffset, w);
         const midOffsetY = this.pxToPercentY(midOffset, h);
         
@@ -668,7 +754,6 @@ animateLineTransition(line, fromCorner, level) {
             p5: { x: 100 - midOffsetX, y: 100 - midOffsetY }
         };
     } else if (isBRTL) {
-        // br -> tl
         const midOffsetX = this.pxToPercentX(midOffset, w);
         const midOffsetY = this.pxToPercentY(midOffset, h);
         
@@ -681,7 +766,6 @@ animateLineTransition(line, fromCorner, level) {
             p5: { x: midOffsetX, y: 100 - midOffsetY }
         };
     } else if (isTLBR) {
-        // tl -> br
         const midOffsetX = this.pxToPercentX(midOffset, w);
         const midOffsetY = this.pxToPercentY(midOffset, h);
         
@@ -696,9 +780,7 @@ animateLineTransition(line, fromCorner, level) {
     } else {
         midPoints = startPoints;
     }
-    // ===== КОНЕЦ =====
 
-    // Функция интерполяции
     const interpolatePoints = (start, end, t) => ({
         p0: { x: start.p0.x + (end.p0.x - start.p0.x) * t, y: start.p0.y + (end.p0.y - start.p0.y) * t },
         p1: { x: start.p1.x + (end.p1.x - start.p1.x) * t, y: start.p1.y + (end.p1.y - start.p1.y) * t },
@@ -764,7 +846,6 @@ animateLineTransition(line, fromCorner, level) {
             }
         }
 
-        // Обновляем линию (в процентах)
         const newPath = `
             M ${currentPoints.p0.x},${currentPoints.p0.y}
             L ${currentPoints.p1.x},${currentPoints.p1.y}
@@ -773,7 +854,6 @@ animateLineTransition(line, fromCorner, level) {
         `;
         line.setAttribute('d', newPath);
         
-        // Получаем точки для маски и конвертируем в relative
         const maskPoints = this.getMaskPointsFromLinePoints(
             currentPoints, 
             fromCorner, 
@@ -784,23 +864,43 @@ animateLineTransition(line, fromCorner, level) {
         
         const relativePoints = toRelative(maskPoints);
         
-        const maskPathData = `
-            M ${relativePoints.p0.x},${relativePoints.p0.y}
-            L ${relativePoints.p1.x},${relativePoints.p1.y}
-            L ${currentPoints.p1.x / 100},${currentPoints.p1.y / 100}
-            C ${currentPoints.p2.x / 100},${currentPoints.p2.y / 100} ${currentPoints.p3.x / 100},${currentPoints.p3.y / 100} ${currentPoints.p4.x / 100},${currentPoints.p4.y / 100}
-            L ${relativePoints.p5.x},${relativePoints.p5.y}
-            Z
-        `;
+        let maskPathData;
+        
+        if (isThemeSwitch) {
+            // Для смены темы - инвертированная маска: показываем область ЗА линией
+            maskPathData = `
+                M 0,0
+                L 1,0
+                L 1,1
+                L 0,1
+                Z
+                M ${relativePoints.p0.x},${relativePoints.p0.y}
+                L ${relativePoints.p1.x},${relativePoints.p1.y}
+                L ${currentPoints.p1.x / 100},${currentPoints.p1.y / 100}
+                C ${currentPoints.p2.x / 100},${currentPoints.p2.y / 100} ${currentPoints.p3.x / 100},${currentPoints.p3.y / 100} ${currentPoints.p4.x / 100},${currentPoints.p4.y / 100}
+                L ${relativePoints.p5.x},${relativePoints.p5.y}
+                Z
+            `;
+            maskPath.setAttribute('fill-rule', 'evenodd');
+        } else {
+            // Для перехода между страницами - обычная маска: показываем область ПЕРЕД линией
+            maskPathData = `
+                M ${relativePoints.p0.x},${relativePoints.p0.y}
+                L ${relativePoints.p1.x},${relativePoints.p1.y}
+                L ${currentPoints.p1.x / 100},${currentPoints.p1.y / 100}
+                C ${currentPoints.p2.x / 100},${currentPoints.p2.y / 100} ${currentPoints.p3.x / 100},${currentPoints.p3.y / 100} ${currentPoints.p4.x / 100},${currentPoints.p4.y / 100}
+                L ${relativePoints.p5.x},${relativePoints.p5.y}
+                Z
+            `;
+        }
+        
         maskPath.setAttribute('d', maskPathData);
 
         if (progress < 1) {
             requestAnimationFrame(animate);
         } else {
-            // Перемещаем линию
             toContainer.appendChild(svg);
 
-            // Обновляем состояние
             this.linesState[fromCorner] = this.linesState[fromCorner].filter(l => l.id !== lineId);
             this.linesState[toCorner].push({
                 id: lineId,
@@ -808,9 +908,42 @@ animateLineTransition(line, fromCorner, level) {
                 corner: toCorner
             });
 
-            // Возвращаем линии исходный цвет и толщину
             line.setAttribute('stroke', '#999');
             line.setAttribute('stroke-width', this.LINE_THICKNESS);
+
+            if (isThemeSwitch) {
+                this.switchTheme();
+                
+                // Останавливаем синхронизацию прокрутки
+                if (this.syncScrollId) {
+                    clearInterval(this.syncScrollId);
+                    this.syncScrollId = null;
+                }
+                
+                if (tempPageElement) {
+                    tempPageElement.remove();
+                }
+                
+                if (currentPageElement) {
+                    currentPageElement.style.mask = '';
+                    currentPageElement.style.webkitMask = '';
+                    currentPageElement.style.zIndex = '';
+                }
+                maskSVG.remove();
+                
+                this.linesState[toCorner].sort((a, b) => a.level - b.level);
+                this.redrawZonesOnly();
+                
+                // ===== РАЗБЛОКИРУЕМ ПРОКРУТКУ =====
+                document.body.style.overflow = this.originalBodyOverflow || '';
+                const page4ContainerAfter = document.querySelector('.page4-container');
+                if (page4ContainerAfter) {
+                    page4ContainerAfter.style.overflow = this.originalPage4Overflow || '';
+                }
+                
+                this.isAnimating = false;
+                return;
+            }
 
             if (currentPageElement) {
                 currentPageElement.style.zIndex = '';
@@ -832,6 +965,14 @@ animateLineTransition(line, fromCorner, level) {
 
             this.linesState[toCorner].sort((a, b) => a.level - b.level);
             this.redrawZonesOnly();
+
+            // ===== РАЗБЛОКИРУЕМ ПРОКРУТКУ =====
+            document.body.style.overflow = this.originalBodyOverflow || '';
+            const page4ContainerAfter = document.querySelector('.page4-container');
+            if (page4ContainerAfter) {
+                page4ContainerAfter.style.overflow = this.originalPage4Overflow || '';
+            }
+
             this.isAnimating = false;
         }
     };
