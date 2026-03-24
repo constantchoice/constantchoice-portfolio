@@ -13,6 +13,24 @@ class Page4Manager {
         this.init();
         window.addEventListener('resize', () => this.onResize());
     }
+
+    getPlatformFromUrl(url) {
+        if (!url) return 'default';
+        if (url.includes('behance.net')) return 'behance';
+        if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+        if (url.includes('github.com')) return 'github';
+        if (url.includes('instagram.com')) return 'instagram';
+        if (url.includes('twitter.com') || url.includes('x.com')) return 'twitter';
+        if (url.includes('pinterest.com')) return 'pinterest';
+        if (url.includes('dribbble.com')) return 'dribbble';
+        if (url.includes('tiktok.com')) return 'tiktok';
+        if (url.includes('t.me')) return 'telegram';
+        if (url.includes('gmail.com') || url.includes('mailto:')) return 'gmail';
+        if (url.includes('kavyar.com')) return 'kavyar';
+        if (url.includes('gumroad.com')) return 'gumroad';
+        if (url.includes('threads.com')) return 'threads';
+        return 'default';
+    }
     
     init() {
         this.createItems();
@@ -99,33 +117,57 @@ class Page4Manager {
             metaDiv.appendChild(p);
         });
         
-        // Правая нижняя - маленькие изображения
-        const thumbnailsDiv = document.createElement('div');
-        thumbnailsDiv.className = 'card-thumbnails';
-        
-        if (data.thumbnails && data.thumbnails.length > 0) {
-            data.thumbnails.forEach((thumbData) => {
-                const link = document.createElement('a');
-                link.href = thumbData.url || '#';
-                link.target = '_blank';
-                link.className = 'thumbnail-link';
-                
-                const thumb = document.createElement('div');
-                thumb.className = 'thumbnail';
-                
-                const thumbImg = document.createElement('img');
-                thumbImg.src = thumbData.image;
-                thumbImg.alt = 'Thumbnail';
-                thumbImg.loading = 'lazy';
-                
-                thumb.appendChild(thumbImg);
-                link.appendChild(thumb);
-                thumbnailsDiv.appendChild(link);
-            });
-        }
-        
         bottomDiv.appendChild(metaDiv);
-        bottomDiv.appendChild(thumbnailsDiv);
+        
+        if (data.contactCard) {
+            const contactCardDiv = document.createElement('div');
+            contactCardDiv.className = 'card-contact';
+            
+            const contactContainer = document.createElement('div');
+            contactContainer.className = 'contact-container';
+            
+            // Ссылка на картинке (если есть)
+            if (data.contactCard.imageUrl) {
+                const imageLink = document.createElement('a');
+                imageLink.href = data.contactCard.imageUrl;
+                imageLink.target = '_blank';
+                imageLink.className = 'contact-image-link';
+                
+                const img = document.createElement('img');
+                img.src = data.contactCard.image;
+                img.alt = 'Contact';
+                img.className = 'contact-bg-image';
+                img.loading = 'lazy';
+                
+                imageLink.appendChild(img);
+                contactContainer.appendChild(imageLink);
+            } else {
+                const img = document.createElement('img');
+                img.src = data.contactCard.image;
+                img.alt = 'Contact';
+                img.className = 'contact-bg-image';
+                img.loading = 'lazy';
+                contactContainer.appendChild(img);
+            }
+            
+            // Кнопка поверх (если есть)
+            if (data.contactCard.button && data.contactCard.button.text) {
+                const button = document.createElement('a');
+                button.href = data.contactCard.button.url || '#';
+                button.target = '_blank';
+                button.className = 'contact-button';
+                button.textContent = data.contactCard.button.text;
+                
+                // Определяем платформу по URL кнопки
+                const platform = this.getPlatformFromUrl(data.contactCard.button.url);
+                button.setAttribute('data-platform', platform);
+                
+                contactContainer.appendChild(button);
+            }
+            
+            contactCardDiv.appendChild(contactContainer);
+            bottomDiv.appendChild(contactCardDiv);
+        }
         
         card.appendChild(topDiv);
         card.appendChild(bottomDiv);
@@ -140,14 +182,13 @@ class Page4Manager {
         const cards = grid.querySelectorAll('.item-card');
         if (cards.length === 0) return;
         
-        // Сначала убираем фиксированные высоты и сбрасываем нормальное поведение
+        // Сначала сбрасываем высоты
         cards.forEach(card => {
             card.style.height = 'auto';
-            // Сбрасываем высоту нижней части
             const bottomPart = card.querySelector('.card-bottom');
-            if (bottomPart) {
-                bottomPart.style.height = 'auto';
-            }
+            if (bottomPart) bottomPart.style.height = 'auto';
+            const contactCard = card.querySelector('.card-contact');
+            if (contactCard) contactCard.style.height = '0'; // временно
         });
         
         // Группируем по строкам (по 2 карточки)
@@ -155,34 +196,37 @@ class Page4Manager {
             const rowCards = [cards[i]];
             if (i + 1 < cards.length) rowCards.push(cards[i + 1]);
             
-            // Находим максимальную высоту верхней части и нижней части отдельно
             let maxTopHeight = 0;
-            let maxBottomHeight = 0;
+            let maxMetaHeight = 0;
             
             rowCards.forEach(card => {
                 const topPart = card.querySelector('.card-top');
-                const bottomPart = card.querySelector('.card-bottom');
+                const metaPart = card.querySelector('.card-meta');
                 
                 if (topPart) {
                     const topHeight = topPart.offsetHeight;
                     if (topHeight > maxTopHeight) maxTopHeight = topHeight;
                 }
                 
-                if (bottomPart) {
-                    const bottomHeight = bottomPart.offsetHeight;
-                    if (bottomHeight > maxBottomHeight) maxBottomHeight = bottomHeight;
+                if (metaPart) {
+                    const metaHeight = metaPart.offsetHeight;
+                    if (metaHeight > maxMetaHeight) maxMetaHeight = metaHeight;
                 }
             });
             
-            // Устанавливаем одинаковую высоту для всех карточек в строке
             rowCards.forEach(card => {
-                // Высота карточки = максимальная высота верхней части + максимальная высота нижней части
-                card.style.height = (maxTopHeight + maxBottomHeight + 30) + 'px'; // +30 на отступы
+                // Общая высота карточки
+                card.style.height = (maxTopHeight + maxMetaHeight + 30) + 'px';
                 
-                // Растягиваем нижнюю часть до максимальной высоты
+                // Нижняя часть
                 const bottomPart = card.querySelector('.card-bottom');
                 if (bottomPart) {
-                    bottomPart.style.height = maxBottomHeight + 'px';
+                    bottomPart.style.height = maxMetaHeight + 'px';
+                }
+                
+                const contactCard = card.querySelector('.card-contact');
+                if (contactCard) {
+                    contactCard.style.height = maxMetaHeight + 'px';
                 }
             });
         }

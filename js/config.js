@@ -129,10 +129,16 @@ const CONFIG = {
                     { label: 'author  ', value: '????' },
                     { label: 'article ', value: 'ART-????' }
                 ],
-                thumbnails: [
-                    { image: 'images/page4/item1/thumb1.webp', url: 'WHERE' },
-                    { image: 'images/page4/item1/thumb2.webp', url: 'WHERE' }
-                ]
+                contactCard: {
+                    image: 'images/page4/item1/contact-bg.webp',  // 500x500
+                    imageUrl: 'https://www.behance.net/constantchoice',
+                    button: {
+                        text: 'CONTACT',
+                        url: 'https://www.behance.net/constantchoice',
+                        color: '#ffffff',      // цвет кнопки
+                        textColor: '#999999'    // цвет текста
+                    }
+                }
             },
             {
                 image: 'images/page4/item2/main.webp',
@@ -143,10 +149,16 @@ const CONFIG = {
                     { label: 'format  ', value: '????' },
                     { label: 'author  ', value: 'Maybe you?' }
                 ],
-                thumbnails: [
-                    { image: 'images/page4/item2/thumb1.webp', url: 'WHERE' },
-                    { image: 'images/page4/item2/thumb2.webp', url: 'WHERE' }
-                ]
+                contactCard: {
+                    image: 'images/page4/item2/contact-bg.webp',  // 500x500
+                    imageUrl: 'https://www.behance.net/constantchoice',
+                    button: {
+                        text: 'CONTACT',
+                        url: 'https://www.instagram.com/constantchoice/',
+                        color: '#ffffff',      // цвет кнопки
+                        textColor: '#999999'    // цвет текста
+                    }
+                }
             },
             {
                 image: 'images/page4/item3/main.webp',
@@ -159,10 +171,16 @@ const CONFIG = {
                     { label: 'article ', value: 'WHAT' },
                     { label: 'year    ', value: 'WHEN' }
                 ],
-                thumbnails: [
-                    { image: 'images/page4/item3/thumb1.webp', url: 'WHERE' },
-                    { image: 'images/page4/item3/thumb2.webp', url: 'WHERE' }
-                ]
+                contactCard: {
+                    image: 'images/page4/item3/contact-bg.webp',  // 500x500
+                    imageUrl: 'https://www.behance.net/constantchoice',
+                    button: {
+                        text: 'CONTACT',
+                        url: 'https://dribbble.com/constantchoice',
+                        color: '#ffffff',      // цвет кнопки
+                        textColor: '#999999'    // цвет текста
+                    }
+                }
             }
         ],
         
