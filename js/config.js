@@ -77,7 +77,7 @@ const CONFIG = {
             { url: 'https://www.youtube.com/@luxgoth', image: 'images/floating/LUXGOTH.webp' },
             { url: 'ANONYMOUS', image: 'images/floating/LIZARD_TAIL.webp' },
             { url: 'WHY ME ANONYMOUS', image: 'images/floating/CANDY.webp' },
-            { url: 'https://twitter.com/your-profile', image: 'images/floating/4.png' },
+            { url: 'https://www.instagram.com/nansjova', image: 'images/floating/TRIGANA.webp' },
             { url: 'https://instagram.com/your-profile', image: 'images/floating/5.png' }
         ],
         
