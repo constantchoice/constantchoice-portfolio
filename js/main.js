@@ -315,7 +315,57 @@ function initGallery() {
             url: 'https://www.youtube.com/@luxgoth',
             images: [
                 'images/projects/Luxgoth_YT_Attribute/1.webp',
-                'images/projects/Luxgoth_YT_Attribute/2.webp'
+                'images/projects/Luxgoth_YT_Attribute/2.webp',
+                'images/projects/Luxgoth_YT_Attribute/3.webp'
+            ]
+        },
+        {
+            name: 'To bb - irreplaceability',
+            url: 'https://dribbble.com/shots/27022663-to-bb',
+            images: [
+                'images/projects/Tattoo/1.webp'
+            ]
+        },
+        {
+            name: 'Rare Nights',
+            url: 'https://vt.tiktok.com/ZSuoTGC26/',
+            images: [
+                'images/projects/RARE_NIGHTS/1.webp',
+                'images/projects/RARE_NIGHTS/2.webp',
+                'images/projects/RARE_NIGHTS/3.webp'
+            ]
+        },
+        {
+            name: 'LTZ',
+            url: 'https://vt.tiktok.com/ZSuowFoVk/',
+            images: [
+                'images/projects/LTZ/1DlyaZhivih.webp',
+                'images/projects/LTZ/2LOVERS.webp',
+                'images/projects/LTZ/3Trip.webp'
+            ]
+        },
+        {
+            name: 'TRIGANA',
+            url: 'https://www.instagram.com/nansjova',
+            images: [
+                'images/projects/TRIGANA/1.webp',
+                'images/projects/TRIGANA/2.webp',
+                'images/projects/TRIGANA/3.webp',
+                'images/projects/TRIGANA/4.webp',
+                'images/projects/TRIGANA/5.webp',
+                'images/projects/TRIGANA/6.webp',
+                'images/projects/TRIGANA/7.webp',
+                'images/projects/TRIGANA/8.webp',
+                'images/projects/TRIGANA/9.webp',
+                'images/projects/TRIGANA/10.webp',
+                'images/projects/TRIGANA/11.webp'
+            ]
+        },
+        {
+            name: 'Luxgoth Logo',
+            url: 'https://dribbble.com/shots/27034499-Logo-for-motion-designer-Luxgoth',
+            images: [
+                'images/projects/Luxgoth_Logo/1.webp'
             ]
         }
         
