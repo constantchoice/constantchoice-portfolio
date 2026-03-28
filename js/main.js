@@ -367,6 +367,35 @@ function initGallery() {
             images: [
                 'images/projects/Luxgoth_Logo/1.webp'
             ]
+        },
+        {
+            name: 'Candy',
+            url: 'https://www.behance.net/constantchoice',
+            images: [
+                'images/projects/Candy/1.webp',
+                'images/projects/Candy/2.webp'
+            ]
+        },
+        {
+            name: 'hero in',
+            url: 'https://www.behance.net/constantchoice',
+            images: [
+                'images/projects/hero_in/1.webp',
+                'images/projects/hero_in/2.webp',
+                'images/projects/hero_in/3.webp',
+                'images/projects/hero_in/4.webp',
+                'images/projects/hero_in/5.webp',
+                'images/projects/hero_in/6.webp',
+                'images/projects/hero_in/7.webp'
+            ]
+        },
+        {
+            name: 'Lizard Tail',
+            url: 'https://www.behance.net/constantchoice',
+            images: [
+                'images/projects/Lizard_Tail/1.webp',
+                'images/projects/Lizard_Tail/2.webp'
+            ]
         }
         
 /*         ,
