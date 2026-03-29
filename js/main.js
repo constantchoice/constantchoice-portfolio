@@ -396,6 +396,76 @@ function initGallery() {
                 'images/projects/Lizard_Tail/1.webp',
                 'images/projects/Lizard_Tail/2.webp'
             ]
+        },
+        {
+            name: 'Blow Up',
+            url: 'https://www.behance.net/constantchoice',
+            images: [
+                'images/projects/BLOW_UP/1.webp',
+                'images/projects/BLOW_UP/2.webp',
+                'images/projects/BLOW_UP/3.webp',
+                'images/projects/BLOW_UP/4.webp',
+                'images/projects/BLOW_UP/5.webp',
+                'images/projects/BLOW_UP/6.webp',
+                'images/projects/BLOW_UP/7.webp',
+                'images/projects/BLOW_UP/8.webp',
+                'images/projects/BLOW_UP/9.webp',
+                'images/projects/BLOW_UP/10.webp',
+                'images/projects/BLOW_UP/11.webp',
+                'images/projects/BLOW_UP/12.webp',
+                'images/projects/BLOW_UP/13.webp',
+                'images/projects/BLOW_UP/14.webp',
+                'images/projects/BLOW_UP/15.webp',
+                'images/projects/BLOW_UP/16.webp',
+                'images/projects/BLOW_UP/17.webp',
+                'images/projects/BLOW_UP/18.webp',
+                'images/projects/BLOW_UP/19.webp',
+                'images/projects/BLOW_UP/20.webp',
+                'images/projects/BLOW_UP/21.webp',
+                'images/projects/BLOW_UP/22.webp'
+            ]
+        },
+        {
+            name: 'Unpublished',
+            url: 'https://www.instagram.com/constantchoice/',
+            images: [
+                'images/projects/unpublished/1.webp',
+                'images/projects/unpublished/2.webp',
+                'images/projects/unpublished/3.webp',
+                'images/projects/unpublished/4.webp',
+                'images/projects/unpublished/5.webp',
+                'images/projects/unpublished/6.webp',
+                'images/projects/unpublished/7.webp',
+                'images/projects/unpublished/8.webp',
+                'images/projects/unpublished/9.webp',
+                'images/projects/unpublished/10.webp',
+                'images/projects/unpublished/11.webp'
+            ]
+        },
+        {
+            name: 'DUBSTEP SCRIPT',
+            url: 'https://github.com/constantchoice/DUBSTEP-SCRIPT',
+            images: [
+                'images/projects/DUBSTEP_SCRIPT/1.webp',
+                'images/projects/DUBSTEP_SCRIPT/2.webp'
+            ]
+        },
+        {
+            name: 'SOON',
+            url: 'https://www.behance.net/constantchoice',
+            images: [
+                'images/projects/HUI/1.webp',
+                'images/projects/HUI/2.webp',
+                'images/projects/HUI/3.webp',
+                'images/projects/HUI/4.webp',
+                'images/projects/HUI/5.webp',
+                'images/projects/HUI/6.webp',
+                'images/projects/HUI/7.webp',
+                'images/projects/HUI/8.webp',
+                'images/projects/HUI/9.webp',
+                'images/projects/HUI/10.webp',
+                'images/projects/HUI/11.webp'
+            ]
         }
         
 /*         ,
