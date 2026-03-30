@@ -104,7 +104,7 @@
 
 .skill-icon {
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
 .skill-icon img {
@@ -164,19 +164,19 @@
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
 }
 
 .link-center:hover,
 .link-left:hover,
 .link-right:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    transform: scale(1.052);
+    box-shadow: 0 4px 13px rgba(0,0,0,0.15);
 }
 
 .small-link:hover {
-    transform: scale(1.15);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    transform: scale(1.075);
+    box-shadow: 0 4.3px 13px rgba(0,0,0,0.15);
 }
 
 .link-center img,
