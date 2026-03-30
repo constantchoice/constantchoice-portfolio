@@ -113,7 +113,7 @@ function initGallery() {
                 'images/projects/to_bb/77.webp'
             ]
         },
-        {
+         {
             name: 'AI',
             url: 'https://www.pinterest.com/axyelIlIo/',
             images: [
@@ -325,7 +325,7 @@ function initGallery() {
             images: [
                 'images/projects/Walking_with_a_friend/1.webp'
             ]
-        },
+        } ,
         {
             name: 'Spring and summer',
             url: 'https://www.behance.net/gallery/132763995/Spring-and-summer',
@@ -599,7 +599,7 @@ function initGallery() {
                 'images/projects/HUI/10.webp',
                 'images/projects/HUI/11.webp'
             ]
-        }
+        } 
         
 /*         ,
         {

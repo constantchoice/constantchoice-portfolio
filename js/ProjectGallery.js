@@ -14,23 +14,123 @@ class ProjectGallery {
         this.images = [];
         
         // Параметры для ветвления
-        this.minDistance = 300; // Мин. расстояние между проектами
-        this.baseImageSize = 60; // Базовый размер изображения в пикселях
-
-        this.branchCount = 4;           // Количество ветвей
-        this.imagesPerBranch = 5;       // Максимум изображений на ветку
-        this.baseRadius = 80;           // Базовый радиус для первого уровня
-        this.radiusStep = 40;           // Увеличение радиуса для следующих уровней
-        this.branchAngleSpread = 0.4;   // Разброс углов внутри ветки (в радианах)
-    
+        this.minDistance = 340;
+        this.baseImageSize = 60;
+        
+        // ===== КОНФИГУРАЦИЯ ВЕТВЛЕНИЯ ПО КОЛИЧЕСТВУ ИЗОБРАЖЕНИЙ =====
+        this.branchConfig = {
+            // Для 1 изображения
+            1: {
+                branchCount: 1,         // количество лучей (ветвей) от центра
+                imagesPerBranch: 1,     // сколько изображений на каждом луче
+                baseRadius: 0,          // расстояние до первого изображения на луче (в пикселях)
+                radiusStep: 0,          // на сколько увеличивается радиус для каждого следующего изображения
+                branchAngleSpread: 0    // разброс углов внутри ветки (в радианах)
+            },
+            // Для 2 изображений
+            2: {
+                branchCount: 2,
+                imagesPerBranch: 1,
+                baseRadius: 60,
+                radiusStep: 0,
+                branchAngleSpread: 0.5
+            },
+            // Для 3 изображений
+            3: {
+                branchCount: 3,
+                imagesPerBranch: 1,
+                baseRadius: 70,
+                radiusStep: 0,
+                branchAngleSpread: 0.66
+            },
+            // Для 4 изображений
+            4: {
+                branchCount: 4,
+                imagesPerBranch: 1,
+                baseRadius: 80,
+                radiusStep: 0,
+                branchAngleSpread: 0.7
+            },
+            // Для 5-15 изображений
+            15: {
+                branchCount: 3,
+                imagesPerBranch: 5,
+                baseRadius: 70,
+                radiusStep: 55,
+                branchAngleSpread: 0.5
+            },
+            // Для 16-30 изображений /////////////////
+            30: {
+                branchCount: 5,
+                imagesPerBranch: 6,
+                baseRadius: 90,
+                radiusStep: 70,
+                branchAngleSpread: 0.4
+            },
+            // Для 31-60 изображений
+            60: {
+                branchCount: 6,
+                imagesPerBranch: 10,
+                baseRadius: 90,
+                radiusStep: 60,
+                branchAngleSpread: 0.35
+            },
+            // Для 61-100 изображений
+            100: {
+                branchCount: 6,
+                imagesPerBranch: 16,
+                baseRadius: 90,
+                radiusStep: 55,
+                branchAngleSpread: 0.35
+            },
+            // Для 101+ изображений
+            '100+': {
+                branchCount: 8,
+                imagesPerBranch: 18,
+                baseRadius: 90,
+                radiusStep: 50,
+                branchAngleSpread: 0.35
+            }
+        };
+        
+        // Текущие параметры
+        this.branchCount = 4;
+        this.imagesPerBranch = 5;
+        this.baseRadius = 80;
+        this.radiusStep = 40;
+        this.branchAngleSpread = 0.4;
+        
         // Параметры коллизий
-        this.collisionPadding = 10;       // Дополнительное пространство между изображениями
+        this.collisionPadding = 10;
         
         // Инициализация Three.js
         this.initThree();
         
         // Запускаем анимацию
         this.animate();
+    }
+
+    getBranchConfig(imageCount) {
+        // Для 1, 2, 3, 4 изображений — отдельные настройки
+        if (imageCount === 1) return this.branchConfig[1];
+        if (imageCount === 2) return this.branchConfig[2];
+        if (imageCount === 3) return this.branchConfig[3];
+        if (imageCount === 4) return this.branchConfig[4];
+        
+        // Для остальных — по диапазонам
+        if (imageCount <= 15) return this.branchConfig[15];
+        if (imageCount <= 30) return this.branchConfig[30];
+        if (imageCount <= 60) return this.branchConfig[60];
+        if (imageCount <= 100) return this.branchConfig[100];
+        return this.branchConfig['100+'];
+    }
+    
+    applyBranchConfig(config) {
+        this.branchCount = config.branchCount;
+        this.imagesPerBranch = config.imagesPerBranch;
+        this.baseRadius = config.baseRadius;
+        this.radiusStep = config.radiusStep;
+        this.branchAngleSpread = config.branchAngleSpread;
     }
     
     initThree() {
@@ -143,25 +243,21 @@ class ProjectGallery {
     // Добавление проекта
     addProject(projectData) {
         const { name, url, images = [] } = projectData;
-        
         // Определяем платформу по URL
         const platform = this.getPlatformFromUrl(url);
+
+        const config = this.getBranchConfig(images.length);
+        this.applyBranchConfig(config);
         
-        // ===== ДИНАМИЧЕСКОЕ ИЗМЕНЕНИЕ КОЛИЧЕСТВА ВЕТВЕЙ =====
-        // Сохраняем оригинальные значения
-        const originalBranchCount = this.branchCount;
-        const originalImagesPerBranch = this.imagesPerBranch;
+        const projectBranchConfig = {
+            branchCount: this.branchCount,
+            imagesPerBranch: this.imagesPerBranch,
+            baseRadius: this.baseRadius,
+            radiusStep: this.radiusStep,
+            branchAngleSpread: this.branchAngleSpread
+        };
         
-        // Если изображений больше 50, увеличиваем количество ветвей
-        if (images.length > 50) {
-            console.log(`Проект "${name}" содержит ${images.length} изображений, увеличиваем ветви до 6`);
-            this.branchCount = 6;
-            this.imagesPerBranch = Math.ceil(images.length / this.branchCount);
-        } else {
-            this.branchCount = 4;
-            this.imagesPerBranch = 5;
-        }
-        // ===== КОНЕЦ ДИНАМИЧЕСКОГО ИЗМЕНЕНИЯ =====
+        console.log(`Проект "${name}": ${images.length} изображений → ветвей: ${this.branchCount}, изображений на ветку: ${this.imagesPerBranch}`);
         
         // Сохраняем данные
         const project = {
@@ -171,7 +267,8 @@ class ProjectGallery {
             images: [],
             position: this.findFreePosition(),
             label: null,
-            imageObjects: []
+            imageObjects: [],
+            branchConfig: projectBranchConfig  // ← сохраняем конфиг в проекте
         };
         
         // Создаем название (кликабельное)
@@ -187,18 +284,15 @@ class ProjectGallery {
         this.scene.add(label);
         this.labels.push(label);
         
-        // Добавляем изображения
+        // Добавляем изображения, передавая сохранённый конфиг
         images.forEach((imgSrc, index) => {
-            this.addProjectImage(project, imgSrc, index);
+            this.addProjectImage(project, imgSrc, index, projectBranchConfig);
         });
         
         this.projects.push(project);
         
         // Запускаем симуляцию для позиционирования
         this.runSimulation();
-        
-        this.branchCount = originalBranchCount;
-        this.imagesPerBranch = originalImagesPerBranch;
         
         return project;
     }
@@ -250,13 +344,14 @@ class ProjectGallery {
         
         sprite.scale.set(this.baseImageSize, this.baseImageSize, 1);
         
-        // Используем ту же логику ветвления для заглушек
-        const branchIndex = index % this.branchCount;
-        const positionInBranch = Math.floor(index / this.branchCount);
-        const baseAngle = (branchIndex / this.branchCount) * Math.PI * 2;
-        const spread = (positionInBranch - (this.imagesPerBranch - 1) / 2) * this.branchAngleSpread;
+        // Используем конфиг из проекта
+        const config = project.branchConfig;
+        const branchIndex = index % config.branchCount;
+        const positionInBranch = Math.floor(index / config.branchCount);
+        const baseAngle = (branchIndex / config.branchCount) * Math.PI * 2;
+        const spread = (positionInBranch - (config.imagesPerBranch - 1) / 2) * config.branchAngleSpread;
         const angle = baseAngle + spread;
-        const radius = this.baseRadius + positionInBranch * this.radiusStep;
+        const radius = config.baseRadius + positionInBranch * config.radiusStep;
         
         sprite.position.set(
             project.position.x + Math.cos(angle) * radius,
@@ -307,24 +402,24 @@ class ProjectGallery {
         }
     }
     
-    addProjectImage(project, imageSrc, index) {
+    addProjectImage(project, imageSrc, index, branchConfig) {
         const img = new Image();
         img.src = imageSrc;
         
         img.onload = () => {
             // Определяем ветку и позицию в ветке
-            const branchIndex = index % this.branchCount;
-            const positionInBranch = Math.floor(index / this.branchCount);
+            const branchIndex = index % branchConfig.branchCount;
+            const positionInBranch = Math.floor(index / branchConfig.branchCount);
             
             // Угол основной ветки (равномерно по кругу)
-            const baseAngle = (branchIndex / this.branchCount) * Math.PI * 2;
+            const baseAngle = (branchIndex / branchConfig.branchCount) * Math.PI * 2;
             
             // Добавляем небольшой разброс для естественности
-            const spread = (positionInBranch - (this.imagesPerBranch - 1) / 2) * this.branchAngleSpread;
+            const spread = (positionInBranch - (branchConfig.imagesPerBranch - 1) / 2) * branchConfig.branchAngleSpread;
             const angle = baseAngle + spread;
             
             // Радиус увеличивается с удалением от центра
-            const radius = this.baseRadius + positionInBranch * this.radiusStep;
+            const radius = branchConfig.baseRadius + positionInBranch * branchConfig.radiusStep;
             
             // Размер уменьшается с удалением (дальше = мельче)
             const sizeMultiplier = Math.max(0.5, 1.0 - positionInBranch * 0.1);
@@ -477,8 +572,8 @@ class ProjectGallery {
                         const targetY = project.position.y + 
                             Math.sin(img.userData.baseAngle) * img.userData.targetRadius;
                         
-                        img.position.x += (targetX - img.position.x) * 0.1;
-                        img.position.y += (targetY - img.position.y) * 0.1;
+                        img.position.x += (targetX - img.position.x) * 0.88;
+                        img.position.y += (targetY - img.position.y) * 0.88;
                     });
                     
                     this.optimizePositions(project);
