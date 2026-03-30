@@ -261,8 +261,19 @@ class Page3Manager {
     
     createLinkElement(data, className, size, borderRadius) {
         const link = document.createElement('a');
-        link.href = data.url;
-        link.target = '_blank';
+        
+        // Проверяем, является ли ссылка email
+        if (data.url.includes('@') && !data.url.startsWith('http')) {
+            link.href = '#';
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showContactOverlay(data.url);
+            });
+        } else {
+            link.href = data.url;
+            link.target = '_blank';
+        }
+        
         link.className = className;
         link.style.width = size + 'px';
         link.style.height = size + 'px';
@@ -413,6 +424,155 @@ class Page3Manager {
         }
         
         return positions;
+    }
+
+    getCurrentTheme() {
+        return document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+    }
+
+    showContactOverlay(email) {
+        // Получаем текущую тему
+        const currentTheme = this.getCurrentTheme();
+        
+        // Создаём оверлей
+        const overlay = document.createElement('div');
+        overlay.className = 'contact-overlay';
+        
+        // Применяем класс темы к оверлею
+        if (currentTheme === 'dark') {
+            overlay.classList.add('contact-overlay-dark');
+        } else {
+            overlay.classList.add('contact-overlay-light');
+        }
+        
+        overlay.innerHTML = `
+            <div class="contact-card">
+                <button class="contact-close">×</button>
+                <div class="contact-header">
+                    <span class="contact-emoji">✉️</span>
+                    <h3>Get in touch</h3>
+                    <p class="contact-subtitle">Choose a topic or write your own</p>
+                </div>
+                
+                <div class="contact-options">
+                    <button class="contact-option" data-subject="Project Inquiry">
+                        <span class="option-emoji">🎨</span>
+                        <span class="option-text">Project Inquiry</span>
+                        <span class="option-desc">Discuss a project or commission</span>
+                    </button>
+                    <button class="contact-option" data-subject="Collaboration">
+                        <span class="option-emoji">🤝</span>
+                        <span class="option-text">Collaboration</span>
+                        <span class="option-desc">Work together on something cool</span>
+                    </button>
+                    <button class="contact-option" data-subject="Feedback">
+                        <span class="option-emoji">💡</span>
+                        <span class="option-text">Feedback</span>
+                        <span class="option-desc">Share your thoughts about my work</span>
+                    </button>
+                    <button class="contact-option" data-subject="Just saying hi">
+                        <span class="option-emoji">👋</span>
+                        <span class="option-text">Just saying hi</span>
+                        <span class="option-desc">No reason, just to connect</span>
+                    </button>
+                </div>
+                
+                <div class="contact-divider">
+                    <span>or</span>
+                </div>
+                
+                <div class="contact-custom">
+                    <input type="text" id="custom-subject" placeholder="Write your own subject..." autocomplete="off">
+                    <button id="send-custom" class="send-custom-btn">Send →</button>
+                </div>
+                
+                <div class="contact-email-display">
+                    <div class="email-label">Direct email:</div>
+                    <div class="email-value">
+                        <span class="email-address">${email}</span>
+                        <button class="copy-email-btn" data-email="${email}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
+        
+        // Анимация появления
+        requestAnimationFrame(() => {
+            overlay.classList.add('visible');
+        });
+        
+        // Закрытие
+        const closeBtn = overlay.querySelector('.contact-close');
+        closeBtn.addEventListener('click', () => this.closeContactOverlay(overlay));
+        
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) this.closeContactOverlay(overlay);
+        });
+        
+        // Обработка предустановленных тем
+        const options = overlay.querySelectorAll('.contact-option');
+        options.forEach(option => {
+            option.addEventListener('click', () => {
+                const subject = option.dataset.subject;
+                this.sendMailWithSubject(email, subject);
+                this.closeContactOverlay(overlay);
+            });
+        });
+        
+        // Обработка кастомной темы
+        const customSubject = overlay.querySelector('#custom-subject');
+        const sendCustom = overlay.querySelector('#send-custom');
+        
+        const sendCustomHandler = () => {
+            const subject = customSubject.value.trim();
+            if (subject) {
+                this.sendMailWithSubject(email, subject);
+                this.closeContactOverlay(overlay);
+            } else {
+                customSubject.classList.add('error');
+                setTimeout(() => customSubject.classList.remove('error'), 500);
+            }
+        };
+        
+        sendCustom.addEventListener('click', sendCustomHandler);
+        customSubject.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendCustomHandler();
+        });
+        
+        // Копирование email
+        const copyBtn = overlay.querySelector('.copy-email-btn');
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(email);
+            
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Copied!
+            `;
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000);
+        });
+    }
+
+    closeContactOverlay(overlay) {
+        overlay.classList.remove('visible');
+        setTimeout(() => overlay.remove(), 300);
+    }
+
+    sendMailWithSubject(email, subject) {
+        const encodedSubject = encodeURIComponent(`FROM SITE CONSTANTCHOICE: ${subject}`);
+        window.location.href = `mailto:${email}?subject=${encodedSubject}`;
     }
     
     onResize() {

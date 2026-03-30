@@ -208,6 +208,430 @@
     margin-right: 40px;
 }
 
+
+/* ===== CONTACT OVERLAY ===== */
+.contact-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* Тёмная тема */
+.contact-overlay-dark {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+}
+
+.contact-overlay-dark .contact-card {
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.contact-overlay-dark .contact-header h3 {
+    color: #ffffff;
+}
+
+.contact-overlay-dark .contact-subtitle {
+    color: #666666;
+}
+
+.contact-overlay-dark .contact-option {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.contact-overlay-dark .contact-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.contact-overlay-dark .option-text {
+    color: #ffffff;
+}
+
+.contact-overlay-dark .option-desc {
+    color: #666666;
+}
+
+.contact-overlay-dark .contact-divider span {
+    background: #1a1a1a;
+    color: #666666;
+}
+
+.contact-overlay-dark .contact-divider::before {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.contact-overlay-dark #custom-subject {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.contact-overlay-dark #custom-subject:focus {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.contact-overlay-dark .send-custom-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.contact-overlay-dark .send-custom-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.contact-overlay-dark .contact-email-display {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.contact-overlay-dark .email-label {
+    color: #666666;
+}
+
+.contact-overlay-dark .email-address {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.contact-overlay-dark .copy-email-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: #999999;
+}
+
+.contact-overlay-dark .copy-email-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+/* Светлая тема */
+.contact-overlay-light {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+}
+
+.contact-overlay-light .contact-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+.contact-overlay-light .contact-header h3 {
+    color: #333333;
+}
+
+.contact-overlay-light .contact-subtitle {
+    color: #999999;
+}
+
+.contact-overlay-light .contact-option {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+.contact-overlay-light .contact-option:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.contact-overlay-light .option-text {
+    color: #333333;
+}
+
+.contact-overlay-light .option-desc {
+    color: #999999;
+}
+
+.contact-overlay-light .contact-divider span {
+    background: #ffffff;
+    color: #999999;
+}
+
+.contact-overlay-light .contact-divider::before {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.contact-overlay-light #custom-subject {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #1a1a1a;
+}
+
+.contact-overlay-light #custom-subject:focus {
+    border-color: rgba(0, 0, 0, 0.25);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.contact-overlay-light .send-custom-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #666666;
+}
+
+.contact-overlay-light .send-custom-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.contact-overlay-light .contact-email-display {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.contact-overlay-light .email-label {
+    color: #999999;
+}
+
+.contact-overlay-light .email-address {
+    color: #333333;
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.contact-overlay-light .copy-email-btn {
+    background: rgba(0, 0, 0, 0.03);
+    color: #999999;
+}
+
+.contact-overlay-light .copy-email-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #333333;
+}
+
+/* Общие стили */
+.contact-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.contact-card {
+    border-radius: 20px;
+    max-width: 520px;
+    width: 90%;
+    padding: 32px;
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.contact-overlay.visible .contact-card {
+    transform: scale(1);
+}
+
+.contact-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.contact-overlay-dark .contact-close {
+    color: #999;
+}
+
+.contact-overlay-dark .contact-close:hover {
+    background: #333333;
+    color: #999999;
+}
+
+.contact-overlay-light .contact-close {
+    color: #999999;
+}
+
+.contact-overlay-light .contact-close:hover {
+    background: #33333325;
+    color: #999999;
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.contact-emoji {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.contact-header h3 {
+    font-size: 24px;
+    font-weight: 400;
+    margin: 0 0 8px 0;
+}
+
+.contact-subtitle {
+    font-size: 14px;
+    margin: 0;
+}
+
+.contact-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.contact-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.contact-option:hover {
+    transform: translateX(4px);
+}
+
+.option-emoji {
+    min-width: 40px;
+    font-size: 28px;
+}
+
+.option-text {
+    min-width: 102px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.option-desc {
+    font-size: 14px;
+    display: block;
+    margin-top: 2px;
+}
+
+.contact-divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.contact-divider span {
+    padding: 0 12px;
+    font-size: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.contact-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+}
+
+.contact-custom {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+#custom-subject {
+    flex: 1;
+    padding: 14px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+#custom-subject:focus {
+    outline: none;
+}
+
+#custom-subject.error {
+    border-color: #ff8cc3;
+    animation: shake 0.3s ease;
+}
+
+.send-custom-btn {
+    padding: 0 24px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.send-custom-btn:hover {
+    transform: translateX(4px);
+}
+
+.contact-email-display {
+    border-radius: 20px;
+    padding: 16px;
+    text-align: center;
+}
+
+.email-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.email-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.email-address {
+    font-size: 14px;
+    font-family: monospace;
+    padding: 6px 12px;
+    border-radius: 15px;
+}
+
+.copy-email-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 15px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.copy-email-btn svg {
+    stroke: currentColor;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+
 /* ===== АДАПТИВНОСТЬ ===== */
 @media (max-width: 1920px) {
     .page3-container {
