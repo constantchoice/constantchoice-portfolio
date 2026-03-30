@@ -421,33 +421,36 @@ class ProjectGallery {
             // Радиус увеличивается с удалением от центра
             const radius = branchConfig.baseRadius + positionInBranch * branchConfig.radiusStep;
             
-            // Размер уменьшается с удалением (дальше = мельче)
-            const sizeMultiplier = Math.max(0.5, 1.0 - positionInBranch * 0.1);
+            // ===== НОВЫЙ РАСЧЁТ РАЗМЕРОВ: ОГРАНИЧЕНИЕ ПО БОЛЬШЕЙ СТОРОНЕ =====
             const baseSize = this.baseImageSize;
             const aspect = img.width / img.height;
-
-            // Масштабируем пропорционально, сохраняя высоту = baseSize
-            let height = baseSize;
-            let width = baseSize * aspect;
             
-            const MAX_SIZE = 100; // Максимальный размер любой стороны
+            let width, height;
             
+            if (aspect >= 1) {
+                // Горизонтальное или квадратное: ограничиваем по ширине
+                width = baseSize;
+                height = baseSize / aspect;
+            } else {
+                // Вертикальное: ограничиваем по высоте
+                height = baseSize;
+                width = baseSize * aspect;
+            }
+            
+            // Максимальный размер любой стороны
+            const MAX_SIZE = 100;
             if (width > MAX_SIZE) {
-                // Если ширина превышает лимит, масштабируем по ширине
                 width = MAX_SIZE;
                 height = width / aspect;
             }
-            
             if (height > MAX_SIZE) {
-                // Если высота превышает лимит, масштабируем по высоте
                 height = MAX_SIZE;
                 width = height * aspect;
             }
             
-            // Минимальный размер, чтобы совсем мелкие не терялись
+            // Минимальный размер
             const MIN_SIZE = 30;
             if (width < MIN_SIZE && height < MIN_SIZE) {
-                // Если оба размера меньше минимума, увеличиваем до минимума по большей стороне
                 if (aspect > 1) {
                     width = MIN_SIZE;
                     height = width / aspect;
@@ -456,6 +459,7 @@ class ProjectGallery {
                     width = height * aspect;
                 }
             }
+            // ===== КОНЕЦ РАСЧЁТА РАЗМЕРОВ =====
             
             // Создаем текстуру
             const texture = new THREE.CanvasTexture(img);
@@ -480,7 +484,7 @@ class ProjectGallery {
                 positionInBranch,
                 baseAngle: angle,
                 targetRadius: radius,
-                sizeMultiplier,
+                sizeMultiplier: Math.max(0.5, 1.0 - positionInBranch * 0.1),
                 homePosition: {
                     x: project.position.x + Math.cos(angle) * radius,
                     y: project.position.y + Math.sin(angle) * radius
