@@ -95,6 +95,7 @@
     word-wrap: break-word;
     background: transparent;
     border: none;
+    white-space: pre-line;
 }
 
 /* Нижняя часть карточки */
