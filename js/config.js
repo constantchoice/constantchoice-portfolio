@@ -99,7 +99,7 @@ const CONFIG = {
         LINKS: {
             center: { url: 'https://www.behance.net/constantchoice', image: 'images/links/BEHANCE.webp' },
             left: { url: 'https://www.instagram.com/constantchoice', image: 'images/links/INSTAGRAM.webp' },
-            right: { url: 'grigrinyouu@gmail.com', image: 'images/links/GMAIL.webp' },                  //
+            right: { url: 'grigrinyouu@gmail.com', image: 'images/links/GMAIL.webp' },
             smallLeft: [
                 { url: 'https://www.pinterest.com/axyelIlIo/', image: 'images/links/PINTEREST.webp' },
                 { url: 'https://www.youtube.com/@constantchoice', image: 'images/links/YOUTUBE.webp' },
@@ -179,6 +179,31 @@ const CONFIG = {
                         url: 'https://dribbble.com/constantchoice',
                         color: '#ffffff',      // цвет кнопки
                         textColor: '#999999'    // цвет текста
+                    }
+                }
+            },
+            {
+                image: 'images/page4/item4/main.webm',
+                title: 'DUBSTEP SCRIPT',
+                description: 'Automatic spark generation from bright flashes in After Effects. Real-time video analysis detects light impulses and creates animated null objects with particles synchronized to the light source movement\n\n' +
+                    'OpenCV-powered tracking ensures high accuracy. Flexible threshold system (threshold, area, lifetime) gives full control over results. Python backend enables JSON data export for post-processing\n\n' +
+                    'Perfect for VFX, music videos, and dynamic motion graphics',
+                meta: [
+                    { label: 'Works with', value: 'After Effects 2020+ (Windows)' },
+                    { label: 'UI Language', value: 'English / Russian' },
+                    { label: 'Tech stack', value: 'ExtendScript (JSX) + Python 3 + OpenCV' },
+                    { label: 'Includes', value: 'Source code • Documentation' },
+                    { label: 'Version', value: 'v1.102.25' },
+                    { label: 'Author', value: 'constantchoice' }
+                ],
+                contactCard: {
+                    image: 'images/page4/item4/contact-bg.webp',
+                    imageUrl: 'https://www.behance.net/constantchoice',
+                    button: {
+                        text: 'REPOSITORY',
+                        url: 'https://github.com/constantchoice/DUBSTEP-SCRIPT',
+                        color: '#ffffff',
+                        textColor: '#999999'
                     }
                 }
             }

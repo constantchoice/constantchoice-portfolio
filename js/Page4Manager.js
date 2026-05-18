@@ -62,20 +62,46 @@ class Page4Manager {
         const topDiv = document.createElement('div');
         topDiv.className = 'card-top';
         
-        // Левая часть - изображение
+        // Левая часть - изображение/видео
         const leftDiv = document.createElement('div');
         leftDiv.className = 'card-image-container';
         
-        const imageDiv = document.createElement('div');
-        imageDiv.className = 'card-image';
+        const mediaDiv = document.createElement('div');
+        mediaDiv.className = 'card-image';
         
-        const img = document.createElement('img');
-        img.src = data.image;
-        img.alt = data.title || 'Item';
-        img.loading = 'lazy';
+        // ===== ПРОВЕРЯЕМ ТИП ФАЙЛА =====
+        const isVideo = data.image && (data.image.endsWith('.webm') || data.image.endsWith('.mp4'));
         
-        imageDiv.appendChild(img);
-        leftDiv.appendChild(imageDiv);
+        let mediaElement;
+        
+        if (isVideo) {
+            // Создаём видео элемент
+            const video = document.createElement('video');
+            video.src = data.image;
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            video.playsinline = true;
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            video.style.pointerEvents = 'none';
+            mediaElement = video;
+        } else {
+            // Создаём изображение
+            const img = document.createElement('img');
+            img.src = data.image;
+            img.alt = data.title || 'Item';
+            img.loading = 'lazy';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            mediaElement = img;
+        }
+        
+        mediaDiv.appendChild(mediaElement);
+        leftDiv.appendChild(mediaDiv);
+        // ===== КОНЕЦ ПРОВЕРКИ =====
         
         // Правая часть - заголовок и описание
         const rightDiv = document.createElement('div');
@@ -188,7 +214,7 @@ class Page4Manager {
             const bottomPart = card.querySelector('.card-bottom');
             if (bottomPart) bottomPart.style.height = 'auto';
             const contactCard = card.querySelector('.card-contact');
-            if (contactCard) contactCard.style.height = '0'; // временно
+            if (contactCard) contactCard.style.height = '0';
         });
         
         // Группируем по строкам (по 2 карточки)
@@ -241,7 +267,7 @@ class Page4Manager {
         if (this.bottomImage.url) {
             const link = document.createElement('a');
             link.href = this.bottomImage.url;
-            link.target = '_blank'; // Открывать в новой вкладке
+            link.target = '_blank';
             link.className = 'banner-link';
             link.style.display = 'block';
             link.style.width = '100%';
@@ -256,7 +282,6 @@ class Page4Manager {
             link.appendChild(img);
             container.appendChild(link);
         } else {
-            // Если нет url, просто показываем картинку
             const img = document.createElement('img');
             img.src = this.bottomImage.src;
             img.alt = this.bottomImage.alt || 'Banner';
