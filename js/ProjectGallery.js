@@ -401,6 +401,52 @@ class ProjectGallery {
             }
         }
     }
+
+    warmUpSpritesBatch(batchSize = 5) {
+        console.log(`🔥 Пакетный прогрев спрайтов (batch: ${batchSize})...`);
+        
+        const startTime = performance.now();  // ⏱️ СЧЁТЧИК ВРЕМЕНИ
+        
+        const originalPos = this.camera.position.clone();
+        const originalZoom = this.camera.zoom;
+        
+        let index = 0;
+        const total = this.images.length;
+        
+        const processBatch = () => {
+            if (index >= total) {
+                // Восстанавливаем камеру
+                this.camera.position.copy(originalPos);
+                this.camera.zoom = originalZoom;
+                this.camera.updateProjectionMatrix();
+                this.renderer.render(this.scene, this.camera);
+                
+                // ⏱️ ВЫВОД РЕЗУЛЬТАТА
+                const endTime = performance.now();
+                const duration = (endTime - startTime) / 1000;
+                console.log(`✅ Пакетный прогрев завершён за ${duration.toFixed(2)} сек`);
+                console.log(`   Всего спрайтов: ${total}, рендеров: ${Math.ceil(total / batchSize)}`);
+                return;
+            }
+            
+            const end = Math.min(index + batchSize, total);
+            
+            // Позиционируем камеру на первый спрайт в батче
+            const targetSprite = this.images[index];
+            this.camera.position.x = targetSprite.position.x;
+            this.camera.position.y = targetSprite.position.y;
+            this.camera.zoom = 1;
+            this.camera.updateProjectionMatrix();
+            
+            // Рендерим один кадр с текущим батчем спрайтов в сцене
+            this.renderer.render(this.scene, this.camera);
+            
+            index = end;
+            requestAnimationFrame(processBatch);
+        };
+        
+        processBatch();
+    }
     
     addProjectImage(project, imageSrc, index, branchConfig) {
         const img = new Image();
@@ -558,6 +604,8 @@ class ProjectGallery {
             .force('charge', d3.forceManyBody().strength(-100))
             .force('collision', d3.forceCollide().radius(this.minDistance))
             .force('center', d3.forceCenter(0, 0).strength(0.05))
+            .alphaDecay(0.01)      // быстро затухает
+            .alphaMin(0.001)       // остановится когда почти устаканится
             .on('tick', () => {
                 nodes.forEach((node, i) => {
                     const project = this.projects[i];
@@ -579,8 +627,6 @@ class ProjectGallery {
                         img.position.x += (targetX - img.position.x) * 0.88;
                         img.position.y += (targetY - img.position.y) * 0.88;
                     });
-                    
-                    this.optimizePositions(project);
                 });
             });
     }

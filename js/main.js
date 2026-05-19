@@ -6,16 +6,16 @@ window.addEventListener('load', () => {
     // Создаем галерею для страницы 2
     setTimeout(() => {
         initGallery();
-    }, 100);
+    }, 50);
     
-    // Создаем менеджер для страницы 3
-    setTimeout(() => {
-        initPage3();
-    }, 200);
-
     setTimeout(() => {
         initPage4(); // страница 4
     }, 300);
+
+    // Создаем менеджер для страницы 3
+    setTimeout(() => {
+        initPage3();
+    }, 600);
 });
 
 function initPage3() {
@@ -29,7 +29,7 @@ function initPage4() {
 function initGallery() {
     const gallery = new ProjectGallery('page2');
     
-    // Пример данных проектов
+    // Проекты
     const projects = [
         {
             name: 'to bb',
@@ -551,7 +551,12 @@ function initGallery() {
     projects.forEach(project => {
         gallery.addProject(project);
     });
-    
+
     // Сохраняем галерею в глобальную область для отладки
     window.projectGallery = gallery;
+
+    // Прогрев спрайтов
+    setTimeout(() => {
+        gallery.warmUpSpritesBatch();
+    }, 1000);
 }
