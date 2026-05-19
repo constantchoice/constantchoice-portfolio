@@ -29,6 +29,7 @@ class LineManager {
 
         this.init();
         window.addEventListener('resize', () => {
+            if (this.isAnimating) return;
             this.init();
             this.updateWhiteFrame(); // добавляем обновление рамки
         });
@@ -372,6 +373,7 @@ updateWhiteFrame() {
     init() {
         const w = window.innerWidth;
         const h = window.innerHeight;
+        console.log(`🔄 init() called: ${w} x ${h}`);
 
         document.getElementById('resolutionInfo').innerHTML =
             `<strong>📱 Resolution:</strong> ${w} x ${h}<br>` /* +
@@ -388,6 +390,7 @@ updateWhiteFrame() {
         this.drawTopLeft(w, h);
         this.drawTopRight(w, h);
         this.drawBottomRight(w, h);
+        this.drawBottomLeft(w, h);
 
         // ВАЖНО: вызываем обновление белой рамки
         this.updateWhiteFrame();
@@ -932,7 +935,7 @@ animateLineTransition(line, fromCorner, level) {
                 maskSVG.remove();
                 
                 this.linesState[toCorner].sort((a, b) => a.level - b.level);
-                this.redrawZonesOnly();
+                this.init(); 
                 
                 // ===== РАЗБЛОКИРУЕМ ПРОКРУТКУ =====
                 document.body.style.overflow = this.originalBodyOverflow || '';
@@ -1446,330 +1449,409 @@ animateLineTransition(line, fromCorner, level) {
     drawTopLeft(w, h) {
         const container = this.containers.tl;
         
-        // Определяем максимальный уровень в этом углу
+        const lines = this.linesState.tl;
+        if (!lines || lines.length === 0) return;
+        
+        lines.forEach(lineData => {
+            const level = lineData.level;
+            const baseOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
+            const offsetX = this.pxToPercentX(baseOffset, w);
+            const offsetY = this.pxToPercentY(baseOffset, h);
+            
+            let widthLength, heightLength;
+            if (level === 1) {
+                widthLength = this.WIDTH_LENGTH_1;
+                heightLength = this.HEIGHT_LENGTH_1;
+            } else if (level === 2) {
+                widthLength = this.WIDTH_LENGTH_2;
+                heightLength = this.HEIGHT_LENGTH_2;
+            } else {
+                widthLength = this.WIDTH_LENGTH_3;
+                heightLength = this.HEIGHT_LENGTH_3;
+            }
+            
+            const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
+            const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
+            
+            const pathData = `
+                M ${offsetX + widthLength},${offsetY}
+                L ${offsetX + radiusX},${offsetY}
+                Q ${offsetX},${offsetY} ${offsetX},${offsetY + radiusY}
+                L ${offsetX},${offsetY + heightLength}
+            `;
+            
+            this.createSVG(container, pathData, level, lineData.id);
+        });
+        
+        // ЗОНЫ АКТИВАЦИИ — только для максимального уровня
         const maxLevel = this.getMaxLevelInCorner('tl');
+        const maxLineData = this.linesState.tl.find(l => l.level === maxLevel);
+        if (!maxLineData) return;
         
-        // Находим ID линии из состояния
-        const lineData = this.linesState.tl.find(l => l.level === maxLevel);
-        if (!lineData) return;
+        const level = maxLineData.level;
+        const baseOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
+        const offsetX = this.pxToPercentX(baseOffset, w);
+        const offsetY = this.pxToPercentY(baseOffset, h);
         
-        const level = lineData.level;
-        
-        // Правильный отступ для уровня
-        const offsetX = this.pxToPercentX(this.BASE_OFFSET + (level - 1) * this.LINE_SPACING, w);
-        const offsetY = this.pxToPercentY(this.BASE_OFFSET + (level - 1) * this.LINE_SPACING, h);
-        let length, heightLength;
+        let widthLength, heightLength;
         if (level === 1) {
-            length = this.WIDTH_LENGTH_1;
+            widthLength = this.WIDTH_LENGTH_1;
             heightLength = this.HEIGHT_LENGTH_1;
         } else if (level === 2) {
-            length = this.WIDTH_LENGTH_2;
+            widthLength = this.WIDTH_LENGTH_2;
             heightLength = this.HEIGHT_LENGTH_2;
         } else {
-            length = this.WIDTH_LENGTH_3;
+            widthLength = this.WIDTH_LENGTH_3;
             heightLength = this.HEIGHT_LENGTH_3;
         }
-        const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
-        const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
         
-        const pathData = `
-            M ${offsetX + length},${offsetY}
-            L ${offsetX + radiusX},${offsetY}
-            Q ${offsetX},${offsetY} ${offsetX},${offsetY + radiusY}
-            L ${offsetX},${offsetY + heightLength}
-        `;
-        
-        this.createSVG(container, pathData, level, lineData.id);
-        
-        // ЗОНЫ ПОДСВЕТКИ (толстые) - для плавного затемнения при приближении
-        const hoverExtra = 4; // +4% для зоны подсветки
-        
+        const hoverExtra = 4;
         const hoverHorizontalZone = {
             top: '0',
             left: '0',
-            width: (offsetX + length + hoverExtra) + '%', // От левого края до линии +4%
-            height: (offsetY + hoverExtra) + '%' // От верхнего края до линии +4%
+            width: (offsetX + widthLength + hoverExtra) + '%',
+            height: (offsetY + hoverExtra) + '%'
         };
-        
         const hoverVerticalZone = {
             top: '0',
             left: '0',
-            width: (offsetX + hoverExtra) + '%', // От левого края до отступа +4%
-            height: (offsetY + heightLength + hoverExtra) + '%' // От верхнего края до линии +4%
+            width: (offsetX + hoverExtra) + '%',
+            height: (offsetY + heightLength + hoverExtra) + '%'
         };
         
         this.createActivationZone(container, 'tl', level, hoverHorizontalZone, true, this);
         this.createActivationZone(container, 'tl', level, hoverVerticalZone, false, this);
         
-        // ТОЧНЫЕ ЗОНЫ (для активации) - от края до линии +1%
-        const clickExtra = 1;
-        
-        const clickHorizontalZone = {
-            top: '0',
-            left: '0',
-            width: (offsetX + length + clickExtra) + '%', // От левого края до линии +1%
-            height: (offsetY + clickExtra) + '%' // От верхнего края до линии +1%
-        };
-        
-        const clickVerticalZone = {
-            top: '0',
-            left: '0',
-            width: (offsetX + clickExtra) + '%', // От левого края до отступа +1%
-            height: (offsetY + heightLength + clickExtra) + '%' // От верхнего края до линии +1%
-        };
-        
-        this.createExactZone(container, 'tl', level, clickHorizontalZone, true, this);
-        this.createExactZone(container, 'tl', level, clickVerticalZone, false, this);
+        if (this.isHighestLevel('tl', level)) {
+            const clickExtra = 1;
+            const clickHorizontalZone = {
+                top: '0',
+                left: '0',
+                width: (offsetX + widthLength + clickExtra) + '%',
+                height: (offsetY + clickExtra) + '%'
+            };
+            const clickVerticalZone = {
+                top: '0',
+                left: '0',
+                width: (offsetX + clickExtra) + '%',
+                height: (offsetY + heightLength + clickExtra) + '%'
+            };
+            
+            this.createExactZone(container, 'tl', level, clickHorizontalZone, true, this);
+            this.createExactZone(container, 'tl', level, clickVerticalZone, false, this);
+        }
     }
+
 
     drawTopRight(w, h) {
         const container = this.containers.tr;
-
-        const lineData = this.linesState.tr.find(l => l.level === 1);
-        if (!lineData) return;
-
-        // Линия
-        const offset = this.pxToPercentX(this.BASE_OFFSET, w);
-        const offsetX = this.pxToPercentX(this.BASE_OFFSET, w);
-        const offsetY = this.pxToPercentY(this.BASE_OFFSET, h);
-        const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
-        const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
-
-        const startX = 100 - offsetX - this.WIDTH_LENGTH_1;
-        const startY = offsetY;
-
-        const cornerX = 100 - offsetX;
-        const cornerY = offsetY;
-
-        const pathData = `
-            M ${startX},${startY}
-            L ${cornerX - radiusX},${cornerY}
-            Q ${cornerX},${cornerY} ${cornerX},${cornerY + radiusY}
-            L ${cornerX},${cornerY + this.HEIGHT_LENGTH_1}
-        `;
-
-        this.createSVG(container, pathData, 1, lineData.id);
-
-        // ЗОНЫ ПОДСВЕТКИ (толстые) - для плавного затемнения при приближении
-        const horizontalZone = {
-            top: '0',
-            right: offset + '%',
-            width: this.WIDTH_LENGTH_1 + '%',
-            height: (4 * offset) + '%'
-        };
-        const verticalZone = {
-            top: offset + '%',
-            right: '0',
-            width: (4 * offset) + '%',
-            height: this.HEIGHT_LENGTH_1 + '%'
-        };
-
-        this.createActivationZone(container, 'tr', 1, horizontalZone, true, this);
-        this.createActivationZone(container, 'tr', 1, verticalZone, false, this);
-
-        // ТОЧНЫЕ ЗОНЫ (для активации) - от края до линии +1%
-        const clickExtra = 1;
         
-        // Горизонтальная зона активации - от верхнего края до линии
-        const exactHorizontalZone = {
+        // Рисуем ВСЕ линии в этом углу
+        const lines = this.linesState.tr;
+        if (!lines || lines.length === 0) return;
+        
+        lines.forEach(lineData => {
+            const level = lineData.level;
+            const offset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
+            const offsetX = this.pxToPercentX(offset, w);
+            const offsetY = this.pxToPercentY(offset, h);
+            const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
+            const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
+            
+            let widthLength, heightLength;
+            if (level === 1) {
+                widthLength = this.WIDTH_LENGTH_1;
+                heightLength = this.HEIGHT_LENGTH_1;
+            } else if (level === 2) {
+                widthLength = this.WIDTH_LENGTH_2;
+                heightLength = this.HEIGHT_LENGTH_2;
+            } else {
+                widthLength = this.WIDTH_LENGTH_3;
+                heightLength = this.HEIGHT_LENGTH_3;
+            }
+            
+            const startX = 100 - offsetX - widthLength;
+            const startY = offsetY;
+            const cornerX = 100 - offsetX;
+            const cornerY = offsetY;
+            
+            const pathData = `
+                M ${startX},${startY}
+                L ${cornerX - radiusX},${cornerY}
+                Q ${cornerX},${cornerY} ${cornerX},${cornerY + radiusY}
+                L ${cornerX},${cornerY + heightLength}
+            `;
+            
+            this.createSVG(container, pathData, level, lineData.id);
+        });
+        
+        // ===== ЗОНЫ АКТИВАЦИИ ТОЛЬКО ДЛЯ МАКСИМАЛЬНОГО УРОВНЯ =====
+        const maxLevel = this.getMaxLevelInCorner('tr');
+        const maxLineData = this.linesState.tr.find(l => l.level === maxLevel);
+        if (!maxLineData) return;
+        
+        const level = maxLineData.level;
+        const offset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
+        const offsetX = this.pxToPercentX(offset, w);
+        const offsetY = this.pxToPercentY(offset, h);
+        
+        let widthLength, heightLength;
+        if (level === 1) {
+            widthLength = this.WIDTH_LENGTH_1;
+            heightLength = this.HEIGHT_LENGTH_1;
+        } else if (level === 2) {
+            widthLength = this.WIDTH_LENGTH_2;
+            heightLength = this.HEIGHT_LENGTH_2;
+        } else {
+            widthLength = this.WIDTH_LENGTH_3;
+            heightLength = this.HEIGHT_LENGTH_3;
+        }
+        
+        // ЗОНЫ ПОДСВЕТКИ (толстые)
+        const hoverExtra = 4;
+        const hoverHorizontalZone = {
             top: '0',
             right: '0',
-            width: (offsetX + this.WIDTH_LENGTH_1 + clickExtra) + '%', // От правого края влево до линии +1%
-            height: (offsetY + clickExtra) + '%' // От верхнего края вниз до линии +1%
+            width: (offsetX + widthLength + hoverExtra) + '%',
+            height: (offsetY + hoverExtra) + '%'
         };
-
-        // Вертикальная зона активации - от правого края до линии
-        const exactVerticalZone = {
+        const hoverVerticalZone = {
             top: '0',
             right: '0',
-            width: (offsetX + clickExtra) + '%', // От правого края влево до линии +1%
-            height: (offsetY + this.HEIGHT_LENGTH_1 + clickExtra) + '%' // От верхнего края вниз до линии +1%
+            width: (offsetX + hoverExtra) + '%',
+            height: (offsetY + heightLength + hoverExtra) + '%'
         };
-
-        this.createExactZone(container, 'tr', 1, exactHorizontalZone, true, this);
-        this.createExactZone(container, 'tr', 1, exactVerticalZone, false, this);
+        
+        this.createActivationZone(container, 'tr', level, hoverHorizontalZone, true, this);
+        this.createActivationZone(container, 'tr', level, hoverVerticalZone, false, this);
+        
+        // ТОЧНЫЕ ЗОНЫ (для активации) — только для высшего уровня
+        if (this.isHighestLevel('tr', level)) {
+            const clickExtra = 1;
+            const exactHorizontalZone = {
+                top: '0',
+                right: '0',
+                width: (offsetX + widthLength + clickExtra) + '%',
+                height: (offsetY + clickExtra) + '%'
+            };
+            const exactVerticalZone = {
+                top: '0',
+                right: '0',
+                width: (offsetX + clickExtra) + '%',
+                height: (offsetY + heightLength + clickExtra) + '%'
+            };
+            
+            this.createExactZone(container, 'tr', level, exactHorizontalZone, true, this);
+            this.createExactZone(container, 'tr', level, exactVerticalZone, false, this);
+        }
     }
 
     drawBottomRight(w, h) {
         const container = this.containers.br;
         
-        const baseOffsetX = this.pxToPercentX(this.BASE_OFFSET, w);
-        const baseOffsetY = this.pxToPercentY(this.BASE_OFFSET, h);
-        const spacingX = this.pxToPercentX(this.LINE_SPACING, w);
-        const spacingY = this.pxToPercentY(this.LINE_SPACING, h);
-        const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
-        const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
+        // Рисуем ВСЕ линии в этом углу
+        const lines = this.linesState.br;
+        if (!lines || lines.length === 0) return;
         
-        // Определяем максимальный уровень в этом углу
+        lines.forEach(lineData => {
+            const level = lineData.level;
+            const baseOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
+            const offsetX = this.pxToPercentX(baseOffset, w);
+            const offsetY = this.pxToPercentY(baseOffset, h);
+            const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
+            const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
+            
+            let widthLength, heightLength;
+            if (level === 1) {
+                widthLength = this.WIDTH_LENGTH_1;
+                heightLength = this.HEIGHT_LENGTH_1;
+            } else if (level === 2) {
+                widthLength = this.WIDTH_LENGTH_2;
+                heightLength = this.HEIGHT_LENGTH_2;
+            } else {
+                widthLength = this.WIDTH_LENGTH_3;
+                heightLength = this.HEIGHT_LENGTH_3;
+            }
+            
+            // НЕ ДОБАВЛЯЕМ лишние spacingX/Y, offsetX уже учитывает уровень
+            const startX = 100 - offsetX;
+            const startY = 100 - offsetY - heightLength;
+            const cornerX = 100 - offsetX;
+            const cornerY = 100 - offsetY;
+            
+            const pathData = `
+                M ${startX},${startY}
+                L ${cornerX},${cornerY - radiusY}
+                Q ${cornerX},${cornerY} ${cornerX - radiusX},${cornerY}
+                L ${cornerX - widthLength},${cornerY}
+            `;
+            
+            this.createSVG(container, pathData, level, lineData.id);
+        });
+        
+        // ===== ЗОНЫ АКТИВАЦИИ ТОЛЬКО ДЛЯ МАКСИМАЛЬНОГО УРОВНЯ =====
         const maxLevel = this.getMaxLevelInCorner('br');
+        const maxLineData = this.linesState.br.find(l => l.level === maxLevel);
+        if (!maxLineData) return;
         
-        // Level 1 линия
-        const lineData1 = this.linesState.br.find(l => l.level === 1);
-        if (lineData1) {
-            const startX1 = 100 - baseOffsetX;
-            const heightLength1 = this.HEIGHT_LENGTH_1; // level 1
-            const startY1 = 100 - baseOffsetY - heightLength1;
-            
-            const cornerX1 = 100 - baseOffsetX;
-            const cornerY1 = 100 - baseOffsetY;
-            
-            const pathData1 = `
-                M ${startX1},${startY1}
-                L ${cornerX1},${cornerY1 - radiusY}
-                Q ${cornerX1},${cornerY1} ${cornerX1 - radiusX},${cornerY1}
-                L ${cornerX1 - this.WIDTH_LENGTH_1},${cornerY1}
-            `;
-            
-            this.createSVG(container, pathData1, 1, lineData1.id);
+        const level = maxLineData.level;
+        const baseOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
+        const offsetX = this.pxToPercentX(baseOffset, w);
+        const offsetY = this.pxToPercentY(baseOffset, h);
+        
+        let widthLength, heightLength;
+        if (level === 1) {
+            widthLength = this.WIDTH_LENGTH_1;
+            heightLength = this.HEIGHT_LENGTH_1;
+        } else if (level === 2) {
+            widthLength = this.WIDTH_LENGTH_2;
+            heightLength = this.HEIGHT_LENGTH_2;
+        } else {
+            widthLength = this.WIDTH_LENGTH_3;
+            heightLength = this.HEIGHT_LENGTH_3;
         }
         
-        // Level 2 линия
-        const lineData2 = this.linesState.br.find(l => l.level === 2);
-        if (lineData2) {
-            const startX2 = 100 - baseOffsetX - spacingX;
-            const heightLength2 = this.HEIGHT_LENGTH_2; // level 2
-            const startY2 = 100 - baseOffsetY - spacingY - heightLength2;
-            
-            const cornerX2 = 100 - baseOffsetX - spacingX;
-            const cornerY2 = 100 - baseOffsetY - spacingY;
-            
-            const pathData2 = `
-                M ${startX2},${startY2}
-                L ${cornerX2},${cornerY2 - radiusY}
-                Q ${cornerX2},${cornerY2} ${cornerX2 - radiusX},${cornerY2}
-                L ${cornerX2 - this.WIDTH_LENGTH_2},${cornerY2}
-            `;
-            
-            this.createSVG(container, pathData2, 2, lineData2.id);
-        }
+        // ЗОНЫ ПОДСВЕТКИ (толстые)
+        const hoverExtra = 4;
+        const hoverHorizontalZone = {
+            bottom: '0',
+            right: '0',
+            width: (offsetX + widthLength + hoverExtra) + '%',
+            height: (offsetY + hoverExtra) + '%'
+        };
+        const hoverVerticalZone = {
+            bottom: '0',
+            right: '0',
+            width: (offsetX + hoverExtra) + '%',
+            height: (offsetY + heightLength + hoverExtra) + '%'
+        };
         
-        // ЗОНЫ ПОДСВЕТКИ (толстые) - для всех уровней
-        if (lineData1) {
-            const horizontalZone1 = {
-                bottom: '0',
-                right: baseOffsetX + '%',
-                width: this.WIDTH_LENGTH_1 + '%',
-                height: (4 * baseOffsetY) + '%'
-            };
-            const verticalZone1 = {
-                bottom: baseOffsetY + '%',
-                right: '0',
-                width: (4 * baseOffsetX) + '%',
-                height: this.HEIGHT_LENGTH_1 + '%'
-            };
-            
-            this.createActivationZone(container, 'br', 1, horizontalZone1, true, this);
-            this.createActivationZone(container, 'br', 1, verticalZone1, false, this);
-        }
+        this.createActivationZone(container, 'br', level, hoverHorizontalZone, true, this);
+        this.createActivationZone(container, 'br', level, hoverVerticalZone, false, this);
         
-        if (lineData2) {
-            const horizontalZone2 = {
-                bottom: '0',
-                right: (baseOffsetX + spacingX) + '%',
-                width: this.WIDTH_LENGTH_2 + '%',
-                height: (4 * (baseOffsetY + spacingY)) + '%'
-            };
-            const verticalZone2 = {
-                bottom: (baseOffsetY + spacingY) + '%',
-                right: '0',
-                width: (4 * (baseOffsetX + spacingX)) + '%',
-                height: this.HEIGHT_LENGTH_2 + '%'
-            };
-            
-            this.createActivationZone(container, 'br', 2, horizontalZone2, true, this);
-            this.createActivationZone(container, 'br', 2, verticalZone2, false, this);
-        }
-        
-        // ТОЧНЫЕ ЗОНЫ (для клика) - ТОЛЬКО для максимального уровня
-        if (lineData2 && maxLevel === 2) {
-            // Горизонтальная зона (вдоль нижнего края) - от правого края влево до линии, от нижнего края вверх до линии
-            const clickHorizontalZone2 = {
+        // ТОЧНЫЕ ЗОНЫ (для активации) — только для высшего уровня
+        if (this.isHighestLevel('br', level)) {
+            const clickExtra = 1;
+            const clickHorizontalZone = {
                 bottom: '0',
                 right: '0',
-                width: (baseOffsetX + spacingX + this.WIDTH_LENGTH_2 + 1) + '%', // От правого края влево до линии +1%
-                height: (baseOffsetY + spacingY + 1) + '%' // От нижнего края вверх до линии +1%
+                width: (offsetX + widthLength + clickExtra) + '%',
+                height: (offsetY + clickExtra) + '%'
             };
-            
-            // Вертикальная зона (вдоль правого края) - от нижнего края вверх до линии, от правого края влево до линии
-            const clickVerticalZone2 = {
+            const clickVerticalZone = {
                 bottom: '0',
                 right: '0',
-                width: (baseOffsetX + spacingX + 1) + '%', // От правого края влево до линии +1%
-                height: (baseOffsetY + spacingY + this.HEIGHT_LENGTH_2 + 1) + '%' // От нижнего края вверх до линии +1%
+                width: (offsetX + clickExtra) + '%',
+                height: (offsetY + heightLength + clickExtra) + '%'
             };
             
-            this.createExactZone(container, 'br', 2, clickHorizontalZone2, true, this);
-            this.createExactZone(container, 'br', 2, clickVerticalZone2, false, this);
+            this.createExactZone(container, 'br', level, clickHorizontalZone, true, this);
+            this.createExactZone(container, 'br', level, clickVerticalZone, false, this);
         }
     }
 
     drawBottomLeft(w, h) {
         const container = this.containers.bl;
-
+        
+        // Рисуем ВСЕ линии в этом углу
         const lines = this.linesState.bl;
         if (!lines || lines.length === 0) return;
-
+        
         lines.forEach(lineData => {
             const level = lineData.level;
-
-            // Правильный отступ для уровня
             const baseOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
             const offsetX = this.pxToPercentX(baseOffset, w);
             const offsetY = this.pxToPercentY(baseOffset, h);
-
             const radiusX = this.pxToPercentX(this.CORNER_RADIUS, w);
             const radiusY = this.pxToPercentY(this.CORNER_RADIUS, h);
-            const widthLength = level === 1 ? this.WIDTH_LENGTH_1 : this.WIDTH_LENGTH_2;
-            let heightLength;
-            if (level === 1) heightLength = this.HEIGHT_LENGTH_1;
-            else if (level === 2) heightLength = this.HEIGHT_LENGTH_2;
-            else heightLength = this.HEIGHT_LENGTH_3;
-
-            // Рисуем линию для нижнего левого угла
+            
+            let widthLength, heightLength;
+            if (level === 1) {
+                widthLength = this.WIDTH_LENGTH_1;
+                heightLength = this.HEIGHT_LENGTH_1;
+            } else if (level === 2) {
+                widthLength = this.WIDTH_LENGTH_2;
+                heightLength = this.HEIGHT_LENGTH_2;
+            } else {
+                widthLength = this.WIDTH_LENGTH_3;
+                heightLength = this.HEIGHT_LENGTH_3;
+            }
+            
             const pathData = `
-                        M ${offsetX},${100 - offsetY - heightLength}
-                        L ${offsetX},${100 - offsetY - radiusY}
-                        Q ${offsetX},${100 - offsetY} ${offsetX + radiusX},${100 - offsetY}
-                        L ${offsetX + widthLength},${100 - offsetY}
-                    `;
-
+                M ${offsetX},${100 - offsetY - heightLength}
+                L ${offsetX},${100 - offsetY - radiusY}
+                Q ${offsetX},${100 - offsetY} ${offsetX + radiusX},${100 - offsetY}
+                L ${offsetX + widthLength},${100 - offsetY}
+            `;
+            
             this.createSVG(container, pathData, level, lineData.id);
-
-            // Толстые зоны для приближения
-            const horizontalZone = {
-                bottom: '0',
-                left: '0',
-                width: '100%',
-                height: (offsetY + heightLength) + '%'
-            };
-
-            const verticalZone = {
-                bottom: '0',
-                left: '0',
-                width: (offsetX + widthLength) + '%',
-                height: '100%'
-            };
-
-            this.createActivationZone(container, 'bl', level, horizontalZone, true, this);
-            this.createActivationZone(container, 'bl', level, verticalZone, false, this);
-
-            // Точные зоны для клика
-            const exactHorizontalZone = {
-                bottom: offsetY + '%',
-                left: offsetX + '%',
-                width: widthLength + '%',
-                height: (this.LINE_THICKNESS * 3) + 'px'
-            };
-
-            const exactVerticalZone = {
-                bottom: offsetY + '%',
-                left: offsetX + '%',
-                width: (this.LINE_THICKNESS * 3) + 'px',
-                height: heightLength + '%'
-            };
-
-            this.createExactZone(container, 'bl', level, exactHorizontalZone, true, this);
-            this.createExactZone(container, 'bl', level, exactVerticalZone, false, this);
         });
+        
+        // ===== ЗОНЫ АКТИВАЦИИ ТОЛЬКО ДЛЯ МАКСИМАЛЬНОГО УРОВНЯ =====
+            const maxLevel = this.getMaxLevelInCorner('bl');
+            const maxLineData = this.linesState.bl.find(l => l.level === maxLevel);
+            if (!maxLineData) return;
+            
+            const level = maxLineData.level;
+            const baseOffset = this.BASE_OFFSET + (level - 1) * this.LINE_SPACING;
+            const offsetX = this.pxToPercentX(baseOffset, w);
+            const offsetY = this.pxToPercentY(baseOffset, h);
+            
+            let widthLength, heightLength;
+            if (level === 1) {
+                widthLength = this.WIDTH_LENGTH_1;
+                heightLength = this.HEIGHT_LENGTH_1;
+            } else if (level === 2) {
+                widthLength = this.WIDTH_LENGTH_2;
+                heightLength = this.HEIGHT_LENGTH_2;
+            } else {
+                widthLength = this.WIDTH_LENGTH_3;
+                heightLength = this.HEIGHT_LENGTH_3;
+            }
+            
+            const hoverExtra = 4;
+            
+            // ГОРИЗОНТАЛЬНАЯ зона подсветки — широкая, но низкая (вдоль нижнего края)
+            const hoverHorizontalZone = {
+                bottom: '0',
+                left: '0',
+                width: (offsetX + widthLength + hoverExtra) + '%',
+                height: (offsetY + hoverExtra) + '%'        // ← низкая, как в drawTopLeft
+            };
+            
+            // ВЕРТИКАЛЬНАЯ зона подсветки — узкая, но высокая (вдоль левого края)
+            const hoverVerticalZone = {
+                bottom: '0',
+                left: '0',
+                width: (offsetX + hoverExtra) + '%',        // ← узкая
+                height: (offsetY + heightLength + hoverExtra) + '%'  // ← высокая
+            };
+            
+            this.createActivationZone(container, 'bl', level, hoverHorizontalZone, true, this);
+            this.createActivationZone(container, 'bl', level, hoverVerticalZone, false, this);
+            
+            // Точные зоны (тонкие, вдоль линий)
+            if (this.isHighestLevel('bl', level)) {
+                const clickExtra = 1;
+                
+            // Горизонтальная точная зона — широкая, но низкая (вдоль нижнего края)
+            const exactHorizontalZone = {
+                bottom: '0',
+                left: '0',
+                width: (offsetX + widthLength + clickExtra) + '%',   // широкая
+                height: (offsetY + clickExtra) + '%'                 // низкая
+            };
+            
+            // Вертикальная точная зона — узкая, но высокая (вдоль левого края)
+            const exactVerticalZone = {
+                bottom: '0',
+                left: '0',
+                width: (offsetX + clickExtra) + '%',                 // узкая
+                height: (offsetY + heightLength + clickExtra) + '%'  // высокая
+            };
+                
+                this.createExactZone(container, 'bl', level, exactHorizontalZone, true, this);
+                this.createExactZone(container, 'bl', level, exactVerticalZone, false, this);
+            }
     }
 }
