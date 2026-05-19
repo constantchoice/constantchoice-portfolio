@@ -1,0 +1,119 @@
+User-agent: *
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+User-agent: YaDirectBot
+Allow: /
+
+User-agent: Mail.Ru
+Disallow: /
+
+User-agent: Rambler
+Disallow: /
+
+User-agent: Aport
+Disallow: /
+
+User-agent: Nigma
+Disallow: /
+
+User-agent: YandexBlogs
+Disallow: /
+
+User-agent: YandexCalendar
+Disallow: /
+
+User-agent: YandexDirect
+Disallow: /
+
+User-agent: YandexImages
+Disallow: /
+
+User-agent: YandexVideo
+Disallow: /
+
+User-agent: YandexMedia
+Disallow: /
+
+User-agent: YandexMetrika
+Disallow: /
+
+User-agent: YandexNews
+Disallow: /
+
+User-agent: YandexSitelinks
+Disallow: /
+
+User-agent: YandexPagecheck
+Disallow: /
+
+# SEO-боты
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: Majestic
+Disallow: /
+
+User-agent: Dotnetdotcom
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: AwarioBot
+Disallow: /
+
+User-agent: MegaIndex
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: Ezooms
+Disallow: /
+
+User-agent: YandexBot
+Disallow: /
+
+# Агрессивные парсеры
+User-agent: Bytespider
+Disallow: /
+
+User-agent: ZoominfoBot
+Disallow: /
+
+User-agent: BrandSafety
+Disallow: /
+
+# AI-боты
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
