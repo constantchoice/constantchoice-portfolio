@@ -320,14 +320,14 @@
     
     .items-grid {
         grid-template-columns: 1fr;
-        gap: 40px;
-        padding: 0px 37px;
-        margin-bottom: 40px;
-        margin-top: 12px;
+        gap: 20px;
+        padding: 0px 24px;
+        margin-bottom: 20px;
     }
     
     .card-top {
         flex-direction: column;
+        margin-bottom: 0px;
     }
 
     .card-contact {
@@ -354,20 +354,29 @@
 
     /* Заголовок */
     .card-title {
-        font-size: 30px;
+        font-size: 18px;
+        margin-bottom: 10px;
     }
     
     /* Описание */
     .card-description {
-        font-size: 20px;
+        font-size: 16px;
         margin: 0;
         width: 100%;
     }
 
+    /* Нижняя часть карточки */
+    .card-bottom {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
     /* Мета-информация */
     .card-meta {
-        font-size: 20px;
+        font-size: 16px;
         max-width: 60%;
+        line-height: 20px;
 
         /* Выравнивание по нижнему правому углу */
         display: flex;
@@ -378,6 +387,13 @@
         
         margin-left: 0;
         margin-right: auto;
+    }
+
+    .card-meta strong {
+        color: #999999;
+        font-weight: 500;
+        min-width: 66px;
+        display: inline-block;
     }
 
     .contact-button {
