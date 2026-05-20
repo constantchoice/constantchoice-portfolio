@@ -305,7 +305,7 @@
 @media (max-width: 1366px) {
     .card-description,
     .card-meta {
-        font-size: 14px;
+        font-size: 16px;
     }
     
     .card-title {
@@ -315,42 +315,83 @@
 
 @media (max-width: 768px) {
     .page4-container {
-        padding: 30px;
+        padding: 50px 25px;
     }
     
     .items-grid {
         grid-template-columns: 1fr;
-        gap: 30px;
+        gap: 40px;
+        padding: 0px 37px;
+        margin-bottom: 40px;
+        margin-top: 12px;
     }
     
     .card-top {
         flex-direction: column;
     }
-    
-    .card-image-container,
+
+    .card-contact {
+        flex: 1;
+        position: relative;
+        border-radius: 20px;
+        max-width: 40%;
+        overflow: hidden;
+        background: #000;
+        height: 0; /* временно, пока JS не установит нужную высоту */
+        min-height: 0; /* убираем min-height */
+    }
+
+    /* Контейнер изображения */
+    .card-image-container {
+        max-width: 100%;
+        margin-bottom: 5px;
+    }
+
+    /* Блок с заголовком и описанием */
     .card-text-container {
         max-width: 100%;
     }
-    
-    .card-description,
-    .card-meta {
-        font-size: 14px;
-    }
-    
+
+    /* Заголовок */
     .card-title {
-        font-size: 24px;
+        font-size: 30px;
     }
     
+    /* Описание */
+    .card-description {
+        font-size: 20px;
+        margin: 0;
+        width: 100%;
+    }
+
+    /* Мета-информация */
+    .card-meta {
+        font-size: 20px;
+        max-width: 60%;
+
+        /* Выравнивание по нижнему правому углу */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;  /* выравнивание по вертикали (снизу) */
+        align-items: flex-start;      /* выравнивание по горизонтали (справа) */
+        text-align: left;
+        
+        margin-left: 0;
+        margin-right: auto;
+    }
+
     .contact-button {
-        font-size: 16px;
+        font-size: 18px;
+        font-weight: 500;
         padding: 10px 16px;
         bottom: 10px;
         left: 10px;
         right: 10px;
     }
-    
+
     .bottom-banner {
-        padding: 0;
+        margin-top: 0px;
+        padding: 0px 25px;
     }
 }
 

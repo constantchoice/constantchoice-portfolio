@@ -207,7 +207,40 @@ class Page4Manager {
         
         const cards = grid.querySelectorAll('.item-card');
         if (cards.length === 0) return;
-        
+
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            cards.forEach(card => {
+                // Сбрасываем высоты
+                card.style.height = 'auto';
+                const bottomPart = card.querySelector('.card-bottom');
+                const contactCard = card.querySelector('.card-contact');
+                const metaPart = card.querySelector('.card-meta');
+                
+                if (!bottomPart || !contactCard) return;
+                
+                // Сбрасываем высоты
+                bottomPart.style.height = 'auto';
+                contactCard.style.height = 'auto';
+                if (metaPart) metaPart.style.height = 'auto';
+                
+                // Получаем высоту contact (если меньше 60px — ставим 60px)
+                let contactHeight = contactCard.offsetHeight;
+                if (contactHeight < 60) contactHeight = 60;
+                
+                // Ставим высоту bottomPart = max(высота meta, contactHeight)
+                let metaHeight = metaPart ? metaPart.offsetHeight : 0;
+                let targetHeight = Math.max(metaHeight, contactHeight);
+                
+                if (targetHeight > 0) {
+                    bottomPart.style.height = targetHeight + 'px';
+                    contactCard.style.height = targetHeight + 'px';
+                    if (metaPart) metaPart.style.height = targetHeight + 'px';
+                }
+            });
+            return;
+        }
+            
         // Сначала сбрасываем высоты
         cards.forEach(card => {
             card.style.height = 'auto';
