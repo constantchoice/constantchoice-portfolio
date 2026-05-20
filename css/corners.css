@@ -48,12 +48,11 @@
 .zone-level-5 { background: rgba(244, 67, 54, 0.3); }
 
 
+/* ВРЕМЕННО: для отладки на телефоне */
 .activation-zone {
-    position: absolute;
-    pointer-events: auto;
-    cursor: pointer;
-    opacity: 0;
-    -webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* убирает серый фон при тапе */
+    background: rgba(255, 0, 0, 0.5) !important;
+    opacity: 0.5 !important;
+    z-index: 9999 !important;
 }
 
 /* Для телефонов — увеличенные зоны */
