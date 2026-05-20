@@ -288,7 +288,7 @@
 }
 
 /* Для средних экранов (1920x1080) */
-@media (min-width: 1600px) and (max-width: 1999px) {
+@media (min-width: 1600px) and (max-width: 2000px) {
 
     .card-title {
         font-size: 22px;
