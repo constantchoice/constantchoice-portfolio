@@ -10,7 +10,13 @@ function createExactZone(container, corner, level, styles, isHorizontal, lineMan
     
     Object.assign(zone.style, styles);
     
-    // При наведении на точную зону - затемняем линию
+    // Дополнительные стили для Safari на iOS
+    zone.style.webkitTapHighlightColor = 'transparent';
+    zone.style.touchAction = 'manipulation';
+    
+    let hoverTimer = null;
+    
+    // При наведении на точную зону - затемняем линию (только для ПК)
     zone.addEventListener('mouseenter', () => {
         const lineData = lineManager.linesState[corner]?.find(l => l.level === level);
         if (lineData) {
@@ -20,9 +26,30 @@ function createExactZone(container, corner, level, styles, isHorizontal, lineMan
                 line.setAttribute('stroke-width', lineManager.LINE_THICKNESS + 1);
             }
         }
+        
+        // Запускаем анимацию с небольшой задержкой
+        if (hoverTimer) clearTimeout(hoverTimer);
+        hoverTimer = setTimeout(() => {
+            if (lineManager.isAnimating) return;
+            
+            console.log(`Запуск анимации по наведению: ${corner} level ${level}`);
+            
+            const lineDataForAnim = lineManager.linesState[corner]?.find(l => l.level === level);
+            if (lineDataForAnim) {
+                const line = container.querySelector(`[data-line-id="${lineDataForAnim.id}"]`);
+                if (line) {
+                    lineManager.animateLineTransition(line, corner, level);
+                }
+            }
+        }, 150);
     });
     
     zone.addEventListener('mouseleave', () => {
+        if (hoverTimer) {
+            clearTimeout(hoverTimer);
+            hoverTimer = null;
+        }
+        
         if (!lineManager.isAnimating) {
             const lineData = lineManager.linesState[corner]?.find(l => l.level === level);
             if (lineData) {
@@ -35,12 +62,12 @@ function createExactZone(container, corner, level, styles, isHorizontal, lineMan
         }
     });
     
-    // При клике запускаем анимацию
+    // Для ПК — клик
     zone.addEventListener('click', (e) => {
         e.stopPropagation();
         if (lineManager.isAnimating) return;
         
-        console.log(`Запуск анимации: ${corner} level ${level}`);
+        console.log(`Клик: ${corner} level ${level}`);
         
         const lineData = lineManager.linesState[corner]?.find(l => l.level === level);
         if (lineData) {
@@ -50,6 +77,23 @@ function createExactZone(container, corner, level, styles, isHorizontal, lineMan
             }
         }
     });
+    
+    // Для Safari и мобильных — касание
+    zone.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (lineManager.isAnimating) return;
+        
+        console.log(`Тач (Safari): ${corner} level ${level}`);
+        
+        const lineData = lineManager.linesState[corner]?.find(l => l.level === level);
+        if (lineData) {
+            const line = container.querySelector(`[data-line-id="${lineData.id}"]`);
+            if (line) {
+                lineManager.animateLineTransition(line, corner, level);
+            }
+        }
+    }, { passive: false });
     
     container.appendChild(zone);
     return zone;
@@ -64,7 +108,11 @@ function createActivationZone(container, corner, level, styles, isHorizontal, li
     
     Object.assign(zone.style, styles);
     
-    // При движении мыши внутри зоны
+    // Дополнительные стили для Safari на iOS
+    zone.style.webkitTapHighlightColor = 'transparent';
+    zone.style.touchAction = 'manipulation';
+    
+    // При движении мыши внутри зоны (только для ПК)
     zone.addEventListener('mousemove', (e) => {
         const rect = zone.getBoundingClientRect();
         
