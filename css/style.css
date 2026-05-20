@@ -329,3 +329,17 @@ body.dark-theme .white-mask path {
 .light-theme-content .page-content p {
     color: #999999 !important;
 }
+
+/* Форсируем аппаратное ускорение на iOS */
+.corner-svg,
+.white-mask svg,
+.white-frame svg {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
+/* Фикс для масок на iOS */
+.page {
+    -webkit-mask-composite: source-over;
+    mask-composite: source-over;
+}
