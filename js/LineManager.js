@@ -374,9 +374,9 @@ updateWhiteFrame() {
         const w = window.innerWidth;
         const h = window.innerHeight;
         console.log(`🔄 init() called: ${w} x ${h}`);
-
+        /*
         document.getElementById('resolutionInfo').innerHTML =
-            `<strong>📱 Resolution:</strong> ${w} x ${h}<br>` /* +
+            `<strong>📱 Resolution:</strong> ${w} x ${h}<br>`  +
             `<strong>⚙️ Толщина:</strong> ${this.LINE_THICKNESS}px<br>` +
             `<strong>📍 Отступ Level 1:</strong> ${this.BASE_OFFSET}px<br>` +
             `<strong>🔲 Интервал:</strong> ${this.LINE_SPACING}px<br>` +
