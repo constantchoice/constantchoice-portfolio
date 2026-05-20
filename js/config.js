@@ -188,12 +188,12 @@ const CONFIG = {
                     'OpenCV-powered tracking ensures high accuracy. Flexible threshold system (threshold, area, lifetime) gives full control over results. Python backend enables JSON data export for post-processing\n\n' +
                     'Perfect for VFX, music videos, and dynamic motion graphics',
                 meta: [
-                    { label: 'Works with', value: 'After Effects 2020+ (Windows)' },
-                    { label: 'UI Language', value: 'English / Russian' },
-                    { label: 'Tech stack', value: 'ExtendScript (JSX) + Python 3 + OpenCV' },
-                    { label: 'Includes', value: 'Source code • Documentation' },
-                    { label: 'Version', value: 'v1.102.25' },
-                    { label: 'Author', value: 'constantchoice' }
+                    { label: 'works with', value: 'After Effects 2020+ (Windows)' },
+                    { label: 'UI language', value: 'English / Russian' },
+                    { label: 'tech stack', value: 'ExtendScript (JSX) + Python 3 + OpenCV' },
+                    { label: 'includes', value: 'Source code • Documentation' },
+                    { label: 'version', value: 'v1.102.25' },
+                    { label: 'author', value: 'constantchoice' }
                 ],
                 contactCard: {
                     image: 'images/page4/item4/contact-bg.webp',
@@ -205,8 +205,33 @@ const CONFIG = {
                         textColor: '#999999'
                     }
                 }
+            },
+            {
+                image: 'images/page4/item5/main.webp',
+                title: 'MONUMENTAL',
+                description: '3D cinematic — an animated architectural short in the brutalist aesthetic. Working with volume, light, and camera dynamics to convey the power and raw beauty of concrete structures\n\n' +
+                    'Focused on monumental forms, stark geometry, and the dramaturgy of light. The camera reveals the scale of the structures through slow, weighty flyovers and abrupt shifts in perspective\n\n' +
+                    'Full production cycle: from static compositing to final render and post-processing',
+                meta: [
+                    { label: 'type', value: '3D Cinematic / Brutalism' },
+                    { label: 'status', value: 'Post-Production (2 weeks)' },
+                    { label: 'tech stack', value: 'Blender • After Effects • Photoshop • Illustrator • DaVinci Resolve • Audition' },
+                    { label: 'timeline', value: '2 months' },
+                    { label: 'author', value: 'constantchoice' }
+                ],
+                contactCard: {
+                    image: 'images/page4/item5/contact-bg.webp',
+                    imageUrl: 'https://www.behance.net/constantchoice',
+                    button: {
+                        text: 'FOLLOW PROGRESS',
+                        url: 'https://www.behance.net/constantchoice',
+                        color: '#ffffff',
+                        textColor: '#999999'
+                    }
+                }
             }
         ],
+
         
         // Нижний баннер
         BOTTOM_IMAGE: {
