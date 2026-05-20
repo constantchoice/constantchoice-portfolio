@@ -94,6 +94,7 @@ body {
     width: 100vw;
     height: 100vh;
     height: -webkit-fill-available;
+    -webkit-overflow-scrolling: touch;
     z-index: 1;
 }
 
