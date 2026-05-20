@@ -289,27 +289,63 @@
 
 /* Для средних экранов (1920x1080) */
 @media (min-width: 1600px) and (max-width: 1999px) {
-    .card-description,
+
+    .card-title {
+        font-size: 22px;
+    }
+
     .card-meta {
         font-size: 18px;
     }
-    
-    .card-title {
-        font-size: 28px;
+
+    /* Описание */
+    .card-description {
+        font-size: 18px;
+        margin: 0;
+        width: 100%;
+    }
+
+    .contact-button {
+        font-size: 18px;
     }
 }
 
-/* Базовый размер уже 14px для 1920x1080 и ниже */
-
 /* Для маленьких экранов */
-@media (max-width: 1366px) {
-    .card-description,
-    .card-meta {
-        font-size: 16px;
-    }
-    
+@media (max-width: 1600px) {
     .card-title {
-        font-size: 22px;
+        font-size: 20px;
+    }
+
+    .card-description{
+        font-size: 14px;
+        line-height: 24px;
+    }
+
+    .card-bottom {
+        display: flex;
+        justify-content: flex-end;  /* выравнивание по вертикали (снизу) */
+    }
+
+    .card-meta{
+        font-size: 14px;
+        line-height: 20px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;  /* выравнивание по вертикали (снизу) */
+        align-items: flex-start;      /* выравнивание по горизонтали (справа) */
+        text-align: left;
+        
+        margin-left: 0;
+        margin-right: auto;
+    }
+
+    .card-meta strong {
+        min-width: 58px;
+    }
+
+    .contact-button {
+        font-size: 14px;
     }
 }
 
