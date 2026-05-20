@@ -10,7 +10,9 @@ function createExactZone(container, corner, level, styles, isHorizontal, lineMan
     
     Object.assign(zone.style, styles);
     
-    // При наведении на точную зону - затемняем линию
+    let hoverTimer = null;
+    
+    // При наведении (ПК)
     zone.addEventListener('mouseenter', () => {
         const lineData = lineManager.linesState[corner]?.find(l => l.level === level);
         if (lineData) {
@@ -20,9 +22,29 @@ function createExactZone(container, corner, level, styles, isHorizontal, lineMan
                 line.setAttribute('stroke-width', lineManager.LINE_THICKNESS + 1);
             }
         }
+        
+        if (hoverTimer) clearTimeout(hoverTimer);
+        hoverTimer = setTimeout(() => {
+            if (lineManager.isAnimating) return;
+            
+            console.log(`Запуск анимации по наведению: ${corner} level ${level}`);
+            
+            const lineDataForAnim = lineManager.linesState[corner]?.find(l => l.level === level);
+            if (lineDataForAnim) {
+                const line = container.querySelector(`[data-line-id="${lineDataForAnim.id}"]`);
+                if (line) {
+                    lineManager.animateLineTransition(line, corner, level);
+                }
+            }
+        }, 150);
     });
     
     zone.addEventListener('mouseleave', () => {
+        if (hoverTimer) {
+            clearTimeout(hoverTimer);
+            hoverTimer = null;
+        }
+        
         if (!lineManager.isAnimating) {
             const lineData = lineManager.linesState[corner]?.find(l => l.level === level);
             if (lineData) {
@@ -35,12 +57,12 @@ function createExactZone(container, corner, level, styles, isHorizontal, lineMan
         }
     });
     
-    // При клике запускаем анимацию
+    // Клик для ПК
     zone.addEventListener('click', (e) => {
         e.stopPropagation();
         if (lineManager.isAnimating) return;
         
-        console.log(`Запуск анимации: ${corner} level ${level}`);
+        console.log(`Клик: ${corner} level ${level}`);
         
         const lineData = lineManager.linesState[corner]?.find(l => l.level === level);
         if (lineData) {
@@ -50,6 +72,24 @@ function createExactZone(container, corner, level, styles, isHorizontal, lineMan
             }
         }
     });
+    
+    // ===== ДОБАВЛЯЕМ ДЛЯ SAFARI (ТОЧНЫЕ ЗОНЫ) =====
+    zone.addEventListener('touchstart', (e) => {
+        // НЕ вызываем preventDefault()!
+        e.stopPropagation();
+        if (lineManager.isAnimating) return;
+        
+        console.log(`Точная зона тач (Safari): ${corner} level ${level}`);
+        
+        const lineData = lineManager.linesState[corner]?.find(l => l.level === level);
+        if (lineData) {
+            const line = container.querySelector(`[data-line-id="${lineData.id}"]`);
+            if (line) {
+                lineManager.animateLineTransition(line, corner, level);
+            }
+        }
+    });
+    // ============================================
     
     container.appendChild(zone);
     return zone;
