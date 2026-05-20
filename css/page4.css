@@ -276,7 +276,7 @@
 /* ===== АДАПТИВНОСТЬ ТЕКСТА ===== */
 
 /* Для больших экранов (2560x1440 и выше) */
-@media (min-width: 2000px) {
+@media (min-width: 2000px) and (max-width: 3000px) {
     .card-description,
     .card-meta {
         font-size: 21px;
