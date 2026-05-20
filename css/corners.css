@@ -46,14 +46,3 @@
 .zone-level-3 { background: rgba(255, 152, 0, 0.3); }
 .zone-level-4 { background: rgba(156, 39, 176, 0.3); }
 .zone-level-5 { background: rgba(244, 67, 54, 0.3); }
-
-
-@media (max-width: 768px) {
-    .activation-zone[data-exact="true"] {
-        background: rgba(255, 0, 0, 0.5) !important;
-        opacity: 0.5 !important;
-        min-width: 40px;
-        min-height: 40px;
-        transform-origin: top left;
-    }
-}
