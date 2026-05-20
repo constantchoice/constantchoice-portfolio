@@ -48,17 +48,12 @@
 .zone-level-5 { background: rgba(244, 67, 54, 0.3); }
 
 
-/* ВРЕМЕННО: для отладки на телефоне */
-.activation-zone {
-    background: rgba(255, 0, 0, 0.5) !important;
-    opacity: 0.5 !important;
-    z-index: 9999 !important;
-}
-
-/* Для телефонов — увеличенные зоны */
 @media (max-width: 768px) {
     .activation-zone[data-exact="true"] {
-        min-width: 44px;  /* минимальный размер для пальца (Apple guideline) */
-        min-height: 44px;
+        background: rgba(255, 0, 0, 0.5) !important;
+        opacity: 0.5 !important;
+        min-width: 40px;
+        min-height: 40px;
+        transform-origin: top left;
     }
 }
