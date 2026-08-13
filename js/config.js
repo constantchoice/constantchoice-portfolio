@@ -77,7 +77,8 @@ const CONFIG = {
             { url: 'https://www.youtube.com/@luxgoth', image: 'images/floating/LUXGOTH.webp' },
             { url: 'ANONYMOUS', image: 'images/floating/LIZARD_TAIL.webp' },
             { url: 'https://www.behance.net/gallery/133009905/Blood-on-the-canvas', image: 'images/floating/CANDY.webp' },
-            { url: 'https://www.instagram.com/nansjova', image: 'images/floating/TRIGANA.webp' }
+            { url: 'https://www.instagram.com/nansjova', image: 'images/floating/TRIGANA.webp' },
+            { url: 'https://www.instagram.com/emptai.vfx', image: 'images/floating/EMPTAI.webp' }
         ],
         
         // Иконки навыков (средний блок)
@@ -229,10 +230,56 @@ const CONFIG = {
                         textColor: '#999999'
                     }
                 }
+            },
+            {
+                image: 'images/page4/item6/main.webp',
+                title: 'ZAKHAR',
+                description: 'A fashion series created using 3D scanning technology. The subject was digitized through photogrammetry — a sequence of multi-angle shots processed in COLMAP and Houdini via Gaussian Splatting\n\n' +
+                    'The final renders are stylized as a fashion editorial — with emphasis on character, light, and volume. The result is a fusion of digital craftsmanship and human presence, where the scanned individual becomes both subject and artifact\n\n' +
+                    'A case study in how photogrammetry can be applied to fashion, digital art, and commercial content production',
+                meta: [
+                    { label: 'type', value: '3D Fashion / Photogrammetry' },
+                    { label: 'status', value: 'Completed' },
+                    { label: 'tech stack', value: 'COLMAP • Houdini • Gaussian Splatting • Photoshop • Capture One' },
+                    { label: 'timeline', value: '1 day' },
+                    { label: 'author', value: 'constantchoice' }
+                ],
+                contactCard: {
+                    image: 'images/page4/item6/contact-bg.webp',
+                    imageUrl: 'https://www.behance.net/constantchoice',
+                    button: {
+                        text: 'OPEN PROJECT',
+                        url: 'https://www.behance.net/gallery/253744551/Zakhar',
+                        color: '#ffffff',
+                        textColor: '#999999'
+                    }
+                }
+            },
+            {
+                image: 'images/page4/item7/main.webp',
+                title: '10 LETTERS, 150 HOURS',
+                description: 'A complete typographic system built from scratch. Ten characters, each constructed individually — without a single pre-existing matrix\n\n' +
+                    'Classical proportions serve only as a starting point: the final geometry is unique — stroke contrast is amplified, terminal cuts are refined, and optical spacing is calibrated with precision\n\n' +
+                    'This is not a modified typeface. It is an original type family, designed to carry a brand\'s identity without borrowing from anyone else',
+                meta: [
+                    { label: 'type', value: 'Typography / Type Design' },
+                    { label: 'status', value: 'Completed' },
+                    { label: 'tech stack', value: 'Illustrator • Photoshop' },
+                    { label: 'timeline', value: '3 weeks' },
+                    { label: 'author', value: 'constantchoice' }
+                ],
+                contactCard: {
+                    image: 'images/page4/item7/contact-bg.webp',
+                    imageUrl: 'https://www.behance.net/constantchoice',
+                    button: {
+                        text: 'OPEN PROJECT',
+                        url: 'https://dribbble.com/shots/27613495-10-Letters-150-Hours',
+                        color: '#ffffff',
+                        textColor: '#999999'
+                    }
+                }
             }
         ],
-
-        
         // Нижний баннер
         BOTTOM_IMAGE: {
             src: 'images/page4/bottom-banner.webp',

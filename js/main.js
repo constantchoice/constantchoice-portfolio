@@ -532,6 +532,36 @@ function initGallery() {
                 'images/projects/HUI/10.webp',
                 'images/projects/HUI/11.webp'
             ]
+        },
+        {
+            name: 'Zakhar',
+            url: 'https://www.behance.net/gallery/253744551/Zakhar',
+            images: [
+                'images/projects/Zakhar/1.webp',
+                'images/projects/Zakhar/2.webp',
+                'images/projects/Zakhar/3.webp',
+                'images/projects/Zakhar/4.webp',
+                'images/projects/Zakhar/5.webp',
+                'images/projects/Zakhar/6.webp',
+                'images/projects/Zakhar/7.webp',
+                'images/projects/Zakhar/8.webp',
+                'images/projects/Zakhar/9.webp',
+                'images/projects/Zakhar/10.webp',
+                'images/projects/Zakhar/11.webp',
+                'images/projects/Zakhar/12.webp',
+                'images/projects/Zakhar/13.webp',
+                'images/projects/Zakhar/14.webp',
+                'images/projects/Zakhar/15.webp',
+                'images/projects/Zakhar/16.webp'
+            ]
+        },
+        {
+            name: '10 Letters, 150 Hours',
+            url: 'https://dribbble.com/shots/27613495-10-Letters-150-Hours',
+            images: [
+                'images/projects/10L150H/1.webp',
+                'images/projects/10L150H/2.webp'
+            ]
         } 
         
 /*         ,
