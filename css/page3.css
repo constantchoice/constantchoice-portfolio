@@ -10,7 +10,15 @@
     pointer-events: none;
 }
 
-/* Включаем интерактивность для кликабельных элементов */
+/* ===== БЛЮР-ОВЕРЛЕЙ ===== */
+.middle-block,
+.bottom-block {
+    position: relative;
+    z-index: auto;
+    overflow: visible;
+}
+
+/* Интерактивность для кликабельных элементов */
 .floating-link,
 .skill-icon,
 .link-center,
@@ -88,6 +96,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    pointer-events: auto;
+    width: 75%;
+    left: 12.5%;
 }
 
 .middle-block .block-title {
@@ -99,7 +110,6 @@
     justify-content: center;
     gap: 15px;
     width: 100%;
-    pointer-events: auto;
 }
 
 .skill-icon {
@@ -112,6 +122,7 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    cursor: default;
 }
 
 /* ===== НИЖНИЙ БЛОК ===== */
@@ -120,6 +131,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    pointer-events: auto;
+    width: 75%;
+    left: 12.5%;
 }
 
 .bottom-block .block-title {
@@ -631,6 +645,87 @@
     75% { transform: translateX(4px); }
 }
 
+/* Все дочерние элементы блоков — 50% непрозрачности */
+.middle-block *,
+.bottom-block * {
+    opacity: 0.5;
+    transition: opacity 0.7s ease;
+}
+
+/* При наведении на блок — 100% непрозрачности */
+.middle-block:hover *,
+.bottom-block:hover * {
+    opacity: 1;
+}
+
+.middle-block::before,
+.bottom-block::before {
+    content: '';
+    position: absolute;
+    top: -17px;
+    width: 100%;
+    height: calc(100% + 53px);
+    border-radius: 24px;
+    backdrop-filter: blur(8px) saturate(0.8);
+    -webkit-backdrop-filter: blur(8px) saturate(0.8);
+    /* background: rgba(255, 255, 255, 0.9); */
+    pointer-events: auto;
+    cursor: default;
+    z-index: 10;
+    transition: backdrop-filter 0.4s ease, background 0.4s ease, pointer-events 0s;
+}
+
+.middle-block:hover::before,
+.bottom-block:hover::before {
+    backdrop-filter: blur(0px) saturate(1);
+    -webkit-backdrop-filter: blur(0px) saturate(1);
+    pointer-events: none;
+    transition: backdrop-filter 0.4s ease,
+            background 0.4s ease,
+            pointer-events 0s;
+    /* background: rgba(255, 255, 255, 0); */
+}
+
+body.dark-theme .middle-block::before,
+body.dark-theme .bottom-block::before {
+   /* background: rgba(0, 0, 0, 0.15); */
+}
+
+body.dark-theme .middle-block:hover::before,
+body.dark-theme .bottom-block:hover::before {
+    /* background: rgba(0, 0, 0, 0); */
+}
+
+.middle-block:hover::after,
+.bottom-block:hover::after {
+    opacity: 0;
+}
+
+.middle-block .block-title,
+.middle-block .skills-row,
+.bottom-block .block-title,
+.bottom-block .links-container {
+    position: relative;
+    z-index: 1;
+}
+
+.middle-block .skill-icon,
+.bottom-block .link-center,
+.bottom-block .link-left,
+.bottom-block .link-right,
+.bottom-block .small-link {
+    pointer-events: none;
+    cursor: pointer;
+}
+
+.middle-block:hover .skill-icon,
+.bottom-block:hover .link-center,
+.bottom-block:hover .link-left,
+.bottom-block:hover .link-right,
+.bottom-block:hover .small-link {
+    pointer-events: auto;
+    cursor: pointer;
+}
 
 /* ===== АДАПТИВНОСТЬ ===== */
 @media (max-width: 1920px) {
@@ -667,4 +762,16 @@
     .skills-row {
         gap: 10px;
     }
+    
+    .middle-block::before,
+    .bottom-block::before {
+        backdrop-filter: blur(8px) saturate(0.8);
+        -webkit-backdrop-filter: blur(8px) saturate(0.8);
+    }
+
+    .middle-block::after,
+    .bottom-block::after {
+        font-size: 12px;
+    }
 }
+
