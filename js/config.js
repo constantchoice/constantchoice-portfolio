@@ -172,7 +172,7 @@ const CONFIG = {
                     { label: 'year    ', value: 'WHEN' }
                 ],
                 contactCard: {
-                    image: 'images/page4/item3/contact-bg.webp',  // 500x500
+                    image: 'images/page4/item3/contact-bg.webp',  // 500x500 
                     imageUrl: 'https://www.behance.net/constantchoice',
                     button: {
                         text: 'CONTACT',
