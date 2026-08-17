@@ -1752,7 +1752,7 @@ animateLineTransition(line, fromCorner, level) {
     drawBottomLeft(w, h) {
         const container = this.containers.bl;
         
-        // Рисуем ВСЕ линии в этом углу
+        // Рисуем ВСЕ линии в этом углу 
         const lines = this.linesState.bl;
         if (!lines || lines.length === 0) return;
         
