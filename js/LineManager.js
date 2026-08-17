@@ -542,7 +542,6 @@ animateLineTransition(line, fromCorner, level) {
         }
         
         // ===== НАХОДИМ ПРОКРУЧИВАЕМЫЙ КОНТЕЙНЕР =====
-        // Ищем .page4-container внутри страницы
         let scrollableContainer = null;
         let scrollTop = 0;
         

@@ -139,7 +139,6 @@
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    background: #000;
     height: 0; /* временно, пока JS не установит нужную высоту */
     min-height: 0; /* убираем min-height */
 }
@@ -372,7 +371,6 @@
         border-radius: 20px;
         max-width: 40%;
         overflow: hidden;
-        background: #000;
         height: 0; /* временно, пока JS не установит нужную высоту */
         min-height: 0; /* убираем min-height */
     }

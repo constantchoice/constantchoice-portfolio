@@ -61,7 +61,7 @@ const CONFIG = {
         // Настройки для плавающих изображений
         FLOATING_SETTINGS: {
             SIZE_MODE: 'relative',      // 'relative' или 'fixed'
-            RELATIVE_SCALE: 0.20,       // 15% от ширины контейнера (для relative)
+            RELATIVE_SCALE: 0.20,       // 20% от ширины контейнера (для relative)
             FIXED_WIDTH: 750,            // Фиксированная ширина в px (для fixed)
             MIN_WIDTH: 100,               // Минимальная ширина
             MAX_WIDTH: 500,               // Максимальная ширина
