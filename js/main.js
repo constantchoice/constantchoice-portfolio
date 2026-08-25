@@ -1,5 +1,8 @@
 // Точка входа в приложение
 window.addEventListener('load', () => {
+    // ===== constantchoice =====
+    initSignature();
+
     // Создаем менеджер линий
     window.lineManager = new LineManager();
     
@@ -17,6 +20,53 @@ window.addEventListener('load', () => {
         initPage3();
     }, 600);
 });
+
+// ===== constantchoice =====
+async function initSignature() {
+    const container = document.querySelector('#page1 .page-content');
+    if (!container) return;
+    
+    // Контейнер для SVG
+    const signatureContainer = document.createElement('div');
+    signatureContainer.className = 'signature-container';
+    container.appendChild(signatureContainer);
+    
+    // ===== НАСТРОЙКИ =====
+    const signature = new AnimatedSignature({
+        duration: 22,              // Время рисования (сек)
+        delay: 0.5,                // Задержка перед началом (сек)
+        fillColor: '#999999',      
+        pointCount: 1500,          // Количество точек
+        easing: 'ease-in-out',
+        scale: 1,                 
+        
+        // ===== ПОЗИЦИОНИРОВАНИЕ =====
+        position: {
+            top: '41.5%',
+            left: '49.334%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            maxWidth: '900px'
+        }
+    });
+    
+    // ===== ЗАГРУЗКА SVG =====
+    try {
+        const svgPath = 'images/svg/constantchoice.svg';
+        await signature.loadFromURL(svgPath);
+        
+        // ===== ЗАПУСК АНИМАЦИИ =====
+        signature.start(signatureContainer, () => {
+            console.log('✅ constantchoice');
+        });
+        
+    } catch (error) {
+        console.error('Ошибка загрузки SVG:', error);
+    }
+    
+    // Сохраняем в глобальную область
+    window.signature = signature;
+}
 
 function initPage3() {
     window.page3Manager = new Page3Manager();
