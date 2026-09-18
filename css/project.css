@@ -1,0 +1,299 @@
+:root {
+    --frame-offset: 50px; /* значение по умолчанию, перезапишется из JS */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #1A1A1A;
+    font-family: 'Inter', system-ui, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ===== Carousel ===== */
+.project-carousel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: var(--frame-offset) 0;
+    cursor: grab;
+    will-change: transform;
+    pointer-events: none;
+}
+
+.project-carousel.dragging {
+    cursor: grabbing;
+}
+
+body {
+    cursor: grab;
+}
+
+body.dragging {
+    cursor: grabbing;
+}
+
+.project-carousel img {
+    height: calc(100vh - var(--frame-offset) * 2);
+    width: auto;
+    display: block;
+    flex-shrink: 0;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.project-title {
+    position: fixed;
+    top: 18px;
+    left: 45px;
+    z-index: 100;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    letter-spacing: -0.026em;
+    color: #666666;
+    text-decoration: none;
+    text-transform: uppercase;
+    line-height: 1;
+    cursor: pointer;
+    pointer-events: auto;
+    white-space: nowrap;
+    max-width: calc(100% - 80px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    mix-blend-mode: luminosity;
+
+
+    /* Финальное состояние, анимация стартует отсюда в обратную сторону */
+    /* НЕ используем transform напрямую — он управляется через CSS-переменные */
+    transform:
+        translateX(var(--title-offset-x, -200px))
+        skewX(var(--title-skew, 0deg));
+    opacity: var(--title-opacity, 1);
+
+    will-change: transform, opacity;
+
+    /* ВАЖНО: убираем дублирующий transform из hover, если он там был */
+    /* transition оставляем только для hover-цвета */
+    transition: color 0.2s;
+}
+
+.project-title:hover {
+    /*color: #00ff0d;*/
+    color: #999999;
+    mix-blend-mode: normal;
+}
+
+/* ===== FRAME ===== */
+.project-frame {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.project-frame svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.project-frame path {
+    fill: #1A1A1A;
+    stroke: none;
+}
+
+.project-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+
+    /* Цвет с альфой — задаётся из JS */
+    background: rgba(26, 26, 26, var(--intro-bg-alpha, 0));
+
+    /* Blur того, что ПОД элементом — то есть карусели */
+    -webkit-backdrop-filter: blur(var(--intro-blur, 0px));
+    backdrop-filter: blur(var(--intro-blur, 0px));
+
+    will-change: background-color, backdrop-filter;
+}
+
+
+.project-intro.active {
+    z-index: 90;
+    pointer-events: auto;
+}
+
+/* ===== FRAME HIGHLIGHT ===== */
+.project-frame-highlight {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    /* Радиальный градиент, центрируется на курсоре */
+    background: radial-gradient(
+        circle var(--highlight-radius, 300px) at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(var(--highlight-color, 255, 255, 255), var(--highlight-opacity, 0.9)) 0%,
+        rgba(var(--highlight-color, 255, 255, 255), calc(var(--highlight-opacity, 0.9) * 0.6)) 30%,
+        rgba(var(--highlight-color, 255, 255, 255), calc(var(--highlight-opacity, 0.9) * 0.2)) 60%,
+        rgba(var(--highlight-color, 255, 255, 255), 0) 100%
+    );
+
+    /* Маска из SVG-рамки — задаётся из JS */
+    -webkit-mask-image: var(--frame-mask, none);
+    mask-image: var(--frame-mask, none);
+    -webkit-mask-mode: alpha;
+    mask-mode: alpha;
+    -webkit-mask-composite: source-over;
+    mask-composite: add;
+
+    /* Плавное появление/исчезновение */
+    opacity: 0;
+    transition: opacity 1.475s ease;
+
+    /* Осветление поверх рамки */
+    mix-blend-mode: screen;
+
+    will-change: background, opacity;
+}
+
+/* Подсветка видна, когда курсор над рамкой */
+.project-frame.hover-active .project-frame-highlight {
+    opacity: 1;
+}
+
+
+/* ===== PROJECT TITLE HOVER по платформе ===== */
+.project-title:hover {
+    mix-blend-mode: normal;
+}
+
+/* Behance */
+.project-title[data-platform="behance"]:hover {
+    color: rgba(23, 105, 255, 1);
+}
+
+/* YouTube */
+.project-title[data-platform="youtube"]:hover {
+    color: rgba(255, 0, 0, 1);
+}
+
+/* GitHub */
+.project-title[data-platform="github"]:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+/* Instagram — градиент текстом */
+.project-title[data-platform="instagram"]:hover {
+    background: linear-gradient(45deg,
+        rgba(255, 220, 128, 1),
+        rgba(252, 175, 69, 1),
+        rgba(247, 119, 55, 1),
+        rgba(245, 96, 64, 1),
+        rgba(253, 29, 29, 1),
+        rgba(225, 48, 108, 1),
+        rgba(193, 53, 132, 1),
+        rgba(131, 58, 180, 1),
+        rgba(88, 81, 219, 1),
+        rgba(64, 93, 230, 1));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* X / Twitter */
+.project-title[data-platform="twitter"]:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+/* Pinterest */
+.project-title[data-platform="pinterest"]:hover {
+    color: rgba(230, 0, 35, 1);
+}
+
+/* Dribbble */
+.project-title[data-platform="dribbble"]:hover {
+    color: rgba(234, 76, 137, 1);
+}
+
+/* TikTok */
+.project-title[data-platform="tiktok"]:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+/* Telegram */
+.project-title[data-platform="telegram"]:hover {
+    color: rgba(0, 136, 204, 1);
+}
+
+/* Gmail */
+.project-title[data-platform="gmail"]:hover {
+    color: rgba(8, 133, 27, 1);
+}
+
+/* Kavyar */
+.project-title[data-platform="kavyar"]:hover {
+    color: rgba(0, 133, 255, 1);
+}
+
+/* Gumroad */
+.project-title[data-platform="gumroad"]:hover {
+    color: rgba(255, 144, 232, 1);
+}
+
+/* Threads */
+.project-title[data-platform="threads"]:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+/* Default */
+.project-title[data-platform="default"]:hover {
+    color: #cccccc;
+}
+
+@property --intro-bg-alpha {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0;
+}
+
+@property --intro-blur {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 0px;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 768px) {
+    .project-title {
+        font-size: 32px;
+        top: 15px;
+        left: 20px;
+        padding: 15px;
+        margin: -15px;
+    }
+}

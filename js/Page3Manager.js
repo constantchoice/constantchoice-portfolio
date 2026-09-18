@@ -5,13 +5,12 @@ class Page3Manager {
         
         // Загружаем все настройки
         this.layout = CONFIG.PAGE3.LAYOUT || {};
-        this.sizeConfig = CONFIG.PAGE3.SIZES || {};
+        this.sizeConfig = CONFIG.PAGE3.SIZES || {};                       // ????
         this.floatingSettings = CONFIG.PAGE3.FLOATING_SETTINGS || {};
         this.floatingLinks = CONFIG.PAGE3.FLOATING_LINKS || [];
         this.skillsIcons = CONFIG.PAGE3.SKILLS_ICONS || [];
         this.linksData = CONFIG.PAGE3.LINKS || {};
         
-        // Текущий масштаб
         this.scale = 1;
         
         this.init();
@@ -325,15 +324,15 @@ class Page3Manager {
             const scaledLinks = linksWithSizes.map(link => {
                 let width;
                 
-                if (this.floatingSettings.sizeMode === 'fixed') {
-                    width = this.floatingSettings.fixedWidth || 750;
+                if (this.floatingSettings.SIZE_MODE === 'fixed') {
+                    width = this.floatingSettings.FIXED_WIDTH || 750;
                 } else {
-                    width = containerWidth * (this.floatingSettings.relativeScale || 0.15);
+                    width = containerWidth * (this.floatingSettings.RELATIVE_SCALE || 0.15);
                 }
                 
                 width = Math.max(
-                    this.floatingSettings.minWidth || 100, 
-                    Math.min(this.floatingSettings.maxWidth || 500, width)
+                    this.floatingSettings.MIN_WIDTH || 100, 
+                    Math.min(this.floatingSettings.MAX_WIDTH || 500, width)
                 );
                 
                 const height = width / link.aspectRatio;
@@ -366,10 +365,10 @@ class Page3Manager {
                 linkElement.style.top = pos.y + 'px';
                 linkElement.style.width = link.displayWidth + 'px';
                 linkElement.style.height = link.displayHeight + 'px';
-                linkElement.style.borderRadius = (this.floatingSettings.borderRadius || 8) + 'px';
+                linkElement.style.borderRadius = (this.floatingSettings.BORDER_RADIUS || 8) + 'px';
                 
-                if (this.floatingSettings.shadow) {
-                    linkElement.style.boxShadow = `0 ${this.floatingSettings.shadowSize || 4}px 15px rgba(0,0,0,0.2)`;
+                if (this.floatingSettings.SHADOW) {
+                    linkElement.style.boxShadow = `0 ${this.floatingSettings.SHADOW_SIZE || 4}px 15px rgba(0,0,0,0.2)`;
                 }
                 
                 const img = document.createElement('img');

@@ -146,6 +146,11 @@ function initGallery() {
                 'images/projects/to_bb/75.webp',
                 'images/projects/to_bb/76.webp',
                 'images/projects/to_bb/77.webp'
+            ],
+            imagesGallery: [
+                'images/projects/to_bb/preview/2.webp',
+                'images/projects/to_bb/preview/29.webp',
+                'images/projects/to_bb/preview/35.webp'
             ]
         },
          {
@@ -252,6 +257,11 @@ function initGallery() {
                 'images/projects/O_OU/123.webp',
                 'images/projects/O_OU/126.webp',
                 'images/projects/O_OU/127.webp'
+            ],
+            imagesGallery: [
+                'images/projects/O_OU/preview/4.webp',
+                'images/projects/O_OU/preview/38.webp',
+                'images/projects/O_OU/preview/59.webp'
             ]
         },
         {
@@ -277,6 +287,11 @@ function initGallery() {
                 'images/projects/cartoons/17.webp',
                 'images/projects/cartoons/18.webp',
                 'images/projects/cartoons/19.webp'
+            ],
+            imagesGallery: [
+                'images/projects/cartoons/preview/1.webp',
+                'images/projects/cartoons/preview/2.webp',
+                'images/projects/cartoons/preview/3.webp'
             ]
         },
         {
@@ -302,6 +317,11 @@ function initGallery() {
                 'images/projects/de2/21.webp',
                 'images/projects/de2/24.webp',
                 'images/projects/de2/29.webp'
+            ],
+            imagesGallery: [
+                'images/projects/de2/preview/6.webp',
+                'images/projects/de2/preview/8.webp',
+                'images/projects/de2/preview/24.webp'
             ]
         },
         {
@@ -315,6 +335,11 @@ function initGallery() {
                 'images/projects/de/5.webp',
                 'images/projects/de/6.webp',
                 'images/projects/de/7.webp'
+            ],
+            imagesGallery: [
+                'images/projects/de/preview/1.webp',
+                'images/projects/de/preview/2.webp',
+                'images/projects/de/preview/3.webp'
             ]
         },
         {
@@ -322,6 +347,9 @@ function initGallery() {
             url: 'https://www.behance.net/gallery/132755409/Walking-with-a-friend',
             images: [
                 'images/projects/Walking_with_a_friend/1.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Walking_with_a_friend/preview/1.webp'
             ]
         } ,
         {
@@ -338,6 +366,11 @@ function initGallery() {
                 'images/projects/Spring_and_summer/8.webp',
                 'images/projects/Spring_and_summer/9.webp',
                 'images/projects/Spring_and_summer/10.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Spring_and_summer/preview/1.webp',
+                'images/projects/Spring_and_summer/preview/3.webp',
+                'images/projects/Spring_and_summer/preview/9.webp'
             ]
         },
         {
@@ -353,6 +386,11 @@ function initGallery() {
                 'images/projects/Call_me_with_you/7.webp',
                 'images/projects/Call_me_with_you/8.webp',
                 'images/projects/Call_me_with_you/9.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Call_me_with_you/preview/1.webp',
+                'images/projects/Call_me_with_you/preview/6.webp',
+                'images/projects/Call_me_with_you/preview/8.webp'
             ]
         },
         {
@@ -364,6 +402,11 @@ function initGallery() {
                 'images/projects/Blood_on_the_canvas/3.webp',
                 'images/projects/Blood_on_the_canvas/4.webp',
                 'images/projects/Blood_on_the_canvas/5.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Blood_on_the_canvas/preview/1.webp',
+                'images/projects/Blood_on_the_canvas/preview/2.webp',
+                'images/projects/Blood_on_the_canvas/preview/5.webp'
             ]
         },
         {
@@ -390,6 +433,11 @@ function initGallery() {
                 'images/projects/Raskolnikov_dreams/24.webp',
                 'images/projects/Raskolnikov_dreams/26.webp',
                 'images/projects/Raskolnikov_dreams/28.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Raskolnikov_dreams/preview/14.webp',
+                'images/projects/Raskolnikov_dreams/preview/22.webp',
+                'images/projects/Raskolnikov_dreams/preview/28.webp'
             ]
         },
         {
@@ -397,6 +445,9 @@ function initGallery() {
             url: 'https://www.behance.net/gallery/133754213/Self-portrait',
             images: [
                 'images/projects/Self_portrait/1.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Self_portrait/preview/1.webp'
             ]
         },
         {
@@ -404,6 +455,9 @@ function initGallery() {
             url: 'https://www.behance.net/gallery/133780161/From-love-to-hate',
             images: [
                 'images/projects/From_love_to_hate/1.webp'
+            ],
+            imagesGallery: [
+                'images/projects/From_love_to_hate/preview/1.webp'
             ]
         },
         {
@@ -418,6 +472,11 @@ function initGallery() {
                 'images/projects/I_wanted_to_show_you/6.webp',
                 'images/projects/I_wanted_to_show_you/7.webp',
                 'images/projects/I_wanted_to_show_you/8.webp'
+            ],
+            imagesGallery: [
+                'images/projects/I_wanted_to_show_you/preview/1.webp',
+                'images/projects/I_wanted_to_show_you/preview/2.webp',
+                'images/projects/I_wanted_to_show_you/preview/3.webp'
             ]
         },
         {
@@ -425,6 +484,9 @@ function initGallery() {
             url: 'https://youtu.be/DpeKJaiLOd0?si=_2VfZz1Ee1K-YLTj',
             images: [
                 'images/projects/HOTEL_LDR/1.webp'
+            ],
+            imagesGallery: [
+                'images/projects/HOTEL_LDR/preview/1.webp'
             ]
         },
         {
@@ -432,6 +494,9 @@ function initGallery() {
             url: 'https://www.youtube.com/watch?v=WwaHwI6gaf0&t=855s',
             images: [
                 'images/projects/Ergo_Proxy/1.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Ergo_Proxy/preview/1.webp'
             ]
         },
         {
@@ -441,6 +506,11 @@ function initGallery() {
                 'images/projects/Luxgoth_YT_Attribute/1.webp',
                 'images/projects/Luxgoth_YT_Attribute/2.webp',
                 'images/projects/Luxgoth_YT_Attribute/3.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Luxgoth_YT_Attribute/preview/1.webp',
+                'images/projects/Luxgoth_YT_Attribute/preview/2.webp',
+                'images/projects/Luxgoth_YT_Attribute/preview/3.webp'
             ]
         },
         {
@@ -448,6 +518,9 @@ function initGallery() {
             url: 'https://dribbble.com/shots/27022663-to-bb',
             images: [
                 'images/projects/Tattoo/1.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Tattoo/preview/1.webp'
             ]
         },
         {
@@ -457,6 +530,11 @@ function initGallery() {
                 'images/projects/RARE_NIGHTS/1.webp',
                 'images/projects/RARE_NIGHTS/2.webp',
                 'images/projects/RARE_NIGHTS/3.webp'
+            ],
+            imagesGallery: [
+                'images/projects/RARE_NIGHTS/preview/1.webp',
+                'images/projects/RARE_NIGHTS/preview/2.webp',
+                'images/projects/RARE_NIGHTS/preview/3.webp'
             ]
         },
         {
@@ -466,6 +544,11 @@ function initGallery() {
                 'images/projects/LTZ/1DlyaZhivih.webp',
                 'images/projects/LTZ/2LOVERS.webp',
                 'images/projects/LTZ/3Trip.webp'
+            ],
+            imagesGallery: [
+                'images/projects/LTZ/preview/1DlyaZhivih.webp',
+                'images/projects/LTZ/preview/2LOVERS.webp',
+                'images/projects/LTZ/preview/3Trip.webp'
             ]
         },
         {
@@ -481,6 +564,11 @@ function initGallery() {
                 'images/projects/TRIGANA/9.webp',
                 'images/projects/TRIGANA/10.webp',
                 'images/projects/TRIGANA/11.webp'
+            ],
+            imagesGallery: [
+                'images/projects/TRIGANA/preview/3.webp',
+                'images/projects/TRIGANA/preview/9.webp',
+                'images/projects/TRIGANA/preview/10.webp'
             ]
         },
         {
@@ -488,6 +576,9 @@ function initGallery() {
             url: 'https://dribbble.com/shots/27034499-Logo-for-motion-designer-Luxgoth',
             images: [
                 'images/projects/Luxgoth_Logo/1.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Luxgoth_Logo/preview/1.webp'
             ]
         },
         {
@@ -495,6 +586,9 @@ function initGallery() {
             url: 'https://www.behance.net/constantchoice',
             images: [
                 'images/projects/Candy/1.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Candy/preview/1.webp'
             ]
         },
         {
@@ -505,6 +599,11 @@ function initGallery() {
                 'images/projects/hero_in/4.webp',
                 'images/projects/hero_in/6.webp',
                 'images/projects/hero_in/7.webp'
+            ],
+            imagesGallery: [
+                'images/projects/hero_in/preview/2.webp',
+                'images/projects/hero_in/preview/4.webp',
+                'images/projects/hero_in/preview/6.webp'
             ]
         },
         {
@@ -513,6 +612,10 @@ function initGallery() {
             images: [
                 'images/projects/Lizard_Tail/1.webp',
                 'images/projects/Lizard_Tail/2.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Lizard_Tail/preview/1.webp',
+                'images/projects/Lizard_Tail/preview/2.webp'
             ]
         },
         {
@@ -539,6 +642,11 @@ function initGallery() {
                 'images/projects/BLOW_UP/19.webp',
                 'images/projects/BLOW_UP/20.webp',
                 'images/projects/BLOW_UP/22.webp'
+            ],
+            imagesGallery: [
+                'images/projects/BLOW_UP/preview/6.webp',
+                'images/projects/BLOW_UP/preview/11.webp',
+                'images/projects/BLOW_UP/preview/12.webp'
             ]
         },
         {
@@ -556,6 +664,11 @@ function initGallery() {
                 'images/projects/unpublished/9.webp',
                 'images/projects/unpublished/10.webp',
                 'images/projects/unpublished/11.webp'
+            ],
+            imagesGallery: [
+                'images/projects/unpublished/preview/1.webp',
+                'images/projects/unpublished/preview/3.webp',
+                'images/projects/unpublished/preview/8.webp'
             ]
         },
         {
@@ -564,6 +677,10 @@ function initGallery() {
             images: [
                 'images/projects/DUBSTEP_SCRIPT/1.webp',
                 'images/projects/DUBSTEP_SCRIPT/2.webp'
+            ],
+            imagesGallery: [
+                'images/projects/DUBSTEP_SCRIPT/preview/1.webp',
+                'images/projects/DUBSTEP_SCRIPT/preview/2.webp'
             ]
         },
         {
@@ -581,6 +698,11 @@ function initGallery() {
                 'images/projects/HUI/9.webp',
                 'images/projects/HUI/10.webp',
                 'images/projects/HUI/11.webp'
+            ],
+            imagesGallery: [
+                'images/projects/HUI/preview/1.webp',
+                'images/projects/HUI/preview/2.webp',
+                'images/projects/HUI/preview/7.webp'
             ]
         },
         {
@@ -603,6 +725,11 @@ function initGallery() {
                 'images/projects/Zakhar/14.webp',
                 'images/projects/Zakhar/15.webp',
                 'images/projects/Zakhar/16.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Zakhar/preview/6.webp',
+                'images/projects/Zakhar/preview/7.webp',
+                'images/projects/Zakhar/preview/9.webp'
             ]
         },
         {
@@ -611,6 +738,10 @@ function initGallery() {
             images: [
                 'images/projects/10L150H/1.webp',
                 'images/projects/10L150H/2.webp'
+            ],
+            imagesGallery: [
+                'images/projects/10L150H/preview/1.webp',
+                'images/projects/10L150H/preview/2.webp'
             ]
         } 
         

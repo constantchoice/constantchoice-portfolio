@@ -25,6 +25,7 @@ const CONFIG = {
         ],
         bl: []
     },
+
     // Противоположные углы
     OPPOSITE_CORNERS: {
         'tl': 'br',
@@ -61,7 +62,7 @@ const CONFIG = {
         // Настройки для плавающих изображений
         FLOATING_SETTINGS: {
             SIZE_MODE: 'relative',      // 'relative' или 'fixed'
-            RELATIVE_SCALE: 0.20,       // 20% от ширины контейнера (для relative)
+            RELATIVE_SCALE: 0.165,       // 20% от ширины контейнера (для relative)
             FIXED_WIDTH: 750,            // Фиксированная ширина в px (для fixed)
             MIN_WIDTH: 100,               // Минимальная ширина
             MAX_WIDTH: 500,               // Максимальная ширина
@@ -135,8 +136,8 @@ const CONFIG = {
                     button: {
                         text: 'CONTACT',
                         url: 'https://www.behance.net/constantchoice',
-                        color: '#ffffff',      // цвет кнопки
-                        textColor: '#999999'    // цвет текста
+                        color: '#ffffff',      // BUTTON
+                        textColor: '#999999'    // TEXT
                     }
                 }
             },
@@ -155,8 +156,8 @@ const CONFIG = {
                     button: {
                         text: 'CONTACT',
                         url: 'https://www.instagram.com/constantchoice/',
-                        color: '#ffffff',      // цвет кнопки
-                        textColor: '#999999'    // цвет текста
+                        color: '#ffffff',      // BUTTON
+                        textColor: '#999999'    // TEXT
                     }
                 }
             },
@@ -177,8 +178,8 @@ const CONFIG = {
                     button: {
                         text: 'CONTACT',
                         url: 'https://dribbble.com/constantchoice',
-                        color: '#ffffff',      // цвет кнопки
-                        textColor: '#999999'    // цвет текста
+                        color: '#ffffff',      // BUTTON
+                        textColor: '#999999'    // TEXT
                     }
                 }
             },
@@ -286,6 +287,51 @@ const CONFIG = {
             alt: 'Bottom banner', 
             url: 'https://www.behance.net/constantchoice'
         }
+    },
+
+        // ===== OPEN PROJECT.HTML =====
+    INTRO: {
+        // ----- TITLE -----
+        TITLE: {
+            ENABLED: true,
+            START_X_PX: -150,          
+            START_SKEW_DEG: 0,         
+            END_SKEW_DEG: -10,         
+            START_OPACITY: 0.5,        
+            END_OPACITY: 1,            
+            DELAY_MS: 100,             // задержка перед стартом
+            DURATION_MS: 1400,         // длительность анимации
+            EASING: 'cubic-bezier(0.1, 0.4, 0.25, 1)' // ease-out
+        },
+
+        // ----- OVERLAY -----
+        OVERLAY: {
+            ENABLED: true,
+
+            // Цвет заливки
+            COLOR_RGB: [26, 26, 26],     // #1A1A1A
+
+            // Затемнение
+            START_BG_ALPHA: 1,         
+            END_BG_ALPHA: 0,            
+
+            // Размытие карусели
+            START_BLUR_PX: 35,          
+            END_BLUR_PX: 0,              
+
+            // Тайминги
+            DELAY_MS: 100,
+            DURATION_MS: 1300,
+            EASING: 'cubic-bezier(0.1, 0.4, 0.25, 1)'
+        }
+    }, 
+    
+    // ===== ПОДСВЕТКА РАМКИ НА PROJECT.HTML =====
+    FRAME_HIGHLIGHT: {
+        ENABLED: true,
+        RADIUS_PX: 2000,      // радиус подсветки в пикселях
+        OPACITY: 0.8,        // максимальная яркость в центре
+        COLOR_RGB: [51, 51, 51]  // цвет подсветки (белый)
     }
 };
 

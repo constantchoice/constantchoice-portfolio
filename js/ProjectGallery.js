@@ -14,20 +14,18 @@ class ProjectGallery {
         this.images = [];
         
         // Параметры для ветвления
-        this.minDistance = 340;
+        this.minDistance = 160;
         this.baseImageSize = 60;
         
         // ===== КОНФИГУРАЦИЯ ВЕТВЛЕНИЯ ПО КОЛИЧЕСТВУ ИЗОБРАЖЕНИЙ =====
         this.branchConfig = {
-            // Для 1 изображения
             1: {
-                branchCount: 1,         // количество лучей (ветвей) от центра
-                imagesPerBranch: 1,     // сколько изображений на каждом луче
-                baseRadius: 0,          // расстояние до первого изображения на луче (в пикселях)
-                radiusStep: 0,          // на сколько увеличивается радиус для каждого следующего изображения
-                branchAngleSpread: 0    // разброс углов внутри ветки (в радианах)
+                branchCount: 1,
+                imagesPerBranch: 1,
+                baseRadius: 0,
+                radiusStep: 0,
+                branchAngleSpread: 0
             },
-            // Для 2 изображений
             2: {
                 branchCount: 2,
                 imagesPerBranch: 1,
@@ -35,7 +33,6 @@ class ProjectGallery {
                 radiusStep: 0,
                 branchAngleSpread: 0.5
             },
-            // Для 3 изображений
             3: {
                 branchCount: 3,
                 imagesPerBranch: 1,
@@ -43,7 +40,6 @@ class ProjectGallery {
                 radiusStep: 0,
                 branchAngleSpread: 0.66
             },
-            // Для 4 изображений
             4: {
                 branchCount: 4,
                 imagesPerBranch: 1,
@@ -51,7 +47,6 @@ class ProjectGallery {
                 radiusStep: 0,
                 branchAngleSpread: 0.7
             },
-            // Для 5-15 изображений
             15: {
                 branchCount: 3,
                 imagesPerBranch: 5,
@@ -59,7 +54,6 @@ class ProjectGallery {
                 radiusStep: 55,
                 branchAngleSpread: 0.5
             },
-            // Для 16-30 изображений /////////////////
             30: {
                 branchCount: 5,
                 imagesPerBranch: 6,
@@ -67,7 +61,6 @@ class ProjectGallery {
                 radiusStep: 70,
                 branchAngleSpread: 0.4
             },
-            // Для 31-60 изображений
             60: {
                 branchCount: 6,
                 imagesPerBranch: 10,
@@ -75,7 +68,6 @@ class ProjectGallery {
                 radiusStep: 60,
                 branchAngleSpread: 0.35
             },
-            // Для 61-100 изображений
             100: {
                 branchCount: 6,
                 imagesPerBranch: 16,
@@ -83,7 +75,6 @@ class ProjectGallery {
                 radiusStep: 55,
                 branchAngleSpread: 0.35
             },
-            // Для 101+ изображений
             '100+': {
                 branchCount: 8,
                 imagesPerBranch: 18,
@@ -103,6 +94,25 @@ class ProjectGallery {
         // Параметры коллизий
         this.collisionPadding = 10;
         
+        // ===== DRAG STATE =====
+        this.isDragging = false;
+        
+        // ===== HOVER STATE =====
+        this.hoveredSprite = null;
+        this.hoverRaycaster = new THREE.Raycaster();
+        this.hoverMouse = new THREE.Vector2();
+        this.lastHoverCheck = 0;
+        this.hoverCheckInterval = 30;
+        
+        // HTML-оверлей для линий
+        this.hoverLines = document.createElement('div');
+        this.hoverLines.className = 'sprite-hover-lines';
+        this.hoverLines.innerHTML = `
+            <div class="sprite-hover-line sprite-hover-line-top"></div>
+            <div class="sprite-hover-line sprite-hover-line-bottom"></div>
+        `;
+        document.body.appendChild(this.hoverLines);
+        
         // Инициализация Three.js
         this.initThree();
         
@@ -111,13 +121,11 @@ class ProjectGallery {
     }
 
     getBranchConfig(imageCount) {
-        // Для 1, 2, 3, 4 изображений — отдельные настройки
         if (imageCount === 1) return this.branchConfig[1];
         if (imageCount === 2) return this.branchConfig[2];
         if (imageCount === 3) return this.branchConfig[3];
         if (imageCount === 4) return this.branchConfig[4];
         
-        // Для остальных — по диапазонам
         if (imageCount <= 15) return this.branchConfig[15];
         if (imageCount <= 30) return this.branchConfig[30];
         if (imageCount <= 60) return this.branchConfig[60];
@@ -137,7 +145,6 @@ class ProjectGallery {
         const width = this.galleryContainer.clientWidth;
         const height = this.galleryContainer.clientHeight;
         
-        // Ортографическая камера (без перспективы)
         this.camera = new THREE.OrthographicCamera(
             -width / 2, width / 2,
             height / 2, -height / 2,
@@ -147,28 +154,24 @@ class ProjectGallery {
         this.camera.zoom = 1;
         this.camera.updateProjectionMatrix();
         
-        // Сцена
         this.scene = new THREE.Scene();
         
-        // Рендерер для 3D объектов (изображения)
         this.renderer = new THREE.WebGLRenderer({ 
             alpha: true,
             antialias: true 
         });
         this.renderer.setSize(width, height);
-        this.renderer.setClearColor(0x000000, 0); // Прозрачный фон
+        this.renderer.setClearColor(0x000000, 0);
         this.galleryContainer.appendChild(this.renderer.domElement);
         
-        // Рендерер для HTML-элементов (названия)
         this.labelRenderer = new THREE.CSS2DRenderer();
         this.labelRenderer.setSize(width, height);
         this.labelRenderer.domElement.style.position = 'absolute';
         this.labelRenderer.domElement.style.top = '0';
         this.labelRenderer.domElement.style.left = '0';
-        this.labelRenderer.domElement.style.pointerEvents = 'none'; // Сделаем события через CSS
+        this.labelRenderer.domElement.style.pointerEvents = 'none';
         this.galleryContainer.appendChild(this.labelRenderer.domElement);
         
-        // Обработчики событий
         this.initEvents();
     }
     
@@ -178,32 +181,27 @@ class ProjectGallery {
             e.preventDefault();
             
             const zoomSpeed = 0.08;
-            // direction: +1 при прокрутке вверх (приближение), -1 вниз (отдаление)
             const direction = -Math.sign(e.deltaY);
-            
-            // Экспоненциальное изменение
-            // Умножаем на 1.1 при приближении, делим на 1.1 при отдалении
             const factor = 1 + direction * zoomSpeed;
             
-            // Применяем фактор, но не даём уйти в ноль или бесконечность
             this.camera.zoom = Math.max(0.5, Math.min(25, this.camera.zoom * factor));
-            
             this.camera.updateProjectionMatrix();
         });
         
         // Перетаскивание (pan)
-        let isDragging = false;
         let lastX, lastY;
         
         this.galleryContainer.addEventListener('mousedown', (e) => {
-            isDragging = true;
+            this.isDragging = true;
             lastX = e.clientX;
             lastY = e.clientY;
             this.galleryContainer.style.cursor = 'grabbing';
+            
+            this.clearHover();
         });
         
         window.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
+            if (!this.isDragging) return;
             
             const dx = e.clientX - lastX;
             const dy = e.clientY - lastY;
@@ -216,8 +214,25 @@ class ProjectGallery {
         });
         
         window.addEventListener('mouseup', () => {
-            isDragging = false;
+            this.isDragging = false;
             this.galleryContainer.style.cursor = 'default';
+            
+            this.clearHover();
+        });
+        
+        // ===== HOVER =====
+        this.galleryContainer.addEventListener('mousemove', (e) => {
+            if (this.isDragging) return;
+            
+            const now = performance.now();
+            if (now - this.lastHoverCheck < this.hoverCheckInterval) return;
+            this.lastHoverCheck = now;
+            
+            this.checkHover(e);
+        });
+        
+        this.galleryContainer.addEventListener('mouseleave', () => {
+            this.clearHover();
         });
         
         // Обновление размеров при ресайзе
@@ -240,13 +255,99 @@ class ProjectGallery {
         this.labelRenderer.setSize(width, height);
     }
     
+    // ===== HOVER =====
+    checkHover(e) {
+        const rect = this.renderer.domElement.getBoundingClientRect();
+        this.hoverMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        this.hoverMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        
+        this.hoverRaycaster.setFromCamera(this.hoverMouse, this.camera);
+        
+        const allSprites = [];
+        this.projects.forEach(p => {
+            p.imageObjects.forEach(s => allSprites.push(s));
+        });
+        
+        const intersects = this.hoverRaycaster.intersectObjects(allSprites);
+        
+        if (intersects.length > 0) {
+            const hit = intersects[0].object;
+            if (this.hoveredSprite !== hit) {
+                this.setHover(hit);
+            } else {
+                this.updateHoverPosition();
+            }
+        } else {
+            this.clearHover();
+        }
+    }
+    
+    setHover(sprite) {
+        this.hoveredSprite = sprite;
+        this.updateHoverPosition();
+        
+        // Сброс анимации
+        this.hoverLines.classList.remove('visible');
+        this.hoverLines.classList.add('no-transition');
+        this.hoverLines.offsetWidth; // force reflow
+        this.hoverLines.classList.remove('no-transition');
+        
+        // Показ
+        requestAnimationFrame(() => {
+            this.hoverLines.classList.add('visible');
+        });
+        
+        this.galleryContainer.style.cursor = 'pointer';
+    }
+    
+    updateHoverPosition() {
+        if (!this.hoveredSprite) return;
+        
+        const sprite = this.hoveredSprite;
+        
+        const vector = new THREE.Vector3(
+            sprite.position.x,
+            sprite.position.y,
+            0
+        );
+        
+        const projected = vector.clone().project(this.camera);
+        
+        const rect = this.renderer.domElement.getBoundingClientRect();
+        
+        const screenX = Math.round(rect.left + (projected.x + 1) * 0.5 * rect.width);
+        const screenY = Math.round(rect.top + (-projected.y + 1) * 0.5 * rect.height);
+        
+        const pixelWidth = Math.round(sprite.scale.x * this.camera.zoom);
+        const pixelHeight = Math.round(sprite.scale.y * this.camera.zoom);
+        
+        this.hoverLines.style.left = screenX + 'px';
+        this.hoverLines.style.top = screenY + 'px';
+        
+        this.hoverLines.style.setProperty('--sprite-width', pixelWidth + 'px');
+        this.hoverLines.style.setProperty('--sprite-height', pixelHeight + 'px');
+    }
+        
+    clearHover() {
+        if (!this.hoveredSprite) return;
+        
+        this.hoveredSprite = null;
+        
+        this.hoverLines.classList.remove('visible');
+        
+        if (!this.isDragging) {
+            this.galleryContainer.style.cursor = 'default';
+        }
+    }
+    
     // Добавление проекта
     addProject(projectData) {
-        const { name, url, images = [] } = projectData;
-        // Определяем платформу по URL
+        const { name, url, images = [], imagesGallery = [] } = projectData;
         const platform = this.getPlatformFromUrl(url);
 
-        const config = this.getBranchConfig(images.length);
+        const previewImages = imagesGallery.length > 0 ? imagesGallery : images;
+
+        const config = this.getBranchConfig(previewImages.length);
         this.applyBranchConfig(config);
         
         const projectBranchConfig = {
@@ -257,21 +358,21 @@ class ProjectGallery {
             branchAngleSpread: this.branchAngleSpread
         };
         
-        console.log(`Проект "${name}": ${images.length} изображений → ветвей: ${this.branchCount}, изображений на ветку: ${this.imagesPerBranch}`);
+        console.log(`Проект "${name}": галерея ${previewImages.length} / всего ${images.length} изображений → ветвей: ${this.branchCount}`);
         
-        // Сохраняем данные
         const project = {
             name,
             url,
             platform,
-            images: [],
+            images: [],                    
+            originalImages: images,        
+            previewImages: previewImages,  
             position: this.findFreePosition(),
             label: null,
             imageObjects: [],
-            branchConfig: projectBranchConfig  // ← сохраняем конфиг в проекте
+            branchConfig: projectBranchConfig
         };
         
-        // Создаем название (кликабельное)
         const div = document.createElement('div');
         div.className = 'project-label';
         div.setAttribute('data-platform', platform);
@@ -284,14 +385,11 @@ class ProjectGallery {
         this.scene.add(label);
         this.labels.push(label);
         
-        // Добавляем изображения, передавая сохранённый конфиг
-        images.forEach((imgSrc, index) => {
+        previewImages.forEach((imgSrc, index) => {
             this.addProjectImage(project, imgSrc, index, projectBranchConfig);
         });
         
         this.projects.push(project);
-        
-        // Запускаем симуляцию для позиционирования
         this.runSimulation();
         
         return project;
@@ -312,12 +410,13 @@ class ProjectGallery {
         if (url.includes('gumroad.com')) return 'gumroad';
         if (url.includes('threads.com')) return 'threads';
         
-        // По умолчанию
         return 'default';
     }
 
+    normalizeGalleryPath(path) {
+        return path.replace('/preview/', '/');
+    }
 
-    // Добавляем метод для создания заглушек
     createPlaceholderImage(project, index) {
         const canvas = document.createElement('canvas');
         canvas.width = 100;
@@ -344,7 +443,6 @@ class ProjectGallery {
         
         sprite.scale.set(this.baseImageSize, this.baseImageSize, 1);
         
-        // Используем конфиг из проекта
         const config = project.branchConfig;
         const branchIndex = index % config.branchCount;
         const positionInBranch = Math.floor(index / config.branchCount);
@@ -364,12 +462,11 @@ class ProjectGallery {
         this.images.push(sprite);
     }
 
-   optimizePositions(project) {
-        const iterations = 15;
+    optimizePositions(project) {
+        const iterations = 5;
         const learningRate = 0.3;
         
         for (let iter = 0; iter < iterations; iter++) {
-            // Оптимизация внутри веток
             for (let i = 0; i < project.imageObjects.length; i++) {
                 for (let j = i + 1; j < project.imageObjects.length; j++) {
                     const imgA = project.imageObjects[i];
@@ -387,10 +484,9 @@ class ProjectGallery {
                         const overlap = (minDistance - distance) / 2;
                         const angle = Math.atan2(dy, dx);
                         
-                        // Разный коэффициент для изображений из одной ветки
                         const factor = (imgA.userData.branchIndex === imgB.userData.branchIndex) 
-                            ? learningRate * 1.5  // Сильнее раздвигаем в одной ветке
-                            : learningRate;        // Слабее между ветками
+                            ? learningRate * 1.5
+                            : learningRate;
                         
                         imgA.position.x -= Math.cos(angle) * overlap * factor;
                         imgA.position.y -= Math.sin(angle) * overlap * factor;
@@ -405,7 +501,7 @@ class ProjectGallery {
     warmUpSpritesBatch(batchSize = 5) {
         console.log(`🔥 Пакетный прогрев спрайтов (batch: ${batchSize})...`);
         
-        const startTime = performance.now();  // ⏱️ СЧЁТЧИК ВРЕМЕНИ
+        const startTime = performance.now();
         
         const originalPos = this.camera.position.clone();
         const originalZoom = this.camera.zoom;
@@ -415,13 +511,11 @@ class ProjectGallery {
         
         const processBatch = () => {
             if (index >= total) {
-                // Восстанавливаем камеру
                 this.camera.position.copy(originalPos);
                 this.camera.zoom = originalZoom;
                 this.camera.updateProjectionMatrix();
                 this.renderer.render(this.scene, this.camera);
                 
-                // ⏱️ ВЫВОД РЕЗУЛЬТАТА
                 const endTime = performance.now();
                 const duration = (endTime - startTime) / 1000;
                 console.log(`✅ Пакетный прогрев завершён за ${duration.toFixed(2)} сек`);
@@ -431,14 +525,12 @@ class ProjectGallery {
             
             const end = Math.min(index + batchSize, total);
             
-            // Позиционируем камеру на первый спрайт в батче
             const targetSprite = this.images[index];
             this.camera.position.x = targetSprite.position.x;
             this.camera.position.y = targetSprite.position.y;
             this.camera.zoom = 1;
             this.camera.updateProjectionMatrix();
             
-            // Рендерим один кадр с текущим батчем спрайтов в сцене
             this.renderer.render(this.scene, this.camera);
             
             index = end;
@@ -453,37 +545,28 @@ class ProjectGallery {
         img.src = imageSrc;
         
         img.onload = () => {
-            // Определяем ветку и позицию в ветке
             const branchIndex = index % branchConfig.branchCount;
             const positionInBranch = Math.floor(index / branchConfig.branchCount);
             
-            // Угол основной ветки (равномерно по кругу)
             const baseAngle = (branchIndex / branchConfig.branchCount) * Math.PI * 2;
-            
-            // Добавляем небольшой разброс для естественности
             const spread = (positionInBranch - (branchConfig.imagesPerBranch - 1) / 2) * branchConfig.branchAngleSpread;
             const angle = baseAngle + spread;
             
-            // Радиус увеличивается с удалением от центра
             const radius = branchConfig.baseRadius + positionInBranch * branchConfig.radiusStep;
             
-            // ===== НОВЫЙ РАСЧЁТ РАЗМЕРОВ: ОГРАНИЧЕНИЕ ПО БОЛЬШЕЙ СТОРОНЕ =====
             const baseSize = this.baseImageSize;
             const aspect = img.width / img.height;
             
             let width, height;
             
             if (aspect >= 1) {
-                // Горизонтальное или квадратное: ограничиваем по ширине
                 width = baseSize;
                 height = baseSize / aspect;
             } else {
-                // Вертикальное: ограничиваем по высоте
                 height = baseSize;
                 width = baseSize * aspect;
             }
             
-            // Максимальный размер любой стороны
             const MAX_SIZE = 100;
             if (width > MAX_SIZE) {
                 width = MAX_SIZE;
@@ -494,7 +577,6 @@ class ProjectGallery {
                 width = height * aspect;
             }
             
-            // Минимальный размер
             const MIN_SIZE = 30;
             if (width < MIN_SIZE && height < MIN_SIZE) {
                 if (aspect > 1) {
@@ -505,9 +587,7 @@ class ProjectGallery {
                     width = height * aspect;
                 }
             }
-            // ===== КОНЕЦ РАСЧЁТА РАЗМЕРОВ =====
             
-            // Создаем текстуру
             const texture = new THREE.CanvasTexture(img);
             texture.generateMipmaps = false;
             texture.minFilter = THREE.LinearFilter;
@@ -524,7 +604,17 @@ class ProjectGallery {
             const sprite = new THREE.Sprite(material);
             sprite.scale.set(width, height, 1);
             
-            // Сохраняем метаданные для анимации
+            // ===== ИНДЕКС ИЩЕМ ПО FULL-ПУТИ, ИГНОРИРУЯ /preview/ =====
+            const normalizedSrc = this.normalizeGalleryPath(imageSrc);
+            let fullIndex = project.originalImages.indexOf(normalizedSrc);
+            
+            // Fallback: если по нормализованному пути не нашли — пробуем по исходному
+            if (fullIndex === -1) {
+                fullIndex = project.originalImages.indexOf(imageSrc);
+            }
+            
+            const resolvedIndex = fullIndex !== -1 ? fullIndex : index;
+
             sprite.userData = {
                 branchIndex,
                 positionInBranch,
@@ -534,10 +624,12 @@ class ProjectGallery {
                 homePosition: {
                     x: project.position.x + Math.cos(angle) * radius,
                     y: project.position.y + Math.sin(angle) * radius
-                }
+                },
+                isClickable: true,
+                project: project,
+                imageIndex: resolvedIndex
             };
             
-            // Позиционируем
             sprite.position.set(
                 project.position.x + Math.cos(angle) * radius,
                 project.position.y + Math.sin(angle) * radius,
@@ -547,8 +639,8 @@ class ProjectGallery {
             project.imageObjects.push(sprite);
             this.scene.add(sprite);
             this.images.push(sprite);
+            this.makeSpriteClickable(sprite, project, index);
             
-            // Запускаем локальную оптимизацию
             setTimeout(() => {
                 this.optimizePositions(project);
             }, 100);
@@ -561,26 +653,80 @@ class ProjectGallery {
     }
     
     makeImageClickable(sprite, url) {
-        // Создаем невидимый HTML-элемент для обработки кликов
-        // (Three.js спрайты не имеют нативных событий)
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         
         this.galleryContainer.addEventListener('click', (e) => {
-            // Вычисляем позицию мыши в нормализованных координатах
             const rect = this.renderer.domElement.getBoundingClientRect();
             mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
             mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
             
             raycaster.setFromCamera(mouse, this.camera);
             
-            // Проверяем пересечение со спрайтом
             const intersects = raycaster.intersectObject(sprite);
             
             if (intersects.length > 0) {
                 window.open(url, '_blank');
             }
         });
+    }
+
+    // ===== клик по спрайту =====
+    makeSpriteClickable(sprite, project, imageIndex) {
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        
+        if (!this._clickHandlerAdded) {
+            this._clickHandlerAdded = true;
+            
+            this.galleryContainer.addEventListener('click', (e) => {
+                const rect = this.renderer.domElement.getBoundingClientRect();
+                mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                raycaster.setFromCamera(mouse, this.camera);
+                
+                const allSprites = [];
+                const spriteToProject = new Map();
+                
+                this.projects.forEach(p => {
+                    p.imageObjects.forEach(s => {
+                        allSprites.push(s);
+                        spriteToProject.set(s, p);
+                    });
+                });
+                
+                const intersects = raycaster.intersectObjects(allSprites);
+                
+                if (intersects.length > 0) {
+                    const hitSprite = intersects[0].object;
+                    const hitProject = spriteToProject.get(hitSprite);
+                    
+                    if (hitProject) {
+                        const hitIndex = hitSprite.userData.imageIndex;
+                        this.openProjectCarousel(hitProject, hitIndex);
+                    }
+                }
+            });
+        }
+    }
+
+    // ===== открытие карусели =====
+    openProjectCarousel(project, imageIndex) {
+        const allImages = project.originalImages || [];
+        
+        if (allImages.length === 0) {
+            console.warn('No original images found for project', project.name);
+        }
+        
+        const params = new URLSearchParams({
+            name: project.name,
+            url: project.url,
+            images: encodeURIComponent(JSON.stringify(allImages)),
+            start: imageIndex.toString()
+        });
+        
+        window.open(`project.html?${params.toString()}`, '_blank');
     }
     
     findFreePosition() {
@@ -604,8 +750,8 @@ class ProjectGallery {
             .force('charge', d3.forceManyBody().strength(-100))
             .force('collision', d3.forceCollide().radius(this.minDistance))
             .force('center', d3.forceCenter(0, 0).strength(0.05))
-            .alphaDecay(0.01)      // быстро затухает
-            .alphaMin(0.001)       // остановится когда почти устаканится
+            .alphaDecay(0.01)
+            .alphaMin(0.001)
             .on('tick', () => {
                 nodes.forEach((node, i) => {
                     const project = this.projects[i];
@@ -633,6 +779,12 @@ class ProjectGallery {
     
     animate() {
         requestAnimationFrame(() => this.animate());
+        
+        // Обновляем позицию hover-линий, если спрайт под курсором
+        if (this.hoveredSprite) {
+            this.updateHoverPosition();
+        }
+        
         this.renderer.render(this.scene, this.camera);
         this.labelRenderer.render(this.scene, this.camera);
     }

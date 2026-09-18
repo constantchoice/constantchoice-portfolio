@@ -124,3 +124,50 @@
     height: 100%;
     object-fit: cover;
 }
+
+/* ===== HOVER LINES ===== */
+.sprite-hover-lines {
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 9999;
+    width: 0;
+    height: var(--sprite-height, 0px);
+    opacity: 0;
+}
+
+.sprite-hover-lines.visible {
+    opacity: 1;
+}
+
+.sprite-hover-line {
+    position: absolute;
+    left: 50%;
+    height: 1px;
+    background: #999999;
+    border-radius: 999px;
+    transform: translateX(-50%);
+    width: 0;
+    will-change: width;
+}
+
+/* Transition управляется через родителя */
+.sprite-hover-lines:not(.no-transition) .sprite-hover-line {
+    transition: width 0.3s ease-in-out;
+}
+
+.sprite-hover-lines.no-transition .sprite-hover-line {
+    transition: none;
+}
+
+.sprite-hover-lines.visible .sprite-hover-line {
+    width: calc(var(--sprite-width, 0px) * 0.6);
+}
+
+.sprite-hover-line-top {
+    top: -10px;
+}
+
+.sprite-hover-line-bottom {
+    bottom: -10px;
+}
