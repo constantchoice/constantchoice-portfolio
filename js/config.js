@@ -115,6 +115,79 @@ const CONFIG = {
                 { url: 'https://twitter.com/constantchoice', image: 'images/links/X.webp' },
                 { url: 'https://www.threads.com/@constantchoice?igshid=NTc4MTIwNjQ2YQ==', image: 'images/links/THREADS.webp' }
             ]
+        },
+
+        SKILLS_RING: {
+            ENABLED: true,
+            
+            // ===== ГЕОМЕТРИЯ КОЛЬЦА =====
+            RADIUS_X: 0.17,
+            RADIUS_Y: 0.35,
+            TILT_DEG: 0,
+            OFFSET_Y_PX: -48,
+            TILT_COMPENSATE: true,   // true = «перед» всегда в центре по X при наклоне
+                                     // false = старое поведение (без компенсации)
+
+            TILT_ANIMATION: {
+                ENABLED: true,          // false → всегда TILT_DEG, без движения
+                
+                // Амплитуда: колеблется от (TILT_DEG - AMPLITUDE) до (TILT_DEG + AMPLITUDE)
+                // Если хочешь ровно от -15 до +15 при TILT_DEG = 0 — ставь AMPLITUDE: 15
+                // Если TILT_DEG = -15 и хочешь от -15 до +15 — ставь AMPLITUDE: 15 (центр 0) — 
+                //   тогда лучше TILT_DEG: 0, AMPLITUDE: 15
+                AMPLITUDE: 5,
+                
+                // Полный период туда-обратно, в секундах
+                PERIOD_SEC: 16,
+                
+                // Фаза старта (0..1): 0 = крайнее левое (TILT_DEG - AMPLITUDE),
+                //                     0.5 = центр, 1 = крайнее правое
+                START_PHASE: 0,
+                
+                // ===== НЕЛИНЕЙНОСТЬ =====
+                // 1 = чистый синус (плавно, симметрично)
+                // < 1 = дольше у краёв (ease-in-out, «залипает» на крайних точках)
+                // > 1 = дольше в центре (быстрый проход краёв, «толчок»)
+                // Работает через smoothstep-подобную кривую на полупериоде
+                EASE_POWER: 1.0,
+                
+                // Доп. асимметрия: 0 = одинаково в обе стороны,
+                // > 0 = медленнее к правому краю, < 0 = медленнее к левому
+                // (просто сдвигает фазу внутри ease, для «вкусности»)
+                EASE_BIAS: 0
+            },
+            
+            // ===== РАСПРЕДЕЛЕНИЕ ИКОНОК =====
+            TOTAL_ITERATIONS: 1,
+            
+            // ===== МАСШТАБ =====
+            CENTER_SCALE: 1.0,        // размер на переднем плане (depth = +1)
+            EDGE_SCALE: 0.2,          // размер на заднем плане (depth = -1)
+            
+            // ===== НЕПРОЗРАЧНОСТЬ =====
+            CENTER_OPACITY: 1.0,      // непрозрачность на переднем плане
+            EDGE_OPACITY: 0.0,        // непрозрачность на заднем плане
+            FULL_OPACITY_ZONE: 0.07,   // доля глубины (0..1), где opacity = CENTER_OPACITY
+                                    // 0 = везде плавный спад
+                                    // 0.3 = 30% кольца спереди и 30% сзади — плато
+                                    // 1 = вся иконка одинаково непрозрачна
+            
+            // ===== ВРАЩЕНИЕ =====
+            ROTATION_SPEED: 0.25,
+            DIRECTION: 1,
+            DEPTH_PHASE_DEG: 0,   // общий сдвиг (перед + зад)
+            BACK_PHASE_DEG: 5,    // ДОП. сдвиг только для задней части (0 = как перед)
+
+            // ===== СКОРОСТЬ =====
+            SPEED_AMPLITUDE: -0.23,  // -0.99..0.99
+                        // 0 = равномерно
+                        // < 0 = сзади быстрее, спереди медленнее (то что надо)
+                        // > 0 = наоборот
+                        // |значение| ближе к 1 = сильнее эффект
+            
+            // ===== Z-INDEX =====
+            Z_INDEX_BASE: 1,
+            Z_INDEX_RANGE: 100
         }
     },
 
@@ -275,6 +348,54 @@ const CONFIG = {
                     button: {
                         text: 'OPEN PROJECT',
                         url: 'https://dribbble.com/shots/27613495-10-Letters-150-Hours',
+                        color: '#ffffff',
+                        textColor: '#999999'
+                    }
+                }
+            },
+            {
+                image: 'images/page4/item8/main.webp',
+                title: 'PINK BLOOD',
+                description: 'A raw, candid editorial capturing the authentic energy of a home tattoo session. Rejecting posed studio portraits, this series embraces a documentary snapshot aesthetic with intentional out-of-focus frames\n\n' +
+                    'The visual language is built on an overexposed film look and cross-processed colors: blown-out highlights, vibrant pink undertones on the skin, and unnatural green shadows. Set against a striking candy-pink background, these gritty archive-style shots create a perfect, stylish contrast for the Halloween season\n\n' +
+                    'This is not a staged shoot. It is pure action, lifestyle, and the raw, unfiltered vibe of real life',
+                meta: [
+                    { label: 'type', value: 'Photography / Editorial' },
+                    { label: 'style', value: 'Candid • Overexposed Film • Cross-Process' },
+                    { label: 'tech stack', value: 'Capture One • Photoshop' },
+                    { label: 'status', value: 'Completed' },
+                    { label: 'author', value: 'constantchoice' }
+                ],
+                contactCard: {
+                    image: 'images/page4/item8/contact-bg.webp',
+                    imageUrl: 'https://www.behance.net/constantchoice',
+                    button: {
+                        text: 'OPEN PROJECT',
+                        url: 'https://www.behance.net/gallery/257741241/Pink-Blood',
+                        color: '#ffffff',
+                        textColor: '#999999'
+                    }
+                }
+            },
+                        {
+                image: 'images/page4/item9/main.webp',
+                title: 'SILVER ARCHIVE',
+                description: 'A monochrome editorial focused on the raw energy of a home tattoo session, elevated by meticulous retouching. The post-processing plays a key role: soft-contrast silver-toned B&W, smooth tone curves, lifted shadows, and fine film grain to achieve an analog feel\n\n' +
+                    'Captured in a candid, documentary style with intentional out-of-focus frames, the images feel like forgotten snapshots from a 90s underground party. There is no staging here — only pure action, lifestyle, and the intimate reality of the moment\n\n' +
+                    'This project is a study in how careful retouching can transform a rough snapshot into a delicate, silver-toned piece of art',
+                meta: [
+                    { label: 'type', value: 'Photography / Retouching' },
+                    { label: 'style', value: 'Soft-Contrast B&W • Silver Tone' },
+                    { label: 'tech stack', value: 'Capture One • Photoshop' },
+                    { label: 'status', value: 'Completed' },
+                    { label: 'author', value: 'constantchoice' }
+                ],
+                contactCard: {
+                    image: 'images/page4/item9/contact-bg.webp',
+                    imageUrl: 'https://www.behance.net/constantchoice',
+                    button: {
+                        text: 'OPEN PROJECT',
+                        url: 'https://www.behance.net/gallery/257746469/Silver-Archive',
                         color: '#ffffff',
                         textColor: '#999999'
                     }

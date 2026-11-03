@@ -743,7 +743,92 @@ function initGallery() {
                 'images/projects/10L150H/preview/1.webp',
                 'images/projects/10L150H/preview/2.webp'
             ]
-        } 
+        },
+        {
+            name: 'Pink Blood',
+            url: 'https://www.behance.net/gallery/257741241/Pink-Blood',
+            images: [
+                'images/projects/Pink_Blood/1.webp',
+                'images/projects/Pink_Blood/2.webp',
+                'images/projects/Pink_Blood/3.webp',
+                'images/projects/Pink_Blood/4.webp',
+                'images/projects/Pink_Blood/5.webp',
+                'images/projects/Pink_Blood/6.webp',
+                'images/projects/Pink_Blood/7.webp',
+                'images/projects/Pink_Blood/8.webp',
+                'images/projects/Pink_Blood/9.webp',
+                'images/projects/Pink_Blood/10.webp',
+                'images/projects/Pink_Blood/11.webp',
+                'images/projects/Pink_Blood/12.webp',
+                'images/projects/Pink_Blood/13.webp',
+                'images/projects/Pink_Blood/14.webp',
+                'images/projects/Pink_Blood/15.webp',
+                'images/projects/Pink_Blood/16.webp',
+                'images/projects/Pink_Blood/17.webp',
+                'images/projects/Pink_Blood/18.webp',
+                'images/projects/Pink_Blood/19.webp',
+                'images/projects/Pink_Blood/20.webp',
+                'images/projects/Pink_Blood/21.webp',
+                'images/projects/Pink_Blood/22.webp',
+                'images/projects/Pink_Blood/23.webp',
+                'images/projects/Pink_Blood/24.webp',
+                'images/projects/Pink_Blood/25.webp',
+                'images/projects/Pink_Blood/26.webp',
+                'images/projects/Pink_Blood/27.webp',
+                'images/projects/Pink_Blood/28.webp',
+                'images/projects/Pink_Blood/29.webp',
+                'images/projects/Pink_Blood/30.webp',
+                'images/projects/Pink_Blood/31.webp',
+                'images/projects/Pink_Blood/32.webp',
+                'images/projects/Pink_Blood/33.webp',
+                'images/projects/Pink_Blood/34.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Pink_Blood/preview/3.webp',
+                'images/projects/Pink_Blood/preview/9.webp',
+                'images/projects/Pink_Blood/preview/34.webp'
+            ]
+        },
+        {
+            name: 'Silver Archive',
+            url: 'https://www.behance.net/gallery/257746469/Silver-Archive',
+            images: [
+                'images/projects/Silver_Archive/1.webp',
+                'images/projects/Silver_Archive/2.webp',
+                'images/projects/Silver_Archive/3.webp',
+                'images/projects/Silver_Archive/4.webp',
+                'images/projects/Silver_Archive/5.webp',
+                'images/projects/Silver_Archive/6.webp',
+                'images/projects/Silver_Archive/7.webp',
+                'images/projects/Silver_Archive/8.webp',
+                'images/projects/Silver_Archive/9.webp',
+                'images/projects/Silver_Archive/10.webp',
+                'images/projects/Silver_Archive/11.webp',
+                'images/projects/Silver_Archive/12.webp',
+                'images/projects/Silver_Archive/13.webp',
+                'images/projects/Silver_Archive/14.webp',
+                'images/projects/Silver_Archive/15.webp',
+                'images/projects/Silver_Archive/16.webp',
+                'images/projects/Silver_Archive/17.webp',
+                'images/projects/Silver_Archive/18.webp',
+                'images/projects/Silver_Archive/19.webp',
+                'images/projects/Silver_Archive/20.webp',
+                'images/projects/Silver_Archive/21.webp',
+                'images/projects/Silver_Archive/22.webp',
+                'images/projects/Silver_Archive/23.webp',
+                'images/projects/Silver_Archive/24.webp',
+                'images/projects/Silver_Archive/25.webp',
+                'images/projects/Silver_Archive/26.webp',
+                'images/projects/Silver_Archive/27.webp',
+                'images/projects/Silver_Archive/28.webp',
+                'images/projects/Silver_Archive/29.webp'
+            ],
+            imagesGallery: [
+                'images/projects/Silver_Archive/preview/13.webp',
+                'images/projects/Silver_Archive/preview/15.webp',
+                'images/projects/Silver_Archive/preview/21.webp'
+            ]
+        }
         
 /*         ,
         {
