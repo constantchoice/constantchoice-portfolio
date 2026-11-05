@@ -171,3 +171,58 @@
 .sprite-hover-line-bottom {
     bottom: -10px;
 }
+
+
+/* ===== GLOBE HTML MARKERS ===== */
+.globe-marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    cursor: pointer;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.55);
+    padding: 8px 16px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    white-space: nowrap;
+    user-select: none;
+    transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.globe-marker:hover {
+    transform: translate(-50%, -50%) scale(1.08);
+    background: rgba(0, 0, 0, 0.75);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Цвета платформ */
+.globe-marker[data-platform="behance"]:hover { background: rgba(23, 105, 255, 0.85); border-color: rgba(23, 105, 255, 0.9); }
+.globe-marker[data-platform="youtube"]:hover { background: rgba(255, 0, 0, 0.85); border-color: rgba(255, 0, 0, 0.9); }
+.globe-marker[data-platform="github"]:hover { background: rgba(0, 3, 51, 0.85); border-color: rgba(0, 3, 51, 0.9); }
+.globe-marker[data-platform="instagram"]:hover {
+    background: linear-gradient(45deg, rgba(255,220,128,.85), rgba(252,175,69,.85), rgba(247,119,55,.85), rgba(245,96,64,.85), rgba(253,29,29,.85), rgba(225,48,108,.85), rgba(193,53,132,.85), rgba(131,58,180,.85), rgba(88,81,219,.85), rgba(64,93,230,.85));
+    border: none;
+}
+.globe-marker[data-platform="twitter"]:hover { background: rgba(20, 23, 26, 0.85); }
+.globe-marker[data-platform="pinterest"]:hover { background: rgba(230, 0, 35, 0.85); }
+.globe-marker[data-platform="dribbble"]:hover { background: rgba(234, 76, 137, 0.85); }
+.globe-marker[data-platform="tiktok"]:hover { background: rgba(0, 0, 0, 0.85); }
+.globe-marker[data-platform="telegram"]:hover { background: rgba(0, 136, 204, 0.85); }
+.globe-marker[data-platform="gmail"]:hover { background: rgba(8, 133, 27, 0.85); }
+.globe-marker[data-platform="kavyar"]:hover { background: rgba(0, 133, 255, 0.85); }
+.globe-marker[data-platform="gumroad"]:hover { background: rgba(255, 144, 232, 0.85); }
+.globe-marker[data-platform="threads"]:hover { background: rgba(0, 0, 0, 0.85); }
+
+/* Скрываем маркер, если он за глобусом */
+.globe-marker.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}

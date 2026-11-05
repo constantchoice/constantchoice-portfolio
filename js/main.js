@@ -84,6 +84,8 @@ function initGallery() {
         {
             name: 'to bb',
             url: 'https://www.behance.net/gallery/184928549/To-bb',
+            lat: 35.189240, 
+            lng: 136.902163,
             images: [
                 'images/projects/to_bb/1.webp',
                 'images/projects/to_bb/2.webp',
@@ -156,6 +158,8 @@ function initGallery() {
          {
             name: 'AI',
             url: 'https://www.pinterest.com/axyelIlIo/',
+            lat: 59.945454, 
+            lng: 30.370971,
             images: [
                 'images/projects/O_OU/1.webp',
                 'images/projects/O_OU/2.webp',
@@ -267,6 +271,8 @@ function initGallery() {
         {
             name: 'Cartoons',
             url: 'https://www.behance.net/gallery/185496395/Cartoons-STATIC',
+            lat: 43.104446, 
+            lng: 131.871184,
             images: [
                 'images/projects/cartoons/1.webp',
                 'images/projects/cartoons/2.webp',
@@ -297,6 +303,8 @@ function initGallery() {
         {
             name: 'Drunken ecstasy 2',
             url: 'https://www.behance.net/gallery/237677261/Drunken-ecstasy-2',
+            lat: 43.116874, 
+            lng: 131.923855,
             images: [
                 'images/projects/de2/1.webp',
                 'images/projects/de2/2.webp',
@@ -327,6 +335,8 @@ function initGallery() {
         {
             name: 'Drunken ecstasy',
             url: 'https://www.behance.net/gallery/132798515/Drunken-ecstasy',
+            lat: 43.105329, 
+            lng: 131.874435,
             images: [
                 'images/projects/de/1.webp',
                 'images/projects/de/2.webp',
@@ -345,6 +355,8 @@ function initGallery() {
         {
             name: 'Walking with a friend',
             url: 'https://www.behance.net/gallery/132755409/Walking-with-a-friend',
+            lat: 43.106632, 
+            lng: 131.877383,
             images: [
                 'images/projects/Walking_with_a_friend/1.webp'
             ],
@@ -354,7 +366,9 @@ function initGallery() {
         } ,
         {
             name: 'Spring and summer',
-            url: 'https://www.behance.net/gallery/132763995/Spring-and-summer',
+            url: 'https://www.behance.net/gallery/132763995/Spring-and-summer', 
+            lat: 43.115300, 
+            lng: 131.885007,
             images: [
                 'images/projects/Spring_and_summer/1.webp',
                 'images/projects/Spring_and_summer/2.webp',
@@ -376,6 +390,8 @@ function initGallery() {
         {
             name: 'Call me with you',
             url: 'https://www.behance.net/gallery/132798025/Call-me-with-you',
+            lat: 43.104422,
+            lng: 131.862552,
             images: [
                 'images/projects/Call_me_with_you/1.webp',
                 'images/projects/Call_me_with_you/2.webp',
@@ -395,7 +411,9 @@ function initGallery() {
         },
         {
             name: 'Blood on the canvas',
-            url: 'https://www.behance.net/gallery/133009905/Blood-on-the-canvas',
+            url: 'https://www.behance.net/gallery/133009905/Blood-on-the-canvas', 
+            lat: 43.104761, 
+            lng: 131.871172,
             images: [
                 'images/projects/Blood_on_the_canvas/1.webp',
                 'images/projects/Blood_on_the_canvas/2.webp',
@@ -412,6 +430,8 @@ function initGallery() {
         {
             name: 'Raskolnikov\'s dreams',
             url: 'https://www.behance.net/gallery/133683461/Raskolnikov-s-dreams',
+            lat: 42.975101, 
+            lng: 131.886262,
             images: [
                 'images/projects/Raskolnikov_dreams/2.webp',
                 'images/projects/Raskolnikov_dreams/4.webp',
@@ -443,6 +463,8 @@ function initGallery() {
         {
             name: 'Self portrait',
             url: 'https://www.behance.net/gallery/133754213/Self-portrait',
+            lat: 43.117489, 
+            lng: 131.899491,
             images: [
                 'images/projects/Self_portrait/1.webp'
             ],
@@ -453,6 +475,8 @@ function initGallery() {
         {
             name: 'From love to hate',
             url: 'https://www.behance.net/gallery/133780161/From-love-to-hate',
+            lat: 43.127239, 
+            lng: 131.910206,
             images: [
                 'images/projects/From_love_to_hate/1.webp'
             ],
@@ -463,6 +487,8 @@ function initGallery() {
         {
             name: 'I wanted to show you!',
             url: 'https://www.behance.net/gallery/180461029/I-wanted-to-show-you',
+            lat: 43.117567, 
+            lng: 131.882547,
             images: [
                 'images/projects/I_wanted_to_show_you/1.webp',
                 'images/projects/I_wanted_to_show_you/2.webp',
@@ -482,6 +508,8 @@ function initGallery() {
         {
             name: 'HOTEL - Love, Death & Robots EDIT',
             url: 'https://youtu.be/DpeKJaiLOd0?si=_2VfZz1Ee1K-YLTj',
+            lat: 43.113805, 
+            lng: 131.895952,
             images: [
                 'images/projects/HOTEL_LDR/1.webp'
             ],
@@ -492,6 +520,8 @@ function initGallery() {
         {
             name: 'Ergo Proxy',
             url: 'https://www.youtube.com/watch?v=WwaHwI6gaf0&t=855s',
+            lat: 43.115701, 
+            lng: 131.900987,
             images: [
                 'images/projects/Ergo_Proxy/1.webp'
             ],
@@ -502,6 +532,8 @@ function initGallery() {
         {
             name: 'Luxgoth YT Attribute',
             url: 'https://www.youtube.com/@luxgoth',
+            lat: 59.965639, 
+            lng: 30.311657,
             images: [
                 'images/projects/Luxgoth_YT_Attribute/1.webp',
                 'images/projects/Luxgoth_YT_Attribute/2.webp',
@@ -516,6 +548,8 @@ function initGallery() {
         {
             name: 'To bb - irreplaceability',
             url: 'https://dribbble.com/shots/27022663-to-bb',
+            lat: 43.115542,
+            lng: 131.885494,
             images: [
                 'images/projects/Tattoo/1.webp'
             ],
@@ -526,6 +560,8 @@ function initGallery() {
         {
             name: 'Rare Nights',
             url: 'https://vt.tiktok.com/ZSuoTGC26/',
+            lat: 43.105726, 
+            lng: 131.869408,
             images: [
                 'images/projects/RARE_NIGHTS/1.webp',
                 'images/projects/RARE_NIGHTS/2.webp',
@@ -540,6 +576,8 @@ function initGallery() {
         {
             name: 'LTZ',
             url: 'https://vt.tiktok.com/ZSuowFoVk/',
+            lat: 42.973370, 
+            lng: 131.884590,
             images: [
                 'images/projects/LTZ/1DlyaZhivih.webp',
                 'images/projects/LTZ/2LOVERS.webp',
@@ -554,6 +592,8 @@ function initGallery() {
         {
             name: 'TRIGANA',
             url: 'https://www.instagram.com/nansjova',
+            lat: 43.116614, 
+            lng: 131.881437,
             images: [
                 'images/projects/TRIGANA/1.webp',
                 'images/projects/TRIGANA/2.webp',
@@ -574,6 +614,8 @@ function initGallery() {
         {
             name: 'Luxgoth Logo',
             url: 'https://dribbble.com/shots/27034499-Logo-for-motion-designer-Luxgoth',
+            lat: 43.092750, 
+            lng: 131.917228,
             images: [
                 'images/projects/Luxgoth_Logo/1.webp'
             ],
@@ -584,6 +626,8 @@ function initGallery() {
         {
             name: 'Candy',
             url: 'https://www.behance.net/constantchoice',
+            lat: 42.966648, 
+            lng: 131.899192,
             images: [
                 'images/projects/Candy/1.webp'
             ],
@@ -594,6 +638,8 @@ function initGallery() {
         {
             name: 'hero in',
             url: 'https://www.behance.net/constantchoice',
+            lat: 43.116305, 
+            lng: 131.882652,
             images: [
                 'images/projects/hero_in/2.webp',
                 'images/projects/hero_in/4.webp',
@@ -609,6 +655,8 @@ function initGallery() {
         {
             name: 'Lizard Tail',
             url: 'https://www.behance.net/constantchoice',
+            lat: 43.167595, 
+            lng: 131.914899,
             images: [
                 'images/projects/Lizard_Tail/1.webp',
                 'images/projects/Lizard_Tail/2.webp'
@@ -621,6 +669,8 @@ function initGallery() {
         {
             name: 'Blow Up',
             url: 'https://www.behance.net/constantchoice',
+            lat: 42.977902, 
+            lng: 131.886927,
             images: [
                 'images/projects/BLOW_UP/1.webp',
                 'images/projects/BLOW_UP/2.webp',
@@ -652,6 +702,8 @@ function initGallery() {
         {
             name: 'Unpublished',
             url: 'https://www.instagram.com/constantchoice/',
+            lat: 43.028989, 
+            lng: 131.894410,
             images: [
                 'images/projects/unpublished/1.webp',
                 'images/projects/unpublished/2.webp',
@@ -674,6 +726,8 @@ function initGallery() {
         {
             name: 'DUBSTEP SCRIPT',
             url: 'https://github.com/constantchoice/DUBSTEP-SCRIPT',
+            lat: 43.099517, 
+            lng: 131.920213,
             images: [
                 'images/projects/DUBSTEP_SCRIPT/1.webp',
                 'images/projects/DUBSTEP_SCRIPT/2.webp'
@@ -686,6 +740,8 @@ function initGallery() {
         {
             name: 'SOON',
             url: 'https://www.behance.net/constantchoice',
+            lat: 18.169323, 
+            lng: -76.972947,
             images: [
                 'images/projects/HUI/1.webp',
                 'images/projects/HUI/2.webp',
@@ -708,6 +764,9 @@ function initGallery() {
         {
             name: 'Zakhar',
             url: 'https://www.behance.net/gallery/253744551/Zakhar',
+            lat: 59.927255, 
+            lng: 30.322946,
+            modelUrl: 'mirror_tag.glb',
             images: [
                 'images/projects/Zakhar/1.webp',
                 'images/projects/Zakhar/2.webp',
@@ -735,6 +794,8 @@ function initGallery() {
         {
             name: '10 Letters, 150 Hours',
             url: 'https://dribbble.com/shots/27613495-10-Letters-150-Hours',
+            lat: 60.000457, 
+            lng: 30.299053,
             images: [
                 'images/projects/10L150H/1.webp',
                 'images/projects/10L150H/2.webp'
@@ -747,6 +808,8 @@ function initGallery() {
         {
             name: 'Pink Blood',
             url: 'https://www.behance.net/gallery/257741241/Pink-Blood',
+            lat: 59.924207, 
+            lng: 30.243209,
             images: [
                 'images/projects/Pink_Blood/1.webp',
                 'images/projects/Pink_Blood/2.webp',
@@ -792,6 +855,8 @@ function initGallery() {
         {
             name: 'Silver Archive',
             url: 'https://www.behance.net/gallery/257746469/Silver-Archive',
+            lat: 52.516282, 
+            lng: 13.376603,
             images: [
                 'images/projects/Silver_Archive/1.webp',
                 'images/projects/Silver_Archive/2.webp',
