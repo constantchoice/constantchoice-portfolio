@@ -1013,6 +1013,7 @@ class ProjectGallery {
 
             const inner = document.createElement('img');
             inner.src = images[i];
+            inner.alt = project.imageAlts?.[images[i]] ?? ''; 
             inner.style.cssText = `width:100%;height:100%;object-fit:cover;display:block;`;
             img.appendChild(inner);
 
@@ -1472,6 +1473,7 @@ class ProjectGallery {
             modelUrl: projectData.modelUrl || null,
             previewImages: preview,
             originalImages: images,
+            imageAlts: projectData.imageAlts || {},
             _domEl: null,
             _previewEls: null,
             _entity3D: null,
@@ -1504,12 +1506,32 @@ class ProjectGallery {
     openProjectCarousel(project, imageIndex) {
         const allImages = project.originalImages || [];
         if (allImages.length === 0) return;
+
+        const alts = project.imageAlts || {};
+        const relevantAlts = {};
+        for (const path of allImages) {
+            if (alts[path]) relevantAlts[path] = alts[path];
+        }
+
+        // localStorage — основной канал
+        try {
+            localStorage.setItem('projectAlts:' + project.url, JSON.stringify(relevantAlts));
+        } catch (e) {
+            console.warn('[Alts] localStorage unavailable', e);
+        }
+
         const params = new URLSearchParams({
             name: project.name,
             url: project.url,
             images: encodeURIComponent(JSON.stringify(allImages)),
             start: imageIndex.toString(),
         });
+
+        // URL fallback — только для малых словарей (≤ 20)
+        if (Object.keys(relevantAlts).length > 0 && Object.keys(relevantAlts).length <= 20) {
+            params.set('alts', encodeURIComponent(JSON.stringify(relevantAlts)));
+        }
+
         window.open(`project.html?${params.toString()}`, '_blank');
     }
 }

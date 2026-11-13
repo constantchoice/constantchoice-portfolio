@@ -34,6 +34,12 @@ const CONFIG = {
         'bl': 'tr'
     },
 
+
+    // ===== ДИАГНОСТИКА ALT-ТЕКСТОВ =====
+    // true  → console.warn для категорий Skills / Links / Floating при отсутствии описания
+    // false → тишина
+    DEBUG_ALT_TEXT: false,
+
     PAGE3: {
         LAYOUT: {
             BASE_HEIGHT: 1163,
@@ -75,45 +81,118 @@ const CONFIG = {
 
         // Плавающие ссылки (верхний блок)
         FLOATING_LINKS: [
-            { url: 'https://www.youtube.com/@luxgoth', image: 'images/floating/LUXGOTH.webp' },
-            { url: 'ANONYMOUS', image: 'images/floating/LIZARD_TAIL.webp' },
-            { url: 'https://www.behance.net/gallery/133009905/Blood-on-the-canvas', image: 'images/floating/CANDY.webp' },
-            { url: 'https://www.instagram.com/nansjova', image: 'images/floating/TRIGANA.webp' },
-            { url: 'https://www.instagram.com/emptai.vfx', image: 'images/floating/EMPTAI.webp' }
+            {
+                url: 'https://www.youtube.com/@luxgoth',
+                image: 'images/floating/LUXGOTH.webp',
+                alt: 'LUXGOTH graffiti tag'
+            },
+            {
+                url: 'ANONYMOUS',
+                image: 'images/floating/LIZARD_TAIL.webp',
+                alt: 'LIZARD TAIL identifying symbol'
+            },
+            {
+                url: 'https://www.behance.net/gallery/133009905/Blood-on-the-canvas',
+                image: 'images/floating/CANDY.webp',
+                alt: 'CANDY hand-painted signature'
+            },
+            {
+                url: 'https://www.instagram.com/nansjova',
+                image: 'images/floating/TRIGANA.webp',
+                alt: 'TRIGANA signature artwork'
+            },
+            {
+                url: 'https://www.instagram.com/emptai.vfx',
+                image: 'images/floating/EMPTAI.webp',
+                alt: 'EMPTAI personal mark'
+            }
         ],
         
         // Иконки навыков (средний блок)
         SKILLS_ICONS: [
-            { image: 'images/skills/TOPAZ.webp' },
-            { image: 'images/skills/BLENDER.webp' },
-            { image: 'images/skills/DaVinci_Resolve.webp' },
-            { image: 'images/skills/PHOTOSHOP.webp' },
-            { image: 'images/skills/AFTER_EFFECTS.webp' },
-            { image: 'images/skills/ILLUSTRATOR.webp' },
-            { image: 'images/skills/PREMIERE.webp' },
-            { image: 'images/skills/CAPTURE_ONE.webp' },
-            { image: 'images/skills/MIDJOURNEY.webp' },
-            { image: 'images/skills/FIGMA.webp' }
+            { image: 'images/skills/TOPAZ.webp',            alt: 'Topaz' },
+            { image: 'images/skills/BLENDER.webp',          alt: 'Blender' },
+            { image: 'images/skills/DaVinci_Resolve.webp',  alt: 'DaVinci Resolve' },
+            { image: 'images/skills/PHOTOSHOP.webp',        alt: 'Adobe Photoshop' },
+            { image: 'images/skills/AFTER_EFFECTS.webp',    alt: 'Adobe After Effects' },
+            { image: 'images/skills/ILLUSTRATOR.webp',      alt: 'Adobe Illustrator' },
+            { image: 'images/skills/PREMIERE.webp',         alt: 'Adobe Premiere Pro' },
+            { image: 'images/skills/CAPTURE_ONE.webp',      alt: 'Capture One' },
+            { image: 'images/skills/MIDJOURNEY.webp',       alt: 'Midjourney' },
+            { image: 'images/skills/FIGMA.webp',            alt: 'Figma' }
         ],
         
         // Социальные ссылки (нижний блок)
         LINKS: {
-            center: { url: 'https://www.behance.net/constantchoice', image: 'images/links/BEHANCE.webp' },
-            left: { url: 'https://www.instagram.com/constantchoice', image: 'images/links/INSTAGRAM.webp' },
-            right: { url: 'grigrinyouu@gmail.com', image: 'images/links/GMAIL.webp' },
+            center: {
+                url: 'https://www.behance.net/constantchoice',
+                image: 'images/links/BEHANCE.webp',
+                alt: "Open constantchoice's Behance profile"
+            },
+            left: {
+                url: 'https://www.instagram.com/constantchoice',
+                image: 'images/links/INSTAGRAM.webp',
+                alt: "Open constantchoice's Instagram profile"
+            },
+            right: {
+                // НЕ ведёт на gmail.com — открывает contact overlay
+                url: 'grigrinyouu@gmail.com',
+                image: 'images/links/GMAIL.webp',
+                alt: 'Show contact email'
+            },
             smallLeft: [
-                { url: 'https://www.pinterest.com/axyelIlIo/', image: 'images/links/PINTEREST.webp' },
-                { url: 'https://www.youtube.com/@constantchoice', image: 'images/links/YOUTUBE.webp' },
-                { url: 'http://dribbble.com/constantchoice', image: 'images/links/DRIBBBLE.webp' },
-                { url: 'https://kavyar.com/6qpn6bz7cjg6', image: 'images/links/KAVYAR.webp' },          //
-                { url: 'https://www.tiktok.com/@constantchoice?_r=1&_t=ZS-94mKheynm9l', image: 'images/links/TIKTOK.webp' }
+                {
+                    url: 'https://www.pinterest.com/axyelIlIo/',
+                    image: 'images/links/PINTEREST.webp',
+                    alt: 'Open Pinterest profile'
+                },
+                {
+                    url: 'https://www.youtube.com/@constantchoice',
+                    image: 'images/links/YOUTUBE.webp',
+                    alt: "Open constantchoice's YouTube channel"
+                },
+                {
+                    url: 'http://dribbble.com/constantchoice',
+                    image: 'images/links/DRIBBBLE.webp',
+                    alt: "Open constantchoice's Dribbble profile"
+                },
+                {
+                    url: 'https://kavyar.com/6qpn6bz7cjg6', //
+                    image: 'images/links/KAVYAR.webp',
+                    alt: 'Open Kavyar profile'
+                },
+                {
+                    url: 'https://www.tiktok.com/@constantchoice?_r=1&_t=ZS-94mKheynm9l',
+                    image: 'images/links/TIKTOK.webp',
+                    alt: "Open constantchoice's TikTok profile"
+                }
             ],
             smallRight: [
-                { url: 'https://github.com/constantchoice', image: 'images/links/GITHUB.webp' },
-                { url: 'https://constantchoice.gumroad.com/', image: 'images/links/GUMROAD.webp' },     //
-                { url: 'https://t.me/iflbrkojdlzl', image: 'images/links/TELEGRAM.webp' },
-                { url: 'https://twitter.com/constantchoice', image: 'images/links/X.webp' },
-                { url: 'https://www.threads.com/@constantchoice?igshid=NTc4MTIwNjQ2YQ==', image: 'images/links/THREADS.webp' }
+                {
+                    url: 'https://github.com/constantchoice',
+                    image: 'images/links/GITHUB.webp',
+                    alt: "Open constantchoice's GitHub profile"
+                },
+                {
+                    url: 'https://constantchoice.gumroad.com/', //
+                    image: 'images/links/GUMROAD.webp',
+                    alt: 'Open the constantchoice Gumroad store'
+                },
+                {
+                    url: 'https://t.me/iflbrkojdlzl',
+                    image: 'images/links/TELEGRAM.webp',
+                    alt: 'Open Telegram contact'
+                },
+                {
+                    url: 'https://twitter.com/constantchoice',
+                    image: 'images/links/X.webp',
+                    alt: "Open constantchoice's X profile"
+                },
+                {
+                    url: 'https://www.threads.com/@constantchoice?igshid=NTc4MTIwNjQ2YQ==',
+                    image: 'images/links/THREADS.webp',
+                    alt: "Open constantchoice's Threads profile"
+                }
             ]
         },
 
@@ -195,6 +274,7 @@ const CONFIG = {
         ITEMS: [
             {
                 image: 'images/page4/item1/main.webp',
+                alt: 'Surreal pink-and-violet portrait of a distorted figure behind crumpled translucent plastic',
                 title: 'SOON ITEM 1',
                 description: 'There might be a description of your work, including all the important and interesting research that went into it',
                 meta: [
@@ -205,7 +285,9 @@ const CONFIG = {
                 ],
                 contactCard: {
                     image: 'images/page4/item1/contact-bg.webp',  // 500x500
+                    alt: '',
                     imageUrl: 'https://www.behance.net/constantchoice',
+                    linkLabel: "Open constantchoice's Behance profile",
                     button: {
                         text: 'CONTACT',
                         url: 'https://www.behance.net/constantchoice',
@@ -216,6 +298,7 @@ const CONFIG = {
             },
             {
                 image: 'images/page4/item2/main.webp',
+                alt: 'Gothic fashion doll with long dark hair and a black outfit, posed against a backdrop crossed with pins and threads',
                 title: 'SOON ITEM 2',
                 description: 'What do you want to show here?',
                 meta: [
@@ -225,7 +308,9 @@ const CONFIG = {
                 ],
                 contactCard: {
                     image: 'images/page4/item2/contact-bg.webp',  // 500x500
+                    alt: '',
                     imageUrl: 'https://www.behance.net/constantchoice',
+                    linkLabel: "Open constantchoice's Behance profile",
                     button: {
                         text: 'CONTACT',
                         url: 'https://www.instagram.com/constantchoice/',
@@ -236,6 +321,7 @@ const CONFIG = {
             },
             {
                 image: 'images/page4/item3/main.webp',
+                alt: 'Stylized fashion doll with long dark hair and a black outfit, shown against a backdrop of sketches and colorful marks',
                 title: 'SOON ITEM 3',
                 description: 'WHY',
                 meta: [
@@ -247,7 +333,9 @@ const CONFIG = {
                 ],
                 contactCard: {
                     image: 'images/page4/item3/contact-bg.webp',  // 500x500
+                    alt: '',
                     imageUrl: 'https://www.behance.net/constantchoice',
+                    linkLabel: "Open constantchoice's Behance profile",
                     button: {
                         text: 'CONTACT',
                         url: 'https://dribbble.com/constantchoice',
@@ -272,7 +360,9 @@ const CONFIG = {
                 ],
                 contactCard: {
                     image: 'images/page4/item4/contact-bg.webp',
+                    alt: '',
                     imageUrl: 'https://www.behance.net/constantchoice',
+                    linkLabel: "Open constantchoice's Behance profile",
                     button: {
                         text: 'REPOSITORY',
                         url: 'https://github.com/constantchoice/DUBSTEP-SCRIPT',
@@ -283,6 +373,7 @@ const CONFIG = {
             },
             {
                 image: 'images/page4/item5/main.webp',
+                alt: 'Abstract close-up from MONUMENTAL showing a dark textured surface with scattered highlights and soft bokeh',
                 title: 'MONUMENTAL',
                 description: '3D cinematic — an animated architectural short in the brutalist aesthetic. Working with volume, light, and camera dynamics to convey the power and raw beauty of concrete structures\n\n' +
                     'Focused on monumental forms, stark geometry, and the dramaturgy of light. The camera reveals the scale of the structures through slow, weighty flyovers and abrupt shifts in perspective\n\n' +
@@ -296,7 +387,9 @@ const CONFIG = {
                 ],
                 contactCard: {
                     image: 'images/page4/item5/contact-bg.webp',
+                    alt: '',
                     imageUrl: 'https://www.behance.net/constantchoice',
+                    linkLabel: "Open constantchoice's Behance profile",
                     button: {
                         text: 'FOLLOW PROGRESS',
                         url: 'https://www.behance.net/constantchoice',
@@ -307,6 +400,7 @@ const CONFIG = {
             },
             {
                 image: 'images/page4/item6/main.webp',
+                alt: 'Stylized city street scene with a lone figure walking along a cobbled street beneath bright blue and magenta light',
                 title: 'ZAKHAR',
                 description: 'A fashion series created using 3D scanning technology. The subject was digitized through photogrammetry — a sequence of multi-angle shots processed in COLMAP and Houdini via Gaussian Splatting\n\n' +
                     'The final renders are stylized as a fashion editorial — with emphasis on character, light, and volume. The result is a fusion of digital craftsmanship and human presence, where the scanned individual becomes both subject and artifact\n\n' +
@@ -320,7 +414,9 @@ const CONFIG = {
                 ],
                 contactCard: {
                     image: 'images/page4/item6/contact-bg.webp',
+                    alt: '',
                     imageUrl: 'https://www.behance.net/constantchoice',
+                    linkLabel: "Open constantchoice's Behance profile",
                     button: {
                         text: 'OPEN PROJECT',
                         url: 'https://www.behance.net/gallery/253744551/Zakhar',
@@ -331,6 +427,7 @@ const CONFIG = {
             },
             {
                 image: 'images/page4/item7/main.webp',
+                alt: 'Typography specimen with oversized black serif letterforms and the words "LOSHCHILIN\'S FIRM" in white on a pale yellow background',
                 title: '10 LETTERS, 150 HOURS',
                 description: 'A complete typographic system built from scratch. Ten characters, each constructed individually — without a single pre-existing matrix\n\n' +
                     'Classical proportions serve only as a starting point: the final geometry is unique — stroke contrast is amplified, terminal cuts are refined, and optical spacing is calibrated with precision\n\n' +
@@ -344,7 +441,9 @@ const CONFIG = {
                 ],
                 contactCard: {
                     image: 'images/page4/item7/contact-bg.webp',
+                    alt: '',
                     imageUrl: 'https://www.behance.net/constantchoice',
+                    linkLabel: "Open constantchoice's Behance profile",
                     button: {
                         text: 'OPEN PROJECT',
                         url: 'https://dribbble.com/shots/27613495-10-Letters-150-Hours',
@@ -355,6 +454,7 @@ const CONFIG = {
             },
             {
                 image: 'images/page4/item8/main.webp',
+                alt: 'Overexposed pink-toned close-up of a tattooed arm and hand, with green ornamental linework against a vivid textured backdrop',
                 title: 'PINK BLOOD',
                 description: 'A raw, candid editorial capturing the authentic energy of a home tattoo session. Rejecting posed studio portraits, this series embraces a documentary snapshot aesthetic with intentional out-of-focus frames\n\n' +
                     'The visual language is built on an overexposed film look and cross-processed colors: blown-out highlights, vibrant pink undertones on the skin, and unnatural green shadows. Set against a striking candy-pink background, these gritty archive-style shots create a perfect, stylish contrast for the Halloween season\n\n' +
@@ -368,7 +468,9 @@ const CONFIG = {
                 ],
                 contactCard: {
                     image: 'images/page4/item8/contact-bg.webp',
+                    alt: '',
                     imageUrl: 'https://www.behance.net/constantchoice',
+                    linkLabel: "Open constantchoice's Behance profile",
                     button: {
                         text: 'OPEN PROJECT',
                         url: 'https://www.behance.net/gallery/257741241/Pink-Blood',
@@ -379,6 +481,7 @@ const CONFIG = {
             },
                         {
                 image: 'images/page4/item9/main.webp',
+                alt: 'Monochrome editorial portrait of a person with dark paint across the face and chest and an intricate upper-arm tattoo',
                 title: 'SILVER ARCHIVE',
                 description: 'A monochrome editorial focused on the raw energy of a home tattoo session, elevated by meticulous retouching. The post-processing plays a key role: soft-contrast silver-toned B&W, smooth tone curves, lifted shadows, and fine film grain to achieve an analog feel\n\n' +
                     'Captured in a candid, documentary style with intentional out-of-focus frames, the images feel like forgotten snapshots from a 90s underground party. There is no staging here — only pure action, lifestyle, and the intimate reality of the moment\n\n' +
@@ -392,7 +495,9 @@ const CONFIG = {
                 ],
                 contactCard: {
                     image: 'images/page4/item9/contact-bg.webp',
+                    alt: '',
                     imageUrl: 'https://www.behance.net/constantchoice',
+                    linkLabel: "Open constantchoice's Behance profile",
                     button: {
                         text: 'OPEN PROJECT',
                         url: 'https://www.behance.net/gallery/257746469/Silver-Archive',
@@ -405,7 +510,7 @@ const CONFIG = {
         // Нижний баннер
         BOTTOM_IMAGE: {
             src: 'images/page4/bottom-banner.webp',
-            alt: 'Bottom banner', 
+            alt: "Open constantchoice's Behance profile", 
             url: 'https://www.behance.net/constantchoice'
         }
     },

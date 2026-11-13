@@ -124,6 +124,7 @@ class Page4Manager {
             video.loop = true;
             video.muted = true;
             video.playsinline = true;
+            video.setAttribute('aria-hidden', 'true');
             video.style.cssText = `
                 width: 100%;
                 height: 100%;
@@ -136,7 +137,7 @@ class Page4Manager {
         } else {
             const img = document.createElement('img');
             img.src = data.image;
-            img.alt = data.title || 'Item';
+            img.alt = data.alt ?? '';
             img.loading = 'lazy';
             img.style.cssText = `
                 width: 100%;
@@ -540,7 +541,7 @@ class Page4Manager {
         
         const img = document.createElement('img');
         img.src = data.contactCard.image;
-        img.alt = 'Contact';
+        img.alt = data.contactCard.alt ?? '';
         img.loading = 'lazy';
         img.style.cssText = `
             width: 100%;
@@ -548,7 +549,7 @@ class Page4Manager {
             object-fit: cover;
             display: block;
         `;
-        
+
         if (data.contactCard.imageUrl) {
             const link = document.createElement('a');
             link.href = data.contactCard.imageUrl;
@@ -559,6 +560,9 @@ class Page4Manager {
                 height: 100%;
                 text-decoration: none;
             `;
+            if (data.contactCard.linkLabel) {
+                link.setAttribute('aria-label', data.contactCard.linkLabel);
+            }
             link.appendChild(img);
             imageWrapper.appendChild(link);
         } else {

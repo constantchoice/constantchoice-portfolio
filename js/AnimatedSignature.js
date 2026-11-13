@@ -105,6 +105,11 @@ class AnimatedSignature {
             svg.setAttribute(attrs[i].name, attrs[i].value);
         }
         
+        // ===== ACCESSIBILITY =====
+        svg.setAttribute('role', 'img');
+        svg.setAttribute('aria-label', 'constantchoice signature');
+        svg.setAttribute('focusable', 'false');
+
         // ===== ПРИМЕНЯЕМ МАСШТАБ =====
         const scale = this.config.scale || 1;
         const viewBox = svg.getAttribute('viewBox') || '0 0 1920 1440';

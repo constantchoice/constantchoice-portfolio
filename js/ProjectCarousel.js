@@ -49,10 +49,11 @@ class ProjectCarousel {
         const name = params.get('name');
         const url = params.get('url');
         const imagesRaw = params.get('images');
+        const altsRaw = params.get('alts');
         const startIndex = parseInt(params.get('start') || '0', 10);
-        
+
         if (!name || !url || !imagesRaw) return null;
-        
+
         let images;
         try {
             images = JSON.parse(decodeURIComponent(imagesRaw));
@@ -60,17 +61,46 @@ class ProjectCarousel {
             console.error('Failed to parse images', e);
             return null;
         }
-        
+
         if (!Array.isArray(images) || images.length === 0) return null;
-        
+
+        // ===== приоритет — localStorage, fallback — URL param =====
+        let imageAlts = {};
+
+        // 1. Пробуем localStorage (передаётся из openProjectCarousel)
+        try {
+            const stored = localStorage.getItem('projectAlts:' + url);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                    imageAlts = parsed;
+                }
+            }
+        } catch (e) {
+            console.warn('[Alts] localStorage read failed', e);
+        }
+
+        // 2. Fallback: alts из URL (старые ссылки / если localStorage недоступен)
+        if (Object.keys(imageAlts).length === 0 && altsRaw) {
+            try {
+                const parsed = JSON.parse(decodeURIComponent(altsRaw));
+                if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                    imageAlts = parsed;
+                }
+            } catch (e) {
+                console.warn('Failed to parse alts from URL', e);
+            }
+        }
+
         const firstImage = images[startIndex] || images[0];
         const restImages = images.filter((_, i) => i !== startIndex);
         this.shuffleArray(restImages);
-        
+
         return {
             name,
             url,
             images: [firstImage, ...restImages],
+            imageAlts,
             startIndex
         };
     }
@@ -109,7 +139,7 @@ class ProjectCarousel {
         this.projectData.images.forEach((src, index) => {
             const img = document.createElement('img');
             img.src = src;
-            img.alt = `${this.projectData.name} — ${index + 1}`;
+            img.alt = this.projectData.imageAlts?.[src] ?? '';
             img.draggable = false;
             this.carousel.appendChild(img);
         });

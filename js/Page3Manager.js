@@ -29,6 +29,20 @@ class Page3Manager {
         this.createLinks();
     }
     
+    // ==================== ALT DIAGNOSTICS ====================
+    /**
+     * Диагностика отсутствующих alt.
+     * null/undefined → предупреждение (описание ещё не написано)
+     * ''             → тишина (намеренно декоративное)
+     * строка         → тишина
+     */
+    _warnMissingAlt(category, src, alt) {
+        if (!CONFIG.DEBUG_ALT_TEXT) return;
+        if (alt === null || alt === undefined) {
+            console.warn(`[ALT TODO] ${category}: ${src}`);
+        }
+    }
+    
     // ==================== SCALE ====================
     calculateScale() {
         const containerHeight = this.container.clientHeight;
@@ -197,9 +211,11 @@ class Page3Manager {
             
             const img = document.createElement('img');
             img.src = iconData.image;
-            img.alt = 'Skill';
+            img.alt = iconData.alt ?? '';
             img.loading = 'lazy';
             img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit;';
+            
+            this._warnMissingAlt('SKILLS_ICONS', iconData.image, iconData.alt);
             
             el.appendChild(img);
             ringContainer.appendChild(el);
@@ -503,8 +519,10 @@ class Page3Manager {
         
         const img = document.createElement('img');
         img.src = data.image;
-        img.alt = 'Link';
+        img.alt = data.alt ?? '';
         img.loading = 'lazy';
+        
+        this._warnMissingAlt('LINKS', data.image, data.alt);
         
         link.appendChild(img);
         return link;
@@ -580,8 +598,10 @@ class Page3Manager {
                 
                 const img = document.createElement('img');
                 img.src = link.image;
-                img.alt = 'Link';
+                img.alt = link.alt ?? '';
                 img.loading = 'lazy';
+                
+                this._warnMissingAlt('FLOATING_LINKS', link.image, link.alt);
                 
                 linkElement.appendChild(img);
                 container.appendChild(linkElement);
