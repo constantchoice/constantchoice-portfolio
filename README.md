@@ -43,6 +43,7 @@ Designed as an immersive visual experience, combining custom animations, interac
       <sub>Editorial Photography</sub>
     </td>
   </tr>
+  <tr></tr> 
   <tr>
     <td width="50%" align="center" valign="top">
       <a href="https://www.behance.net/gallery/185496395/Cartoons-STATIC">
