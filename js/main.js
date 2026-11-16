@@ -1480,6 +1480,23 @@ function initGallery() {
                 'images/projects/Silver_Archive/preview/15.webp': 'Overhead close-up of a person in a pale smock, with a large ornamental tattoo extending along the raised arm.',
                 'images/projects/Silver_Archive/preview/21.webp': 'Close frontal portrait of a bald person with dark theatrical face paint, a pale ruffled collar, and a large ornamental shoulder tattoo.'
             }
+        },
+        {
+            name: 'Stream Of Clarity',
+            url: 'https://signallock.bandcamp.com/track/stream-of-clarity',
+            lat: 46.383484, 
+            lng: 15.041508,
+            images: [
+                'images/projects/SignalLock/1.webp'
+            ],
+            imagesGallery: [
+                'images/projects/SignalLock/preview/1.webp'
+            ],
+            imageAlts: {
+                'images/projects/SignalLock/1.webp': 'Abstract close-up of a dark figure against a distorted blue-green background, with vibrant cyan highlights, chromatic aberration, and splashing water along the bottom edge.',
+
+                'images/projects/SignalLock/preview/1.webp': 'Abstract close-up of a dark figure against a distorted blue-green background, with vibrant cyan highlights, chromatic aberration, and splashing water along the bottom edge.'
+            }
         }
         
 /*         ,

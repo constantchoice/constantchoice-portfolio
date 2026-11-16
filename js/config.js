@@ -105,6 +105,11 @@ const CONFIG = {
                 url: 'https://www.instagram.com/emptai.vfx',
                 image: 'images/floating/EMPTAI.webp',
                 alt: 'EMPTAI personal mark'
+            },
+            {
+                url: 'https://signallock.bandcamp.com/',
+                image: 'images/floating/SIGNAL_LOCK.webp',
+                alt: 'SIGNAL LOCK personal mark'
             }
         ],
         
